@@ -1,4 +1,5 @@
 import { Box } from '@chakra-ui/react'
+import { StarRating } from '../components/items'
 import { SliderHome } from '../components/slider/SliderHome'
 
 const image = 'src/assets/seba.jpg'
@@ -89,6 +90,9 @@ export const HomePage = () => {
   return (
     <Box w={'full'}>
       <SliderHome title={'Ofertas del Día'} />
+
+      <br/>
+      <StarRating rating={3.2}/>
     </Box>
   )
 }

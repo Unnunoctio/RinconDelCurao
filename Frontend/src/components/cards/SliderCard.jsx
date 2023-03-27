@@ -1,4 +1,4 @@
-import { Box, Card, CardBody, HStack, Image, Tag, TagLabel, Text, useColorModeValue, VStack } from "@chakra-ui/react"
+import { Box, Card, CardBody, HStack, Image, Text, useColorModeValue, VStack } from "@chakra-ui/react"
 
 export const SliderCard = ({ dataCard }) => {
   return (
