@@ -1,41 +1,40 @@
 import { Box, Center, Collapse, Drawer, DrawerContent, DrawerOverlay, Flex, HStack, Icon, IconButton, Link, Stack, Text, useColorModeValue, useDisclosure, VStack } from "@chakra-ui/react"
-import { BsGear } from 'react-icons/bs'
 import { GiShatteredGlass } from 'react-icons/gi'
 import { FiChevronDown, FiMenu, FiX } from 'react-icons/fi'
-import { useEffect } from "react"
 import { OptionsButton } from "./OptionsButton"
+import { useNavigate } from "react-router-dom"
 
 const navHeigth = '72px'
 
 const linkItems = [
   {
     name: 'Cervezas',
-    url: '',
+    url: '/cervezas',
     categories: [
-      { name: 'Cervezas Artesanales', url: '' },
-      { name: 'Cervezas Tradicionales', url: '' },
-      { name: 'Cervezas Importadas', url: '' },
-      { name: 'Cervezas Sin Alcohol', url: '' }
+      { name: 'Cervezas Artesanales', url: '/cervezas-artesanales' },
+      { name: 'Cervezas Tradicionales', url: '/cervezas-tradicionales' },
+      { name: 'Cervezas Importadas', url: '/cervezas-importadas' },
+      { name: 'Cervezas Sin Alcohol', url: '/cervezas-sin-alcohol' }
     ]
   },
   {
     name: 'Vinos',
-    url: '',
+    url: '/vinos',
     categories: [
-      { name: 'Vinos Tintos', url: '' },
-      { name: 'Vinos Blancos', url: '' },
-      { name: 'Vinos Rosé', url: '' },
-      { name: 'Vinos Cero', url: '' }
+      { name: 'Vinos Tintos', url: '/vinos-tintos' },
+      { name: 'Vinos Blancos', url: '/vinos-blancos' },
+      { name: 'Vinos Rosé', url: '/vinos-rose' },
+      { name: 'Vinos Cero', url: '/vinos-cero' }
     ]
   },
   {
     name: 'Destilados',
-    url: '',
+    url: 'destilados',
     categories: [
-      { name: 'Whisky', url: '' },
-      { name: 'Pisco', url: '' },
-      { name: 'Ron', url: '' },
-      { name: 'Tequila', url: '' }
+      { name: 'Whisky', url: '/whisky' },
+      { name: 'Pisco', url: '/pisco' },
+      { name: 'Ron', url: '/ron' },
+      { name: 'Tequila', url: '/tequila' }
     ]
   }
 ]
@@ -43,6 +42,12 @@ const linkItems = [
 export const Navbar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure() //Sidebar
   const { isOpen: isNavOpen, onOpen: onNavOpen, onClose: onNavClose } = useDisclosure()
+
+  const onNavCloseDelay = () => {
+    setTimeout(() => {
+      onNavClose()
+    }, 300)
+  }
 
   return (
     <>
@@ -84,14 +89,24 @@ export const Navbar = () => {
 
 const NavbarContent = ({ onOpen, isNavOpen, onNavOpen, onNavClose, ...rest }) => {
   const {isOpen: isOptionOpen, onOpen: onOptionOpen, onClose: onOptionClose} = useDisclosure()
+  const navigate = useNavigate()
   
+  const goHome = () => {
+    navigate('', { replace: true })
+  }
+
   return (
     <Flex minW={'75%'} maxW={'90%'} w={{ base: '90%', md: 'auto' }}
       justifyContent={'space-between'}
       {...rest}
     >
       {/* LOGO */}
-      <Center h={navHeigth} mr={{ base: 0, md: 12 }} color={'yellow.500'}>
+      <Center onClick={goHome}
+        h={navHeigth} mr={{ base: 0, md: 12 }} 
+        color={'yellow.500'} cursor={'pointer'}
+        transition={'transform 200ms ease-out'}
+        _hover={{ transform: 'scale(1.03)' }}
+      >
         <Icon boxSize={9} as={GiShatteredGlass} />
         <Box ml={2} fontFamily={'Finger Paint'}>
           <Text>Rincón</Text>
@@ -152,6 +167,16 @@ const NavbarContent = ({ onOpen, isNavOpen, onNavOpen, onNavClose, ...rest }) =>
 }
 
 const NavItem = ({ item, ...rest }) => {
+  const navigate = useNavigate()
+
+  const goLinkCategory = (categoryUrl) => {
+    navigate(`${item.url}${categoryUrl}`, { replace: true })
+  }
+
+  const goLinkAll = () => {
+    navigate(`${item.url}`, { replace: true })
+  }
+
   return (
     <Flex
       alignItems={'left'}
@@ -164,7 +189,7 @@ const NavItem = ({ item, ...rest }) => {
       </Center>
       {
         item.categories.map((category, index) => (
-          <Link key={index}
+          <Link key={index} onClick={() => goLinkCategory(category.url)}
             color={'gray.500'}
             mb={2}
           >
@@ -172,7 +197,7 @@ const NavItem = ({ item, ...rest }) => {
           </Link>
         ))
       }
-      <Link
+      <Link onClick={goLinkAll}
         color={'yellow.500'}
       >
         Ver Todos

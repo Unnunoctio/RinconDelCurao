@@ -1,5 +1,5 @@
-import { Box, Text, useColorModeValue } from "@chakra-ui/react"
-import { Navbar } from "../components/Navbar"
+import { Box, Flex, useColorModeValue } from "@chakra-ui/react"
+import { Navbar } from "./components/Navbar"
 
 export const LayoutApp = ({ children }) => {
   return (
@@ -8,7 +8,12 @@ export const LayoutApp = ({ children }) => {
       <Navbar />
       
       <Box h={'73px'} w={'full'}></Box>
-      {children}
+      <Flex w={'full'} justifyContent={'center'}>
+        {/* <Flex w={{ base: '100%', sm: '90%', md: '80%',  }}> */}
+        <Flex minW={'80%'} maxW={{ base: '100%', sm: '90%', md: '80%' }} >
+          {children}
+        </Flex>
+      </Flex>
 
       {/* Footer */}
     </Box>
