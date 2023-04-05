@@ -1,60 +1,18 @@
-import re
+arr = ["hola", "mundo", "mundo", "en", "python"]
+str_completo = "Hola mundo en Python, estoy aprendiendo Python"
 
-data = ['Pack 6 un. Cerveza Royal Guard Lager botella 355 cc', 
-        'Pack 18 un. Cerveza Corona Lager 4.6° 330 cc', 
-        'Pack 24 un. Cerveza Stella Artois Lager 5.2° 330 cc', 
-        'Pack 6 un. Cerveza Coors Stubby 5° botella 355 cc', 
-        'Pack 12 un. Cerveza Stella Artois Belga Lager 5.2° 354 cc', 
-        'Pack 6 un. Cerveza Stones Limón lata 350 cc', 
-        'Pack 6 un. Cerveza Stones Limón lata 350 cc', 
-        'Pack 10 un. Cerveza Heineken 350 cc', 
-        'Pack 6 un. Cerveza Austral Patagonia 4.8° Hoppy Lager 470 cc',  
-        'Pack 6 un. Cerveza Stella Artois sin alcohol 330 cc',
-        'Cerveza Gulden Draak 9000 Quadruple 10.5° 330 cc',
-        'Cerveza Bitburger Sin Alcohol Drive botella 330 cc',
-        'Cerveza Sin alcohol lata 330 cc'
-      ]
+# Utilizamos la función all() con una expresión generadora para verificar si todos los elementos de 'arr' están presentes en 'str_completo'
+if all(elem in str_completo.lower().split() for elem in arr):
+    print("Todos los elementos del arreglo están presentes en el string completo")
+else:
+    print("Al menos uno de los elementos del arreglo no está presente en el string completo")
 
-for product in data:
-  product = product.replace('Cerveza ', '')
-  # eliminar la marca
 
-  # Obtener is es un pack o unidad, la cantidad
-  if "Pack" in product:
-    unit_type = "Pack"
-    quantity = re.search(r'\d+', product).group()
-    product = product.replace(f'Pack {quantity} un. ', '')
-  else:
-    unit_type = "Unidad"
-    quantity = 1
-
-  # Obtener el envase
-  if "botella" in product:
-    packaging = "Botella"
-    product = product.replace('botella ', '')
-  elif "lata" in product:
-    packaging = "Lata"
-    product = product.replace('lata ', '')
-  else:
-    packaging = ""
-
-  # Obtener la graduacion
-  if "°" in product:
-    grad = re.search(r'\d+\.\d+°', product)
-    if(grad == None):
-      grad = re.search(r'\d+°', product).group()
-    else:
-      grad = re.search(r'\d+\.\d+°', product).group()
-    
-    product = product.replace(f'{grad} ', '')
-  else:
-    grad = ""
-
-  # Obtener el contenido cc
-  cc_content = re.search(r'\d+\scc', product).group()
-  product = product.replace(cc_content, '')
-
-  
-
-  print(f'{unit_type} - {quantity} - {packaging} - {grad} - {cc_content}')
-  print(f'lo que queda: {product}')
+    {
+      "website": "Jumbo",
+      "url": "https://www.jumbo.cl/cerveza-kunstman-sin-filtrar-5-0-botella-330-cc/p",
+      "price": 2190,
+      "best_price": 2190,
+      "average": 0,
+      "last_hash": "16b17d8366435e4ec9aee955461df561bc1f8b11d34c8bc83c1740a6987c05c9"
+    }
