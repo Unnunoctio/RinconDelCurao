@@ -1,9 +1,10 @@
 import { Box, Card, CardBody, HStack, Image, Text, useColorModeValue, VStack } from "@chakra-ui/react"
+import { StarRating } from "../items"
 
-export const SliderCard = ({ dataCard }) => {
+export const SliderCard = ({ dataCard, variant }) => {
   return (
     <Card
-      my={3} ml={2}
+      my={3} mx={4}
       w={{ base: 240, md: 260 }} h={{ base: 260, md: 280 }}
       background={useColorModeValue('white', 'gray.900')}
       boxShadow={'md'} 
@@ -28,9 +29,17 @@ export const SliderCard = ({ dataCard }) => {
           spacing={1}
           justifyContent={'space-between'} alignItems={'flex-start'}
         >
-          <Box px={2} py={'1px'} background={'rgba(214,158,46,0.6)'} borderRadius={'full'}>
-            <Text fontWeight={'medium'} fontSize={14}>{dataCard.dataValue}% desc</Text>
-          </Box>
+          {
+            (variant === 'offer') 
+            ? (
+              <Box px={2} py={'1px'} background={'rgba(214,158,46,0.6)'} borderRadius={'full'}>
+                <Text fontWeight={'medium'} fontSize={14}>{dataCard.dataValue}% desc</Text>
+              </Box>
+            )
+            : (variant === 'rating')
+            ? <StarRating rating={dataCard.dataValue} />
+            : null
+          }
           <Text fontWeight={'medium'} fontSize={18}>{dataCard.title}</Text>
           <HStack w={'full'} justifyContent={'space-between'}>
             <Text color={'gray.600'}>{dataCard.brand}</Text>

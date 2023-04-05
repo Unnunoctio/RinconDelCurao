@@ -7,3 +7,7 @@
   height: 28px;
   width: 28px;
 }
+
+.slick-track {
+  width: 10000px !important;
+}

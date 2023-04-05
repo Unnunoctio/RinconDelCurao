@@ -4,40 +4,9 @@ import { FiChevronDown, FiMenu, FiX } from 'react-icons/fi'
 import { OptionsButton } from "./OptionsButton"
 import { useNavigate } from "react-router-dom"
 
-const navHeigth = '72px'
+import { linkItems } from "../../assets/linkItems"
 
-const linkItems = [
-  {
-    name: 'Cervezas',
-    url: '/cervezas',
-    categories: [
-      { name: 'Cervezas Artesanales', url: '/cervezas-artesanales' },
-      { name: 'Cervezas Tradicionales', url: '/cervezas-tradicionales' },
-      { name: 'Cervezas Importadas', url: '/cervezas-importadas' },
-      { name: 'Cervezas Sin Alcohol', url: '/cervezas-sin-alcohol' }
-    ]
-  },
-  {
-    name: 'Vinos',
-    url: '/vinos',
-    categories: [
-      { name: 'Vinos Tintos', url: '/vinos-tintos' },
-      { name: 'Vinos Blancos', url: '/vinos-blancos' },
-      { name: 'Vinos Rosé', url: '/vinos-rose' },
-      { name: 'Vinos Cero', url: '/vinos-cero' }
-    ]
-  },
-  {
-    name: 'Destilados',
-    url: 'destilados',
-    categories: [
-      { name: 'Whisky', url: '/whisky' },
-      { name: 'Pisco', url: '/pisco' },
-      { name: 'Ron', url: '/ron' },
-      { name: 'Tequila', url: '/tequila' }
-    ]
-  }
-]
+const navHeigth = '72px'
 
 export const Navbar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure() //Sidebar
@@ -126,7 +95,7 @@ const NavbarContent = ({ onOpen, isNavOpen, onNavOpen, onNavClose, ...rest }) =>
           onMouseEnter={onNavOpen}
         >
           <Collapse in={isNavOpen && !isOptionOpen} startingHeight={navHeigth}>
-            <HStack spacing={8}>
+            <HStack spacing={8} alignItems={'flex-start'}>
               {
                 linkItems.map((item, index) => (
                   <NavItem key={index} item={item} />
@@ -207,6 +176,12 @@ const NavItem = ({ item, ...rest }) => {
 }
 
 const SidebarContent = ({ onClose, ...rest }) => {
+  const navigate = useNavigate()
+  
+  const goHome = () => {
+    navigate('', { replace: true })
+  }
+
   return (
     <Box
       bg={useColorModeValue('white', 'gray.900')}
@@ -219,7 +194,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
     >
       <Flex h={24} alignItems={'center'} justifyContent={'space-between'}>
         {/* LOGO */}
-        <Center color={'yellow.500'}>
+        <Center color={'yellow.500'} onClick={goHome} cursor={'pointer'}>
           <Icon boxSize={10} as={GiShatteredGlass} />
           <Box ml={2} fontFamily={'Finger Paint'} fontSize={18}>
             <Text>Rincón</Text>
@@ -245,9 +220,19 @@ const SidebarContent = ({ onClose, ...rest }) => {
 }
 
 const SidebarItem = ({ item, ...rest }) => {
+  const navigate = useNavigate()
   const { isOpen, onToggle, onOpen } = useDisclosure()
 
-  //Detectar en que pagina estamos y abrir esas categorias 
+  //Detectar en que pagina estamos y abrir esas categorias
+
+
+  const goLinkCategory = (categoryUrl) => {
+    navigate(`${item.url}${categoryUrl}`, { replace: true })
+  }
+
+  const goLinkAll = () => {
+    navigate(`${item.url}`, { replace: true })
+  }
 
   return (
     <Flex
@@ -261,7 +246,7 @@ const SidebarItem = ({ item, ...rest }) => {
         justifyContent={'space-between'}
         alignItems={'center'}
       >
-        <Text fontSize={18} fontWeight={'semibold'} >{item.name}</Text>
+        <Text fontSize={18} fontWeight={'medium'} >{item.name}</Text>
         {
           item.categories && (
             <Icon boxSize={6} as={FiChevronDown}
@@ -281,7 +266,7 @@ const SidebarItem = ({ item, ...rest }) => {
           {
             item.categories &&
             item.categories.map((category, index) => (
-              <Link key={index}
+              <Link key={index} onClick={() => goLinkCategory(category.url)}
                 color={'gray.500'}
                 py={1}
               >
@@ -289,7 +274,7 @@ const SidebarItem = ({ item, ...rest }) => {
               </Link>
             ))
           }
-          <Link
+          <Link onClick={goLinkAll}
             color={'yellow.500'}
             py={1}
           >

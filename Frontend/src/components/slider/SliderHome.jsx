@@ -7,96 +7,11 @@ import { useState } from "react";
 
 import './sliderHome.css'
 
-const image = 'src/assets/seba.jpg'
-
-const cards = [
-  {
-    image: image,
-    dataValue: 26,
-    title: 'Titulo Card 1',
-    brand: 'Marca',
-    price: 5600,
-    href: '#',
-  },
-  {
-    image: image,
-    dataValue: 26,
-    title: 'Titulo Card 2',
-    brand: 'Marca',
-    price: 5600,
-    href: '#',
-  },
-  {
-    image: image,
-    dataValue: 26,
-    title: 'Titulo Card 3',
-    brand: 'Marca',
-    price: 5600,
-    href: '#',
-  },
-  {
-    image: image,
-    dataValue: 26,
-    title: 'Titulo Card 4',
-    brand: 'Marca',
-    price: 5600,
-    href: '#',
-  },
-  {
-    image: image,
-    dataValue: 26,
-    title: 'Titulo Card 5',
-    brand: 'Marca',
-    price: 5600,
-    href: '#',
-  },
-  {
-    image: image,
-    dataValue: 26,
-    title: 'Titulo Card 6',
-    brand: 'Marca',
-    price: 5600,
-    href: '#',
-  },
-  {
-    image: image,
-    dataValue: 26,
-    title: 'Titulo Card 7',
-    brand: 'Marca',
-    price: 5600,
-    href: '#',
-  },
-  {
-    image: image,
-    dataValue: 26,
-    title: 'Titulo Card 8',
-    brand: 'Marca',
-    price: 5600,
-    href: '#',
-  },
-  {
-    image: image,
-    dataValue: 26,
-    title: 'Titulo Card 9',
-    brand: 'Marca',
-    price: 5600,
-    href: '#',
-  },
-  {
-    image: image,
-    dataValue: 26,
-    title: 'Titulo Card 10',
-    brand: 'Marca',
-    price: 5600,
-    href: '#',
-  }
-]
-
 function CustomNextArrow(props) {
   const { onClick } = props
 
   return (
-    <IconButton onClick={onClick}
+    <IconButton onClick={onClick} display={{ base: 'none', md: 'flex' }}
       icon={<Icon boxSize={8} as={SlArrowRight} />}
       position={'absolute'}
       bg={'transparent'}
@@ -114,7 +29,7 @@ function CustomPrevArrow(props) {
   const { onClick } = props
 
   return (
-    <IconButton onClick={onClick}
+    <IconButton onClick={onClick} display={{ base: 'none', md: 'flex' }}
       icon={<Icon boxSize={8} as={SlArrowLeft} />}
       position={'absolute'}
       bg={'transparent'}
@@ -138,39 +53,43 @@ function CustomDot(i, currentSlide, slidesToScroll) {
   )
 }
 
-export const SliderHome = ({ title }) => {
+export const SliderHome = ({ title, cards, variant }) => {
   const [currentSlide, setCurrentSlide] = useState(0)
 
   const settings = {
-    dots: true,
+    dots: false,
     infinite: true,
-    // centerMode: true,
-    slidesToShow: 4,
-    slidesToScroll: 4,
+    centerMode: true,
+
+    variableWidth: true,
+
     speed: 800,
     autoplay: true,
     autoplaySpeed: 5000,
+    pauseOnFocus: true,
 
     afterChange: (index) => {
       setCurrentSlide(index)
     },
     prevArrow: <CustomPrevArrow />,
     nextArrow: <CustomNextArrow />,
-    customPaging: i => CustomDot(i, currentSlide, 4)
+    customPaging: i => CustomDot(i, currentSlide, 1),
+    // arrows: false
   }
   // appendDots: dots => { console.log({dots}) }
 
   return (
     <Box>
-      <Heading fontSize={28} fontWeight={'medium'} fontFamily={'roboto'}>{title}</Heading>
-
-      <Slider {...settings}>
-        {
-          cards.map((card, index) => (
-            <SliderCard key={index} dataCard={card} />
-          ))
-        }
-      </Slider>
+      <Heading fontSize={{base: 24, sm: 28}} fontWeight={'medium'} fontFamily={'roboto'}>{title}</Heading>
+      <Box px={{ base: 0, sm: 2, md: 4 }}>
+        <Slider {...settings}>
+          {
+            cards.map((card, index) => (
+              <SliderCard key={index} dataCard={card} variant={variant} />
+            ))
+          }
+        </Slider>
+      </Box>
     </Box>
   )
 }
