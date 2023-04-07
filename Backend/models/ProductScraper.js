@@ -4,6 +4,7 @@ const { Schema, model } = require("mongoose")
 
 const ProductScraperSchema = Schema({
   product_id: { type: Schema.Types.ObjectId, ref: "Product", required: true },
+  title: { type: String, required: true },
   quantity: { type: Number, required: true },
   websites: [
     {

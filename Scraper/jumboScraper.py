@@ -28,15 +28,38 @@ productsNotFound = []
 # Contador de productos vistos
 contView = 0
 
-def getProductImage( href ):
-  response = requests.get(f'{urlBase}{href}', headers=headers)
-  soup = BeautifulSoup(response.content, 'html.parser')
-  imgElement = soup.select_one('.product-image-content img')
-  imgUrl = imgElement["src"]
+def createTitle( productMongo, productData ):
+  title = ""
+  if(productData['quantity'] > 1):
+    title += f"Pack {productData['quantity']} un. "
+  
+  title += f"{productMongo['name']} {productMongo['package']} "
 
-  imageResponse = requests.get(imgUrl).content
-  image = { 'image': ('image.webp', imageResponse)}
-  print(image)
+  if(productMongo['content'] >= 1000):
+    title += f"{productMongo['content']/1000} L"
+  else:
+    title += f"{productMongo['content']} cc"
+
+  return title
+
+def getProductImage( href ):
+  while(True):
+    try:
+      response = requests.get(f'{urlBase}{href}', headers=headers)
+      soup = BeautifulSoup(response.content, 'html.parser')
+      imgElement = soup.select_one('.product-image-content img')
+      imgUrl = imgElement["src"]
+
+      imageResponse = requests.get(imgUrl).content
+      with open("Scraper/image.webp", "wb") as archivo:
+        archivo.write(imageResponse)
+
+      with open("Scraper/image.webp", "rb") as archivo:
+        backendResponse = requests.post("http://localhost:4000/api/scraper_products/upload-image", files={ "image": archivo })
+
+      return backendResponse.json()['imagePath']
+    except Exception as e:
+      print(f'Error: {e} url: {urlBase}{href}')
 
 def getNewPrices( href ):
   while(True):
@@ -94,9 +117,9 @@ def getProductDB( productData ):
       if(len(nameSplit) > len(nameCorrect)):
         nameCorrect = nameSplit
         productCorrect = productDB
-  
+
   return productCorrect
- 
+
 def obteinProductData( href, typeProduct ):
   while(True):
     try:
@@ -122,11 +145,11 @@ def obteinProductData( href, typeProduct ):
         bestPrice = normalPrice
 
       title = infoProduct.select_one(".product-container-title .product-name").text.strip()
-      
+
       # Obtener los datos de caracteristicas principales
       productFeatures = soup.select(".product-content .product-wrap-table .product-page-container-technical-information .technical-information-flags .technical-information-flags-container")
       subType = quantity = alcoholContent = unitContent = package = None
-      
+
       for feature in productFeatures:
         featureTitle = feature.select_one(".technical-information-flags-title-container .technical-information-flags-title").text.strip()
         featureValue = feature.select_one(".technical-information-flags-value-container .technical-information-flags-value").text.strip()
@@ -197,7 +220,7 @@ def browseProducts( products, typeProduct ):
     # Pasar las urls bloqueadas
     if(href in urlsBlocked):
       continue
-    
+
     # Verificar que esta entrando a los productos
     global contView
     contView += 1
@@ -245,7 +268,7 @@ def browseProducts( products, typeProduct ):
             "average": 0,
             "last_hash": getPageHash(href)
           }
-          
+
           productScraper['websites'].append(newWebsite)
           scraper_collection.update_one({"_id": productScraper['_id']}, {"$set": productScraper})
 
@@ -259,6 +282,7 @@ def browseProducts( products, typeProduct ):
           # si no existe crear el scraper product con todos los datos
           newScraperProduct = {
             "product_id": productMongo['_id'],
+            "title": createTitle(productMongo, productData),
             "quantity": productData['quantity'],
             "websites": [
               {
@@ -270,9 +294,9 @@ def browseProducts( products, typeProduct ):
                 "last_hash": getPageHash(href)
               }
             ],
-            "image": "una imagen"
+            "image": getProductImage(href)
           }
-          
+
           scraper_collection.insert_one(newScraperProduct)
 
           print('********************************')
@@ -297,7 +321,7 @@ def browseProducts( products, typeProduct ):
             website['last_hash'] = new_hash
 
             scraper_collection.update_one({"_id": scraperProductMongo['_id']}, {"$set": scraperProductMongo})
-            
+
             print('********************************')
             print(f'Actualizo un website, URL: {urlSearch}')
             print('********************************')
@@ -334,7 +358,7 @@ def scrollPages(url):
       # Se obtienen los productos por medio de un selector CSS
       products = soup.select(".shelf-products-wrap .shelf-content .shelf-product-island")
       print(f'Cantidad de Productos: {len(products)}')
-    
+
     browseProducts(products, url['typeProduct'])
 
     # Ir a la siguiente pagina
@@ -374,12 +398,12 @@ def exportData():
     sheet["F" + str(i+2)] = obj["unitContent"]
     sheet["G" + str(i+2)] = obj["package"]
 
-  workbook.save(filename="productosNotFound.xlsx")
+  workbook.save(filename="Scraper/productosNotFound.xlsx")
 
-# jumboSraper()
-# exportData()
+jumboSraper()
+exportData()
 
-getProductImage('/cer-kunstman-vald-pale-al-bot-330cc-5-2-1924619-pak/p')
+# getProductImage('/cer-kunstman-vald-pale-al-bot-330cc-5-2-1924619-pak/p')
 
 
 
