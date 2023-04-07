@@ -19,14 +19,24 @@ urlsBlocked = [
 # Conexion a la base de datos
 client = MongoClient('mongodb://localhost:27017/')
 db = client['Rincon_del_Curao']
-products_collection = db['Product']
-scraper_collection = db['Scraper_Product']
+products_collection = db['products']
+scraper_collection = db['scraper_products']
 
 # Array de producto que no estan en la caleccion de productos
 productsNotFound = []
 
 # Contador de productos vistos
 contView = 0
+
+def getProductImage( href ):
+  response = requests.get(f'{urlBase}{href}', headers=headers)
+  soup = BeautifulSoup(response.content, 'html.parser')
+  imgElement = soup.select_one('.product-image-content img')
+  imgUrl = imgElement["src"]
+
+  imageResponse = requests.get(imgUrl).content
+  image = { 'image': ('image.webp', imageResponse)}
+  print(image)
 
 def getNewPrices( href ):
   while(True):
@@ -366,8 +376,10 @@ def exportData():
 
   workbook.save(filename="productosNotFound.xlsx")
 
-jumboSraper()
-exportData()
+# jumboSraper()
+# exportData()
+
+getProductImage('/cer-kunstman-vald-pale-al-bot-330cc-5-2-1924619-pak/p')
 
 
 

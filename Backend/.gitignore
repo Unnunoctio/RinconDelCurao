@@ -1,0 +1,5 @@
+node_modules/
+
+uploads/scraper_images/*
+
+!uploads/scraper_images/.gitkeep
