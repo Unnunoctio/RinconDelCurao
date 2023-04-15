@@ -1,6 +1,7 @@
 "use strict"
 
 const { Schema, model } = require("mongoose")
+const Product = require("./Product")
 
 const ProductScraperSchema = Schema({
   product_id: { type: Schema.Types.ObjectId, ref: "Product", required: true },
