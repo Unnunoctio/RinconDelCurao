@@ -1,0 +1,13 @@
+.slick-dots {
+  display: flex !important;
+  justify-content: center;
+}
+
+.slick-dots li {
+  height: 28px;
+  width: 28px;
+}
+
+.slick-track {
+  width: 10000px !important;
+}

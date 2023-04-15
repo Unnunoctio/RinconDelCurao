@@ -1,48 +1,22 @@
 import { Box, Center, Collapse, Drawer, DrawerContent, DrawerOverlay, Flex, HStack, Icon, IconButton, Link, Stack, Text, useColorModeValue, useDisclosure, VStack } from "@chakra-ui/react"
-import { BsGear } from 'react-icons/bs'
 import { GiShatteredGlass } from 'react-icons/gi'
 import { FiChevronDown, FiMenu, FiX } from 'react-icons/fi'
-import { useEffect } from "react"
 import { OptionsButton } from "./OptionsButton"
+import { useNavigate } from "react-router-dom"
+
+import { linkItems } from "../../assets/linkItems"
 
 const navHeigth = '72px'
-
-const linkItems = [
-  {
-    name: 'Cervezas',
-    url: '',
-    categories: [
-      { name: 'Cervezas Artesanales', url: '' },
-      { name: 'Cervezas Tradicionales', url: '' },
-      { name: 'Cervezas Importadas', url: '' },
-      { name: 'Cervezas Sin Alcohol', url: '' }
-    ]
-  },
-  {
-    name: 'Vinos',
-    url: '',
-    categories: [
-      { name: 'Vinos Tintos', url: '' },
-      { name: 'Vinos Blancos', url: '' },
-      { name: 'Vinos Rosé', url: '' },
-      { name: 'Vinos Cero', url: '' }
-    ]
-  },
-  {
-    name: 'Destilados',
-    url: '',
-    categories: [
-      { name: 'Whisky', url: '' },
-      { name: 'Pisco', url: '' },
-      { name: 'Ron', url: '' },
-      { name: 'Tequila', url: '' }
-    ]
-  }
-]
 
 export const Navbar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure() //Sidebar
   const { isOpen: isNavOpen, onOpen: onNavOpen, onClose: onNavClose } = useDisclosure()
+
+  const onNavCloseDelay = () => {
+    setTimeout(() => {
+      onNavClose()
+    }, 300)
+  }
 
   return (
     <>
@@ -84,14 +58,24 @@ export const Navbar = () => {
 
 const NavbarContent = ({ onOpen, isNavOpen, onNavOpen, onNavClose, ...rest }) => {
   const {isOpen: isOptionOpen, onOpen: onOptionOpen, onClose: onOptionClose} = useDisclosure()
+  const navigate = useNavigate()
   
+  const goHome = () => {
+    navigate('', { replace: true })
+  }
+
   return (
     <Flex minW={'75%'} maxW={'90%'} w={{ base: '90%', md: 'auto' }}
       justifyContent={'space-between'}
       {...rest}
     >
       {/* LOGO */}
-      <Center h={navHeigth} mr={{ base: 0, md: 12 }} color={'yellow.500'}>
+      <Center onClick={goHome}
+        h={navHeigth} mr={{ base: 0, md: 12 }} 
+        color={'yellow.500'} cursor={'pointer'}
+        transition={'transform 200ms ease-out'}
+        _hover={{ transform: 'scale(1.03)' }}
+      >
         <Icon boxSize={9} as={GiShatteredGlass} />
         <Box ml={2} fontFamily={'Finger Paint'}>
           <Text>Rincón</Text>
@@ -111,7 +95,7 @@ const NavbarContent = ({ onOpen, isNavOpen, onNavOpen, onNavClose, ...rest }) =>
           onMouseEnter={onNavOpen}
         >
           <Collapse in={isNavOpen && !isOptionOpen} startingHeight={navHeigth}>
-            <HStack spacing={8}>
+            <HStack spacing={8} alignItems={'flex-start'}>
               {
                 linkItems.map((item, index) => (
                   <NavItem key={index} item={item} />
@@ -152,6 +136,16 @@ const NavbarContent = ({ onOpen, isNavOpen, onNavOpen, onNavClose, ...rest }) =>
 }
 
 const NavItem = ({ item, ...rest }) => {
+  const navigate = useNavigate()
+
+  const goLinkCategory = (categoryUrl) => {
+    navigate(`${item.url}${categoryUrl}`, { replace: true })
+  }
+
+  const goLinkAll = () => {
+    navigate(`${item.url}`, { replace: true })
+  }
+
   return (
     <Flex
       alignItems={'left'}
@@ -164,7 +158,7 @@ const NavItem = ({ item, ...rest }) => {
       </Center>
       {
         item.categories.map((category, index) => (
-          <Link key={index}
+          <Link key={index} onClick={() => goLinkCategory(category.url)}
             color={'gray.500'}
             mb={2}
           >
@@ -172,7 +166,7 @@ const NavItem = ({ item, ...rest }) => {
           </Link>
         ))
       }
-      <Link
+      <Link onClick={goLinkAll}
         color={'yellow.500'}
       >
         Ver Todos
@@ -182,6 +176,12 @@ const NavItem = ({ item, ...rest }) => {
 }
 
 const SidebarContent = ({ onClose, ...rest }) => {
+  const navigate = useNavigate()
+  
+  const goHome = () => {
+    navigate('', { replace: true })
+  }
+
   return (
     <Box
       bg={useColorModeValue('white', 'gray.900')}
@@ -194,7 +194,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
     >
       <Flex h={24} alignItems={'center'} justifyContent={'space-between'}>
         {/* LOGO */}
-        <Center color={'yellow.500'}>
+        <Center color={'yellow.500'} onClick={goHome} cursor={'pointer'}>
           <Icon boxSize={10} as={GiShatteredGlass} />
           <Box ml={2} fontFamily={'Finger Paint'} fontSize={18}>
             <Text>Rincón</Text>
@@ -220,9 +220,19 @@ const SidebarContent = ({ onClose, ...rest }) => {
 }
 
 const SidebarItem = ({ item, ...rest }) => {
+  const navigate = useNavigate()
   const { isOpen, onToggle, onOpen } = useDisclosure()
 
-  //Detectar en que pagina estamos y abrir esas categorias 
+  //Detectar en que pagina estamos y abrir esas categorias
+
+
+  const goLinkCategory = (categoryUrl) => {
+    navigate(`${item.url}${categoryUrl}`, { replace: true })
+  }
+
+  const goLinkAll = () => {
+    navigate(`${item.url}`, { replace: true })
+  }
 
   return (
     <Flex
@@ -236,7 +246,7 @@ const SidebarItem = ({ item, ...rest }) => {
         justifyContent={'space-between'}
         alignItems={'center'}
       >
-        <Text fontSize={18} fontWeight={'semibold'} >{item.name}</Text>
+        <Text fontSize={18} fontWeight={'medium'} >{item.name}</Text>
         {
           item.categories && (
             <Icon boxSize={6} as={FiChevronDown}
@@ -256,7 +266,7 @@ const SidebarItem = ({ item, ...rest }) => {
           {
             item.categories &&
             item.categories.map((category, index) => (
-              <Link key={index}
+              <Link key={index} onClick={() => goLinkCategory(category.url)}
                 color={'gray.500'}
                 py={1}
               >
@@ -264,7 +274,7 @@ const SidebarItem = ({ item, ...rest }) => {
               </Link>
             ))
           }
-          <Link
+          <Link onClick={goLinkAll}
             color={'yellow.500'}
             py={1}
           >
