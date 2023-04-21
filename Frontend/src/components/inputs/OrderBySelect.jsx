@@ -54,6 +54,10 @@ export const OrderBySelect = ({ control, label, name, options = [], handleSelect
                 background: state.isSelected ? useColorModeValue('gray.200', 'gray.600') : provided.background,
                 color: state.isSelected ? useColorModeValue('gray.800', 'white') : provided.color
               }),
+              indicatorSeparator: (provided, state) => ({
+                ...provided,
+                borderColor: useColorModeValue('gray.400', 'gray.600')
+              }),
               dropdownIndicator: (provided, { selectProps }) => ({
                 ...provided,
                 background: 'transparent',

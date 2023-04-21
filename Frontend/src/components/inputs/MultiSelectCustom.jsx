@@ -40,6 +40,10 @@ export const MultiSelectCustom = ({ control, label, name, options = [] }) => {
                 background: 'rgba(214,158,46,0.6)',
                 color: useColorModeValue('gray.800', 'white')
               }),
+              indicatorSeparator: (provided, state) => ({
+                ...provided,
+                borderColor: useColorModeValue('gray.400', 'gray.600')
+              }),
               dropdownIndicator: (provided, { selectProps }) => ({
                 ...provided,
                 background: 'transparent',

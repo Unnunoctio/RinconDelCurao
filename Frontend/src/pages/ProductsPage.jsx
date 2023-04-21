@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
-import { useLocation } from "react-router-dom"
-import { Error404Page } from "./Error404Page"
+import { useLocation, useParams } from "react-router-dom"
+import { shallow } from 'zustand/shallow'
 
 import { linkItems } from "../assets/linkItems"
 import { Box, Button, Divider, Flex, HStack, Heading, Text, VStack, useColorModeValue } from "@chakra-ui/react"
@@ -8,6 +8,7 @@ import { BreadcrumbPage } from "../components/breadcrumbs/BreadcrumbPage"
 import { MultiSelectCustom, SliderCustom, OrderBySelect } from "../components/inputs"
 
 import { useForm } from 'react-hook-form'
+import { useProductsStore } from "../store/productsStore"
 
 const orderByData = [
   { value: 'scoreDesc', label: 'Recomendados' },
@@ -58,153 +59,121 @@ const contenidoData = [
 ]
 
 export const ProductsPage = () => {
-  const { pathname } = useLocation()
-  const [error404, setError404] = useState(false)
+  const { pathname, search } = useLocation()
 
   const [breadCrumbLinks, setBreadCrumbLinks] = useState([])
-  const [resetSelect, setResetSelect] = useState(false)
   const [title, setTitle] = useState('')
 
-  // Mandar a un hook
-  useEffect(() => {
-    const pathSplit = pathname.split('/')
-    const pathCategory = pathSplit[1]
-    const pathSubCategory = pathSplit[2]
+   const [ isLoading, filtersActive ] = useProductsStore((state) => [ state.isLoading, state.filtersActive ], shallow)
+   const [ applyFilters ] = useProductsStore((state) => [ state.applyFilters ], shallow)
 
-    let isPathAllowed = true
-
-    // ver si esta por medio de category-subCategory o solo category
-    if (!!pathSubCategory) {
-      isPathAllowed = linkItems.some((item) => {
-        if (item.url === `/${pathCategory}`) {
-          return item.categories.some((subCategory) => { return subCategory.url === `/${pathSubCategory}` })
-        }
-        return false
-      })
-    } else {
-      isPathAllowed = linkItems.some((item) => { return item.url === `/${pathCategory}` })
-    }
-
-    setError404(isPathAllowed === false)
-  }, [pathname])
+   const { handleSubmit, setValue, control } = useForm({
+     defaultValues: {
+       orderBy: orderByData[0],
+       rangePrice: [1990, 13590],
+       rangeGrade: [0.0, 7.5]
+     }
+   })
 
   useEffect(() => {
     const pathSplit = pathname.split('/')
     const pathCategory = pathSplit[1]
-    const pathSubCategory = pathSplit[2]
 
     const category = linkItems.find(item => item.url === `/${pathCategory}`)
-    const subCategory = category.categories.find(item => item.url === `/${pathSubCategory}`)
 
-    if (!!pathSubCategory) {
-      if (!!category && !!subCategory) {
-        setBreadCrumbLinks([
-          { name: 'Home', url: '/' },
-          { name: category.name, url: category.url },
-          { name: subCategory.name, url: category.url + subCategory.url }
-        ])
-        setTitle(subCategory.name)
-      }
-    } else {
-      if (!!category) {
-        setBreadCrumbLinks([
-          { name: 'Home', url: '/' },
-          { name: category.name, url: category.url }
-        ])
-        setTitle(category.name)
-      }
+    if (!!category) {
+      setBreadCrumbLinks([
+        { name: 'Home', url: '/' },
+        { name: category.name, url: category.url }
+      ])
+      setTitle(category.name)
+      setValue('category', category.name)
     }
   }, [pathname])
-
-  
-  const { handleSubmit, control } = useForm({
-    defaultValues: {
-      orderBy: orderByData[0],
-      rangePrice: [1990, 13590],
-      rangeGrade: [0.0, 7.5]
-    }
-  })
 
   useEffect(() => {
-    setResetSelect(!resetSelect)
-  }, [pathname])
-  
+    const searchParams = new URLSearchParams(search)
+    const subCategory = searchParams.get('category')
+    if(!!subCategory){
+      const categorySplit = subCategory.split(',')
+      const categoriesActive = categoriaData.filter(obj => categorySplit.includes(obj.value))
+      setValue('subCategory', categoriesActive)
+    }
+  }, [search, pathname])
+
   const buttonSubmit = useRef()
   const handleOrderBy = () => {
     buttonSubmit.current.click()
   }
 
   const onSubmit = (data) => {
-    console.log({data})
+    applyFilters(data)
+    // console.log({ data })
   }
 
   return (
-    <>
-      {
-        (error404)
-          ? (<Error404Page />)
-          : (
-            <Box p={{ base: 2, md: 4 }} w={'full'} minH={'190vh'}>
-              <BreadcrumbPage links={breadCrumbLinks} />
-              {/* Title and OrderBy */}
-              <Flex py={4} justifyContent={'space-between'}>
-                <Flex gap={2} alignItems={'baseline'}>
-                  <Heading fontSize={{ base: 24, sm: 28 }} fontWeight={'medium'} >{title}</Heading>
-                  {/* <Text color={'yellow.500'} >54 resultados</Text> */}
-                </Flex>
+    <Box p={{ base: 2, md: 4 }} w={'full'} minH={'190vh'}>
+      <BreadcrumbPage links={breadCrumbLinks} />
+      {/* Title and OrderBy */}
+      <Flex py={4} justifyContent={'space-between'}>
+        <Flex gap={2} alignItems={'baseline'}>
+          <Heading fontSize={{ base: 24, sm: 28 }} fontWeight={'medium'} >{title}</Heading>
+          {/* <Text color={'yellow.500'} >54 resultados</Text> */}
+        </Flex>
 
-                {/* <MenuCustom label={'Ordernar por'} options={dataSelect} defaultValue={dataSelect[0]} onSelect={genericFunction} isReset={resetSelect} /> */}
-                <OrderBySelect control={control} label={'Ordenar por'} name={'orderBy'} options={orderByData} handleSelect={handleOrderBy}/>
+        {/* <MenuCustom label={'Ordernar por'} options={dataSelect} defaultValue={dataSelect[0]} onSelect={genericFunction} isReset={resetSelect} /> */}
+        <OrderBySelect control={control} label={'Ordenar por'} name={'orderBy'} options={orderByData} handleSelect={handleOrderBy} />
+      </Flex>
+      {/* Content Page */}
+      <HStack align={'flex-start'} gap={4}>
+        {/* Filter */}
+        <Box w={'300px'}>
+          <Flex justifyContent={'space-between'} alignItems={'baseline'} pb={1}>
+            <Text color={'yellow.500'}>54 resultados</Text>
+            <Button variant={'ghost'} size={'sm'} fontWeight={'medium'} color={'yellow.500'} 
+              // isDisabled={ Object.keys(filtersActive).length <= 1 }
+              isDisabled={ true }
+              _disabled={{ color: 'gray.500', cursor: 'auto' }}
+            >
+              Borrar Filtros
+            </Button>
+          </Flex>
+          <Divider borderColor={useColorModeValue('gray.400', 'gray.600')} />
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <VStack alignItems={'stretch'} gap={2} my={2}>
+              <SliderCustom control={control} label={'Precio'} name={'rangePrice'} minValue={1990} maxValue={13590} startSymbol={'$'} format={(value) => { return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") }} />
+              <MultiSelectCustom control={control} label={'Categoria'} name={'subCategory'} options={categoriaData} />
+              <MultiSelectCustom control={control} label={'Marca'} name={'brand'} options={marcaData} />
+              <SliderCustom control={control} label={'Graduación'} name={'rangeGrade'} step={0.1} minValue={0.0} maxValue={7.5} endSymbol={'°'} />
+              <MultiSelectCustom control={control} label={'Contenido'} name={'content'} options={contenidoData} />
+              <MultiSelectCustom control={control} label={'Pack-Unitario'} name={'pack_unit'} options={packUnitarioData} />
+              <MultiSelectCustom control={control} label={'Cantidad'} name={'quantity'} options={cantidadData} />
+              <MultiSelectCustom control={control} label={'Envase'} name={'package'} options={envaseData} />
+
+              <Flex justifyContent={'flex-end'}>
+                <Button type="onSubmit"
+                  ref={buttonSubmit}
+                  variant={'outline'}
+                  fontWeight={'medium'}
+                  w={'50%'}
+                  borderColor={'gray.500'}
+                  _hover={{
+                    color: 'yellow.500',
+                    borderColor: 'yellow.500'
+                  }}
+                >
+                  Aplicar Filtros
+                </Button>
               </Flex>
-              {/* Content Page */}
-              <HStack align={'flex-start'} gap={4}>
-                {/* Filter */}
-                <Box w={'300px'}>
-                  <Flex justifyContent={'space-between'} alignItems={'baseline'} pb={1}>
-                    <Text color={'yellow.500'}>54 resultados</Text>
-                    <Button variant={'ghost'} size={'sm'} fontWeight={'medium'} color={'yellow.500'} isDisabled={true}
-                      _disabled={{ color: 'gray.500', cursor: 'auto' }}
-                    >
-                      Borrar Filtros
-                    </Button>
-                  </Flex>
-                  <Divider borderColor={useColorModeValue('gray.400', 'gray.600')} />
-                  <form onSubmit={handleSubmit(onSubmit)}>
-                    <VStack alignItems={'stretch'} gap={2} my={2}>
-                      <SliderCustom control={control} label={'Precio'} name={'rangePrice'} minValue={1990} maxValue={13590} startSymbol={'$'} format={(value) => { return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") }} />
-                      <MultiSelectCustom control={control} label={'Categoria'} name={'category'} options={categoriaData} />
-                      <MultiSelectCustom control={control} label={'Marca'} name={'brand'} options={marcaData} />
-                      <SliderCustom control={control} label={'Graduación'} name={'rangeGrade'} step={0.1} minValue={0.0} maxValue={7.5} endSymbol={'°'} />
-                      <MultiSelectCustom control={control} label={'Contenido'} name={'content'} options={contenidoData} />
-                      <MultiSelectCustom control={control} label={'Pack-Unitario'} name={'pack_unit'} options={packUnitarioData} />
-                      <MultiSelectCustom control={control} label={'Cantidad'} name={'quantity'} options={cantidadData} />
-                      <MultiSelectCustom control={control} label={'Envase'} name={'package'} options={envaseData} />
-
-                      <Flex justifyContent={'flex-end'}>
-                        <Button type="onSubmit" 
-                          ref={buttonSubmit} 
-                          variant={'outline'} 
-                          fontWeight={'medium'} 
-                          w={'50%'}
-                          borderColor={'gray.500'}
-                          _hover={{
-                            color: 'yellow.500',
-                            borderColor: 'yellow.500'
-                          }}
-                        >
-                          Aplicar Filtros
-                        </Button>
-                      </Flex>
-                    </VStack>
-                  </form>
-                </Box>
-                <Box flex={1} bg={'white'} h={'auto'} color={'black'} m={0}>
-                  a
-                </Box>
-              </HStack>
-            </Box>
-          )
-      }
-    </>
+            </VStack>
+          </form>
+        </Box>
+        <Box flex={1} bg={'white'} h={'auto'} color={'black'} m={0}>
+          {
+            isLoading ? "Cargando" : "a"
+          }
+        </Box>
+      </HStack>
+    </Box>
   )
 }
