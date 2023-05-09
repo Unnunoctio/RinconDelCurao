@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, Text, useColorModeValue } from '@chakra-ui/react'
+import { FormControl, FormLabel, useColorModeValue } from '@chakra-ui/react'
 import { Controller } from 'react-hook-form'
 import { Select } from 'chakra-react-select'
 import { useState } from 'react'
@@ -12,8 +12,8 @@ export const OrderBySelect = ({ control, label, name, options = [], handleSelect
       name={name}
       control={control}
       render={({ field: { onChange, value, name, ref } }) => (
-        <Box w={'210px'} position={'relative'}>
-          <Text fontSize={14}
+        <FormControl w={'210px'} position={'relative'}>
+          <FormLabel fontSize={14}
             position={'absolute'}
             top={'-12px'}
             left={'8px'}
@@ -22,9 +22,10 @@ export const OrderBySelect = ({ control, label, name, options = [], handleSelect
             px={1}
             transition={'color 200ms linear'}
             color={(focus) ? 'yellow.500' : 'gray.500'}
+            fontWeight={'regular'}
           >
             {label}
-          </Text>
+          </FormLabel>
           <Select
             name={name}
             ref={ref}
@@ -68,7 +69,7 @@ export const OrderBySelect = ({ control, label, name, options = [], handleSelect
               }),
             }}
           />
-        </Box>
+        </FormControl>
       )}
     />
   )

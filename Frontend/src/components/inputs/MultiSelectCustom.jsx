@@ -1,4 +1,4 @@
-import { Box, FormLabel, useColorModeValue } from "@chakra-ui/react"
+import { FormControl, FormLabel, useColorModeValue } from "@chakra-ui/react"
 import { Select } from "chakra-react-select"
 import { useState } from "react"
 import { Controller } from "react-hook-form"
@@ -11,7 +11,7 @@ export const MultiSelectCustom = ({ control, label, name, options = [] }) => {
       name={name}
       control={control}
       render={({ field: { onChange, value, name, ref } }) => (
-        <Box>
+        <FormControl>
           <FormLabel fontSize={18} mb={1}>{label}</FormLabel>
           <Select
             isMulti
@@ -54,7 +54,7 @@ export const MultiSelectCustom = ({ control, label, name, options = [] }) => {
               }),
             }}
           />
-        </Box>
+        </FormControl>
       )}
     />
   )

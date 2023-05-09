@@ -12,14 +12,14 @@ function CustomNextArrow(props) {
 
   return (
     <IconButton onClick={onClick} display={{ base: 'none', md: 'flex' }}
-      icon={<Icon boxSize={8} as={SlArrowRight} />}
+      icon={<Icon boxSize={7} as={SlArrowRight} />}
       position={'absolute'}
       bg={'transparent'}
       top={'calc(50% - 20px)'}
       right={'-44px'}
       color={'gray.500'}
-      borderRadius={'full'}
-      justifyContent={'flex-end'}
+      borderRadius={'md'}
+      // justifyContent={'flex-end'}
       _hover={{ color: 'yellow.500' }}
     />
   )
@@ -30,14 +30,14 @@ function CustomPrevArrow(props) {
 
   return (
     <IconButton onClick={onClick} display={{ base: 'none', md: 'flex' }}
-      icon={<Icon boxSize={8} as={SlArrowLeft} />}
+      icon={<Icon boxSize={7} as={SlArrowLeft} />}
       position={'absolute'}
       bg={'transparent'}
       top={'calc(50% - 20px)'}
       left={'-44px'}
       color={'gray.500'}
-      borderRadius={'full'}
-      justifyContent={'flex-start'}
+      borderRadius={'md'}
+      // justifyContent={'flex-start'}
       _hover={{ color: 'yellow.500' }}
     />
   )
