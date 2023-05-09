@@ -8,9 +8,9 @@ export const LayoutApp = ({ children }) => {
       <Navbar />
       
       <Box h={'73px'} w={'full'}></Box>
-      <Flex w={'full'} justifyContent={'center'}>
+      <Flex w={'100%'} justifyContent={'center'}>
         {/* <Flex w={{ base: '100%', sm: '90%', md: '80%',  }}> */}
-        <Flex minW={'80%'} maxW={{ base: '100%', sm: '90%', md: '80%' }} >
+        <Flex flex={1} maxW={`${1850*0.8}px`} >
           {children}
         </Flex>
       </Flex>

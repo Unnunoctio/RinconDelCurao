@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { Box, Button, Icon, Menu, MenuButton, MenuItem, MenuList, Text, useColorModeValue } from "@chakra-ui/react"
 import { BiChevronDown } from 'react-icons/bi'
 
-export const SelectCustom = ({ label, options = [], defaultValue, onSelect, isReset }) => {
+export const MenuCustom = ({ label, options = [], defaultValue, onSelect, isReset }) => {
   const [selectedOption, setSelectedOption] = useState(defaultValue.name)
   const [focus, setFocus] = useState(false)
 
@@ -28,6 +28,7 @@ export const SelectCustom = ({ label, options = [], defaultValue, onSelect, isRe
         px={1}
         color={(focus) ? 'yellow.500': 'gray.500'}
         transition={'color 100ms linear'}
+        userSelect={'none'}
       >
         {label}
       </Text>

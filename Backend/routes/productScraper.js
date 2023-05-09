@@ -22,7 +22,7 @@ const upload = multer({
   }
 })
 
-router.get('/', getProducts)
+router.post('/', getProducts)
 
 router.get('/:id', getProductById)
 

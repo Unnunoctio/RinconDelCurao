@@ -32,7 +32,7 @@ export const SliderCard = ({ dataCard, variant }) => {
           {
             (variant === 'offer') 
             ? (
-              <Box px={2} py={'1px'} background={'rgba(214,158,46,0.6)'} borderRadius={'full'}>
+              <Box px={2} py={'1px'} background={'rgba(214,158,46,0.6)'} borderRadius={'md'}>
                 <Text fontWeight={'medium'} fontSize={14}>{dataCard.dataValue}% desc</Text>
               </Box>
             )

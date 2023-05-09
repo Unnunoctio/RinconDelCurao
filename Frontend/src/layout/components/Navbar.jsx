@@ -23,7 +23,7 @@ export const Navbar = () => {
       {/* Navbar */}
       <Flex
         w={'full'}
-        zIndex={2} pos={'fixed'}
+        zIndex={3} pos={'fixed'}
         bg={useColorModeValue('white', 'gray.900')}
         borderBottom={'1px'} borderBottomColor={useColorModeValue('gray.200', 'gray.700')}
         justifyContent={'center'}
@@ -139,7 +139,7 @@ const NavItem = ({ item, ...rest }) => {
   const navigate = useNavigate()
 
   const goLinkCategory = (categoryUrl) => {
-    navigate(`${item.url}${categoryUrl}`, { replace: true })
+    navigate(`${item.url}?category=${categoryUrl}`, { replace: true })
   }
 
   const goLinkAll = () => {
