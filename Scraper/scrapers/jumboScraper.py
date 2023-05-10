@@ -13,13 +13,13 @@ urlsBlocked = [
 
 productsNotFound = []
 
-def getProductImage( productBody ):
+def getProductImage( productBody, typeProduct ):
   # response = requests.get(f'{urlProduct}', headers=uts.pageHeaders)
   # soup = BeautifulSoup(response.content, 'html.parser')
   imgElement = productBody.select_one('.product-image-content img')
   imgUrl = imgElement["src"]
 
-  return uts.saveImage(imgUrl)
+  return uts.saveImage(imgUrl, typeProduct)
 
 def getNewPrices( productBody ):
   # response = requests.get(f'{urlProduct}', headers=uts.pageHeaders)
@@ -174,7 +174,7 @@ def workInProduct( scraperDB, productResponse, productBody, urlProduct, typeProd
               "last_hash": uts.getPageHash(productResponse)
             }
           ],
-          "image": getProductImage(productBody)
+          "image": getProductImage(productBody, typeProduct)
         }
 
         db.addScraperProductDB(newScraperProduct)

@@ -19,7 +19,7 @@ def getPageHash( response ):
 
   return hash_hex
 
-def saveImage( imgUrl ):
+def saveImage( imgUrl, typeProduct ):
   while(True):
     try:
       imgResponse = requests.get(imgUrl).content
@@ -28,7 +28,7 @@ def saveImage( imgUrl ):
         archivo.write(imgResponse)
 
       with open(f"Scraper/assets/{imgName}.webp", "rb") as archivo:
-        backendResponse = requests.post("http://localhost:4000/api/scraper_products/upload-image", files={ "image": archivo })
+        backendResponse = requests.post("http://localhost:4000/api/scraper_products/upload-image", files={ "image": archivo }, data={"category": typeProduct})
 
       os.remove(f"Scraper/assets/{imgName}.webp")
       return backendResponse.json()['imagePath']

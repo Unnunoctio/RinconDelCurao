@@ -1,12 +1,32 @@
 import { Card, CardBody, HStack, Image, Text, VStack, useColorModeValue } from '@chakra-ui/react'
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useState } from 'react'
+import productsApi from '../../api/productsApi'
 
-const imageOffer = 'src/assets/seba.jpg'
+const imageNotFound = 'src/assets/image_not_found.jpg'
 
 export const ProductCard = ({ dataCard, ...rest }) => {
+  const [imageSrc, setImageSrc] = useState(null)
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      try {
+        const response = await productsApi.get(`/scraper_products/get-image/${dataCard?.image}`, { responseType: 'arraybuffer' })
+        const objectData = `data:image/webp;base64,${btoa(
+          new Uint8Array(response.data).reduce((datos, byte) => datos + String.fromCharCode(byte), '')
+        )}`
+        setImageSrc(objectData)
+      } catch (error) {
+        console.log(error)
+        setImageSrc(imageNotFound)
+      }
+    }
+
+    fetchImage()
+  }, [])
 
   const onClickCard = () => {
-    //TODO: Enviar al link de la carta
+    //TODO: Enviar al link de la card
   }
 
   return (
@@ -16,19 +36,19 @@ export const ProductCard = ({ dataCard, ...rest }) => {
       background={useColorModeValue('white', 'gray.900')}
       boxShadow={'md'}
       border={'1px'} borderColor={useColorModeValue('gray.200', 'gray.700')}
-      transition={'transform 0.1s ease-out'}
+      transition={'transform 200ms ease'}
       cursor={'pointer'}
       _hover={{
-        transform: 'scale(1.01)'
+        transform: 'scale(1.025)'
       }}
       {...rest}
     >
       <CardBody h={'full'} p={2} display={'flex'} flexDir={'column'}>
         <Image
-          h={170}
+          h={200}
           objectFit={'cover'}
           borderRadius={'sm'}
-          src={imageOffer}
+          src={imageSrc}
         />
 
         <VStack flex={1} pt={2}

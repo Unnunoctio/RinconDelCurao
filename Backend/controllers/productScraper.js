@@ -6,6 +6,7 @@ const path = require("path")
 const fs = require("fs")
 
 const ScraperProduct = require('../models/ProductScraper')
+const { categoryNames } = require("../assets/categoryNames")
 
 const getProducts = async(req, res = response) => {
   const productsPerPage = 12
@@ -178,25 +179,58 @@ const getProductById = async(req, res = response) => {
 
 const uploadProductImage = async(req, res = response) => {
   const file = req.file
+  const category = req.body.category
 
   const id = shortid.generate()
 
-  const fileName = `${id}${path.extname(file.originalname)}`
+  let fileName = `${id}${path.extname(file.originalname)}`
 
-  const destination = `uploads/scraper_images/${fileName}`
+  let folder = "others"
+  switch (category) {
+    case categoryNames.BEERS.category:
+      folder = categoryNames.BEERS.folder
+      break;
+    case categoryNames.DISTILLATES.category:
+      folder = categoryNames.DISTILLATES.folder
+      break;
+    case categoryNames.WINES.category:
+      folder = categoryNames.WINES.folder
+  }
+
+  fileName = `${folder}/${fileName}`
+
+  const destination = `uploads/images/${fileName}`
   fs.rename(file.path, destination, (error) => {
     if(error) {
       console.log(error)
-      res.status(500).send({
+      return res.status(500).send({
         ok: false,
         msg: "Error al guardar la imagen"
       })
     }else {
-      res.status(200).send({
+      return res.status(200).send({
         ok: true,
         imagePath: fileName
       })
     }
+  })
+}
+
+const getProductImage = async(req, res = response) => {
+  const pathName = req.params.pathname
+  const pathCategory = req.params.category
+
+  const destination = `uploads/images/${pathCategory}/${pathName}`
+
+  fs.readFile(destination, (error, data) => {
+    if(error) {
+      return res.status(404).send({
+        ok: false,
+        msg: "Image not found"
+      })
+    }
+    res.writeHead(200, { 'Content-Type': 'image/webp' })
+    res.end(data)
   })
 }
 
@@ -223,5 +257,6 @@ module.exports = {
   getProducts,
   getProductById,
   uploadProductImage,
+  getProductImage,
   deleteProductImage
 }
