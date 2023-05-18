@@ -1,4 +1,4 @@
-import { Flex, Icon, Text } from '@chakra-ui/react'
+import { Flex, Icon, useColorModeValue } from '@chakra-ui/react'
 import { MdStar, MdStarBorder, MdStarHalf } from 'react-icons/md'
 
 export const StarRating = ({ rating }) => {
@@ -7,7 +7,7 @@ export const StarRating = ({ rating }) => {
   return (
     <Flex
       // py={'1px'}
-      pt={'4px'} pb={'3px'}
+      pt={'3px'} pb={'4px'}
       alignItems={'center'}
     >
       {
@@ -20,7 +20,9 @@ export const StarRating = ({ rating }) => {
               MdStarBorder
             }
             color={
-              (rating >= star-0.5) ? 'yellow.500' : 'gray.400'
+              (rating >= star-0.5) 
+                ? useColorModeValue('light.component.active', 'dark.component.active')
+                : useColorModeValue('light.component.main', 'dark.component.main')
             }
           />
         ))

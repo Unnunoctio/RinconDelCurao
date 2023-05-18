@@ -1,7 +1,6 @@
 import { Box, Button, Icon, IconButton, useColorMode, useColorModeValue } from '@chakra-ui/react'
 import React, { memo, useState } from 'react'
 import { useProductsStore } from '../../store'
-import { shallow } from 'zustand/shallow'
 import { useEffect } from 'react'
 import Slider from 'react-slick'
 import { BsChevronLeft, BsChevronRight } from 'react-icons/bs'
@@ -15,10 +14,11 @@ const CustomPrevArrow = (props) => {
       position={'absolute'}
       top={'calc(50% - 20px)'}
       left={'-44px'}
-      color={'gray.500'}
+      color={useColorModeValue('light.text.secondary', 'dark.text.secondary')}
+      bg={'transparent'}
       _hover={{
-        color: useColorModeValue('gray.800', 'white'),
-        background: 'rgba(214,158,46,0.6)'
+        color: useColorModeValue('light.text.main', 'dark.text.main'),
+        background: useColorModeValue('light.background.active', 'dark.background.active')
       }}
     />
   )
@@ -34,29 +34,32 @@ const CustomNextArrow = (props) => {
       position={'absolute'}
       top={'calc(50% - 20px)'}
       right={'-44px'}
-      color={'gray.500'}
+      color={useColorModeValue('light.text.secondary', 'dark.text.secondary')}
+      bg={'transparent'}
       _hover={{
-        color: useColorModeValue('gray.800', 'white'),
-        background: 'rgba(214,158,46,0.6)'
+        color: useColorModeValue('light.text.main', 'dark.text.main'),
+        background: useColorModeValue('light.background.active', 'dark.background.active')
       }}
     />
   )
 }
 
-export const PaginatorCustom = memo(({ name, setValue, handlePaginator }) => {
+export const PaginatorCustom = () => {
   const [pages, setPages] = useState([])
-  const [page] = useProductsStore((state) => [state.page], shallow)
+
+  const { totalPages } = useProductsStore((state) => state.page)
+  const getProductsByPage = useProductsStore((state) => state.getProductsByPage)
 
   useEffect(() => {
-    setPages(Array.from({ length: page.totalPages }, (_, i) => i + 1))
-  }, [page.totalPages])
+    setPages(Array.from({ length: totalPages }, (_, i) => i + 1))
+  }, [totalPages])
 
   const settings = {
     dots: false,
     infinity: false,
     speed: 300,
     // variableWidth: true,
-    slidesToShow: (page.totalPages >= 5) ? 5 : page.totalPages,
+    slidesToShow: (totalPages >= 5) ? 5 : totalPages,
     slidesToScroll: 5,
 
     prevArrow: <CustomPrevArrow />,
@@ -64,15 +67,16 @@ export const PaginatorCustom = memo(({ name, setValue, handlePaginator }) => {
   }
 
   const onHandleClick = (pageNum) => {
-    setValue(name, pageNum)
-    handlePaginator()
+    // setValue(name, pageNum)
+    // handlePaginator()
+    getProductsByPage(pageNum)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return (
     <Box
-      w={page.totalPages >= 5 ? `calc(51px * 5)` : `calc(51px * ${page.totalPages})`}
-      display={ page.totalPages === 1 ? 'none' : '' }
+      w={totalPages >= 5 ? `calc(51px * 5)` : `calc(51px * ${totalPages})`}
+      display={ totalPages === 1 ? 'none' : '' }
     >
       <Slider {...settings}>
         {
@@ -83,11 +87,11 @@ export const PaginatorCustom = memo(({ name, setValue, handlePaginator }) => {
       </Slider>
     </Box>
   )
-})
+}
 
-const PageButton = ({ pageNum, onButtonClick }) => {
+const PageButton = memo(({ pageNum, onButtonClick }) => {
   const { colorMode } = useColorMode()
-  const [page] = useProductsStore((state) => [state.page], shallow)
+  const { currentPage } = useProductsStore((state) => state.page)
 
   return (
     <Box mx={1}>
@@ -96,16 +100,16 @@ const PageButton = ({ pageNum, onButtonClick }) => {
         variant={'outline'}
         maxW={'43px'}
         fontWeight={'medium'}
-        color={page.currentPage === pageNum ? colorMode === 'light' ? 'gray.800' : 'white' : 'gray.500'}
-        background={page.currentPage === pageNum ? 'rgba(214,158,46,0.6)' : ''}
-        borderColor={page.currentPage === pageNum ? 'transparent' : 'gray.500'}
+        color={currentPage === pageNum ? colorMode === 'light' ? 'light.text.main' : 'dark.text.main' : colorMode === 'light' ? 'light.text.secondary' : 'dark.text.secondary'}
+        background={currentPage === pageNum ? colorMode === 'light' ? 'light.background.active' : 'dark.background.active' : 'transparent'}
+        borderColor={currentPage === pageNum ? 'transparent' : colorMode === 'light' ? 'light.component.main' : 'dark.component.main' }
         _hover={{
-          color: page.currentPage === pageNum ? colorMode === 'light' ? 'gray.800' : 'white' : 'yellow.500',
-          borderColor: page.currentPage === pageNum ? 'transparent' : 'yellow.500'
+          color: currentPage === pageNum ? colorMode === 'light' ? 'light.text.main' : 'dark.text.main' : colorMode === 'light' ? 'light.text.active' : 'dark.text.active',
+          borderColor: currentPage === pageNum ? 'transparent' : colorMode === 'light' ? 'light.component.active' : 'dark.component.active'
         }}
       >
         {pageNum}
       </Button>
     </Box>
   )
-}
+})

@@ -9,7 +9,7 @@ const ScraperProduct = require('../models/ProductScraper')
 const { categoryNames } = require("../assets/categoryNames")
 
 const getProducts = async(req, res = response) => {
-  const productsPerPage = 12
+  const productsPerPage = 6
 
   const { orderBy, page: currentPage, filters } = req.body
   console.log(filters)
@@ -151,6 +151,45 @@ const getProducts = async(req, res = response) => {
   })
 }
 
+const getBestDiscountProducts = async(req, res = response) => {
+  let scraper_products = await ScraperProduct.find().populate({ path: 'product_id' }).exec()
+
+  //* Ordenar los websites de cada product mediante su precio oferta y calcular su descuento
+  scraper_products = scraper_products.map(x => {
+    x.websites.sort((a, b) => {
+      if (a.best_price < b.best_price) return -1
+      if (a.best_price > b.best_price) return 1
+      return 0
+    })
+
+    const { product_id: product, ...rest } = x.toObject()
+    const newObject = {
+      ...rest,
+      product,
+      discount: Math.round(100 - (x.websites[0].best_price * 100)/x.websites[0].price)
+    }
+    return newObject
+  })
+
+  //* Ordenar los productos mediante su descuento
+  scraper_products.sort((a, b) => {
+    const scoreA = 100 - (a.websites[0].best_price * 100)/a.websites[0].price
+    const scoreB = 100 - (b.websites[0].best_price * 100)/b.websites[0].price
+    if (scoreA < scoreB) return 1
+    if (scoreA > scoreB) return -1
+    if (a.websites[0].best_price < b.websites[0].best_price) return -1
+    if (a.websites[0].best_price > b.websites[0].best_price) return 1
+    if (a.title < b.title) return -1
+    if (a.title > b.title) return 1
+    return 0
+  })
+
+  res.status(200).json({
+    ok: true,
+    products: scraper_products.slice(0, 7)
+  })
+}
+
 const getProductById = async(req, res = response) => {
   const scraper_id = req.params.id
 
@@ -255,6 +294,7 @@ const deleteProductImage = async(req, res = response) => {
 
 module.exports = {
   getProducts,
+  getBestDiscountProducts,
   getProductById,
   uploadProductImage,
   getProductImage,

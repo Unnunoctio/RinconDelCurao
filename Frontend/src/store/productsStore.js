@@ -1,5 +1,8 @@
 import { create } from 'zustand'
 import productsApi from '../api/productsApi'
+import { getProducts } from './helpers/getProducts'
+
+const imageNotFound = 'src/assets/image_not_found.jpg'
 
 export const useProductsStore = create((set, get) => ({
   products: [],
@@ -23,7 +26,7 @@ export const useProductsStore = create((set, get) => ({
     set((state) => ({
       page: {
         ...state.page,
-        currentPage: filters.page
+        currentPage: 1
       }
     }))
     
@@ -46,26 +49,105 @@ export const useProductsStore = create((set, get) => ({
       filters: get().filtersActive
     }
 
-    try {
-      const { data } = await productsApi.post('/scraper_products', JSON.stringify(body))
-      set({ products: data.products })
-      set({ totalProducts: data.totalProducts })
+    const data = await getProducts(body)
+    if(!!data){
       set((state) => ({
+        products: data.products,
+        totalProducts: data.totalProducts,
         page: {
           ...state.page,
           totalPages: data.totalPages
         }
       }))
-      console.log(get().page)
-    } catch (error) {
-      console.log(error)
-      set({ products: [] })
-      set({ totalProducts: 0 })
+    }else{
+      set((state) => ({
+        products: [],
+        totalProducts: 0,
+        page: {
+          currentPage: 1,
+          totalPages: 1
+        }
+      }))
+    }
+    
+    set({ isLoading: false })
+  },
+
+  getProductsByPage: async(page) => {
+    set({ isLoading: true })
+
+    set((state) => ({
+      page: {
+        ...state.page,
+        currentPage: page
+      }
+    }))
+
+    const body = {
+      orderBy: get().orderBy,
+      page: get().page.currentPage,
+      filters: get().filtersActive
     }
 
-    setTimeout(() => {
-      set({ isLoading: false })
-    }, 500)
+    const data = await getProducts(body)
+    if(!!data){
+      set((state) => ({
+        products: data.products,
+        totalProducts: data.totalProducts,
+        page: {
+          ...state.page,
+          totalPages: data.totalPages
+        }
+      }))
+    }else{
+      set((state) => ({
+        products: [],
+        totalProducts: 0,
+        page: {
+          currentPage: 1,
+          totalPages: 1
+        }
+      }))
+    }
+
+    set({ isLoading: false })
+  },
+
+  getProductsByOrderBy: async(orderBy) => {
+    set({ isLoading: true })
+
+    console.log({orderBy})
+
+    set({ orderBy: orderBy.value })
+
+    const body = {
+      orderBy: get().orderBy,
+      page: get().page.currentPage,
+      filters: get().filtersActive
+    }
+
+    const data = await getProducts(body)
+    if(!!data){
+      set((state) => ({
+        products: data.products,
+        totalProducts: data.totalProducts,
+        page: {
+          ...state.page,
+          totalPages: data.totalPages
+        }
+      }))
+    }else{
+      set((state) => ({
+        products: [],
+        totalProducts: 0,
+        page: {
+          currentPage: 1,
+          totalPages: 1
+        }
+      }))
+    }
+
+    set({ isLoading: false })
   },
 
   resetStoreFilters: () => {
@@ -76,7 +158,6 @@ export const useProductsStore = create((set, get) => ({
       filtersLimits: {},
       orderBy: "scoreDesc",
       page: {
-        ...state.page,
         currentPage: 1,
         totalPages: 1
       }

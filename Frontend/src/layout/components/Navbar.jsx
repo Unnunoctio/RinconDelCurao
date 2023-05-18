@@ -1,4 +1,4 @@
-import { Box, Center, Collapse, Drawer, DrawerContent, DrawerOverlay, Flex, HStack, Icon, IconButton, Link, Stack, Text, useColorModeValue, useDisclosure, VStack } from "@chakra-ui/react"
+import { Box, Center, Collapse, Drawer, DrawerContent, DrawerOverlay, Flex, HStack, Icon, IconButton, Link, Stack, Text, useColorMode, useColorModeValue, useDisclosure, VStack } from "@chakra-ui/react"
 import { GiShatteredGlass } from 'react-icons/gi'
 import { FiChevronDown, FiMenu, FiX } from 'react-icons/fi'
 import { OptionsButton } from "./OptionsButton"
@@ -22,10 +22,10 @@ export const Navbar = () => {
     <>
       {/* Navbar */}
       <Flex
-        w={'full'}
+        w={'100%'}
         zIndex={3} pos={'fixed'}
-        bg={useColorModeValue('white', 'gray.900')}
-        borderBottom={'1px'} borderBottomColor={useColorModeValue('gray.200', 'gray.700')}
+        bg={useColorModeValue('light.background.main', 'dark.background.main')}
+        borderBottom={'1px'} borderBottomColor={useColorModeValue('light.divider.main', 'dark.divider.main')}
         justifyContent={'center'}
         userSelect={'none'}
         onMouseLeave={onNavClose}
@@ -65,14 +65,18 @@ const NavbarContent = ({ onOpen, isNavOpen, onNavOpen, onNavClose, ...rest }) =>
   }
 
   return (
-    <Flex minW={'75%'} maxW={'90%'} w={{ base: '90%', md: 'auto' }}
+    <Flex
+      flex={1}
+      maxW={`${1850*0.75}px`}
+      px={{ base: 2, sm: 4, md: 8 }}
+      // minW={'75%'} maxW={'90%'} w={{ base: '90%', md: 'auto' }}
       justifyContent={'space-between'}
       {...rest}
     >
       {/* LOGO */}
       <Center onClick={goHome}
         h={navHeigth} mr={{ base: 0, md: 12 }} 
-        color={'yellow.500'} cursor={'pointer'}
+        color={useColorModeValue('light.text.active', 'dark.text.active')} cursor={'pointer'}
         transition={'transform 200ms ease-out'}
         _hover={{ transform: 'scale(1.03)' }}
       >
@@ -124,9 +128,10 @@ const NavbarContent = ({ onOpen, isNavOpen, onNavOpen, onNavClose, ...rest }) =>
           <IconButton onClick={onOpen}
             display={{ base: 'block', md: 'none' }}
             bg={'transparent'}
+            color={useColorModeValue('light.text.main', 'dark.text.main')}
             icon={<Icon boxSize={6} as={FiMenu} />}
             _hover={{
-              color: 'yellow.500'
+              color: useColorModeValue('light.text.active', 'dark.text.active')
             }}
           />
         </Flex>
@@ -140,10 +145,12 @@ const NavItem = ({ item, ...rest }) => {
 
   const goLinkCategory = (categoryUrl) => {
     navigate(`${item.url}?category=${categoryUrl}`, { replace: true })
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const goLinkAll = () => {
     navigate(`${item.url}`, { replace: true })
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return (
@@ -154,12 +161,12 @@ const NavItem = ({ item, ...rest }) => {
       {...rest}
     >
       <Center h={navHeigth} justifyContent={'left'}>
-        <Text fontSize={18} fontWeight={'medium'}>{item.name}</Text>
+        <Text fontSize={18} fontWeight={'medium'} color={useColorModeValue('light.text.main', 'dark.text.main')} >{item.name}</Text>
       </Center>
       {
         item.categories.map((category, index) => (
           <Link key={index} onClick={() => goLinkCategory(category.url)}
-            color={'gray.500'}
+            color={useColorModeValue('light.text.secondary', 'dark.text.secondary')}
             mb={2}
           >
             {category.name}
@@ -167,7 +174,7 @@ const NavItem = ({ item, ...rest }) => {
         ))
       }
       <Link onClick={goLinkAll}
-        color={'yellow.500'}
+        color={useColorModeValue('light.text.active', 'dark.text.active')}
       >
         Ver Todos
       </Link>
@@ -184,8 +191,8 @@ const SidebarContent = ({ onClose, ...rest }) => {
 
   return (
     <Box
-      bg={useColorModeValue('white', 'gray.900')}
-      borderRight={'1px'} borderRightColor={useColorModeValue('gray.200', 'gray.700')}
+      bg={useColorModeValue('light.background.main', 'dark.background.main')}
+      borderRight={'1px'} borderRightColor={useColorModeValue('light.divider.main', 'dark.divider.main')}
       pos={'fixed'}
       h={'full'} w={'full'}
       p={4}
@@ -194,7 +201,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
     >
       <Flex h={24} alignItems={'center'} justifyContent={'space-between'}>
         {/* LOGO */}
-        <Center color={'yellow.500'} onClick={goHome} cursor={'pointer'}>
+        <Center color={useColorModeValue('light.text.active', 'dark.text.active')} onClick={goHome} cursor={'pointer'}>
           <Icon boxSize={10} as={GiShatteredGlass} />
           <Box ml={2} fontFamily={'Finger Paint'} fontSize={18}>
             <Text>Rincón</Text>
@@ -206,7 +213,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
         <IconButton onClick={onClose}
           bg={'transparent'}
           aria-label={'close menu'}
-          _hover={{ color: 'yellow.500' }}
+          _hover={{ color: useColorModeValue('light.text.active', 'dark.text.active') }}
           icon={<Icon boxSize={6} as={FiX} />}
         />
       </Flex>
@@ -223,15 +230,16 @@ const SidebarItem = ({ item, ...rest }) => {
   const navigate = useNavigate()
   const { isOpen, onToggle, onOpen } = useDisclosure()
 
-  //Detectar en que pagina estamos y abrir esas categorias
-
+  //TODO: Detectar en que pagina estamos y abrir esas categorias
 
   const goLinkCategory = (categoryUrl) => {
-    navigate(`${item.url}${categoryUrl}`, { replace: true })
+    navigate(`${item.url}?category=${categoryUrl}`, { replace: true })
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const goLinkAll = () => {
     navigate(`${item.url}`, { replace: true })
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return (
@@ -245,6 +253,7 @@ const SidebarItem = ({ item, ...rest }) => {
       <Flex py={3}
         justifyContent={'space-between'}
         alignItems={'center'}
+        color={useColorModeValue('light.text.main', 'dark.text.main')}
       >
         <Text fontSize={18} fontWeight={'medium'} >{item.name}</Text>
         {
@@ -261,13 +270,13 @@ const SidebarItem = ({ item, ...rest }) => {
           pl={4}
           borderLeft={'1px'}
           borderStyle={'solid'}
-          borderLeftColor={useColorModeValue('gray.200', 'gray.700')}
+          borderLeftColor={useColorModeValue('light.divider.main', 'dark.divider.main')}
         >
           {
             item.categories &&
             item.categories.map((category, index) => (
               <Link key={index} onClick={() => goLinkCategory(category.url)}
-                color={'gray.500'}
+                color={useColorModeValue('light.text.secondary', 'dark.text.secondary')}
                 py={1}
               >
                 {category.name}
@@ -275,7 +284,7 @@ const SidebarItem = ({ item, ...rest }) => {
             ))
           }
           <Link onClick={goLinkAll}
-            color={'yellow.500'}
+            color={useColorModeValue('light.text.active', 'dark.text.active')}
             py={1}
           >
             Ver Todos

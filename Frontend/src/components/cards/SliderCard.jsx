@@ -4,46 +4,57 @@ import { StarRating } from "../items"
 export const SliderCard = ({ dataCard, variant }) => {
   return (
     <Card
-      my={3} mx={4}
-      w={{ base: 240, md: 260 }} h={{ base: 260, md: 280 }}
-      background={useColorModeValue('white', 'gray.900')}
+      className="slider-card"
+      my={3} mx={2}
+      w={{ base: 260, md: 260 }}
+      background={useColorModeValue('light.background.main', 'dark.background.main')}
       boxShadow={'md'} 
-      border={'1px'} borderColor={useColorModeValue('gray.200', 'gray.700')}
+      border={'1px'} borderColor={useColorModeValue('light.divider.main', 'dark.divider.main')}
       transition={'transform 0.2s ease-out'}
       cursor={'pointer'}
       _hover={{
         transform: 'scale(1.025)',
-        // boxShadow: 'lg'
+        borderColor: useColorModeValue('light.divider.active', 'dark.divider.active')
       }}
     >
-      <CardBody h={'full'} p={0} display={'flex'} flexDir={'column'}>
+      <CardBody h={'full'} p={2} display={'flex'} flexDir={'column'}>
         <Image
-          w={'100%'} h={{ base: '156px', md: '176px' }}
+          h={200}
           objectFit={'cover'}
-          borderTopRadius={'md'}
-          src={dataCard.image}
+          borderRadius={'sm'}
+          src={dataCard?.image}
         />
 
-        <VStack 
-          px={3} py={2}
-          spacing={1}
-          justifyContent={'space-between'} alignItems={'flex-start'}
+        <VStack flex={1} pt={2}
+          spacing={0}
+          alignItems={'flex-start'}
+          justifyContent={'space-between'}
         >
           {
             (variant === 'offer') 
             ? (
-              <Box px={2} py={'1px'} background={'rgba(214,158,46,0.6)'} borderRadius={'md'}>
-                <Text fontWeight={'medium'} fontSize={14}>{dataCard.dataValue}% desc</Text>
+              <Box px={2} py={'1px'} background={useColorModeValue('light.background.active', 'dark.background.active')} borderRadius={'md'}>
+                <Text fontWeight={'medium'} fontSize={14} color={useColorModeValue('light.text.main', 'dark.text.main')}>
+                  {dataCard?.discount}% desc
+                </Text>
               </Box>
             )
             : (variant === 'rating')
-            ? <StarRating rating={dataCard.dataValue} />
+            ? <StarRating rating={dataCard?.dataValue} />
             : null
           }
-          <Text fontWeight={'medium'} fontSize={18}>{dataCard.title}</Text>
+          <Text fontWeight={'medium'} fontSize={18} minH={54}
+            color={useColorModeValue('light.text.main', 'dark.text.main')}
+          >
+            {dataCard?.title}
+          </Text>
           <HStack w={'full'} justifyContent={'space-between'}>
-            <Text color={'gray.600'}>{dataCard.brand}</Text>
-            <Text fontWeight={'medium'} fontSize={20}>${(dataCard.price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</Text>
+            <Text color={useColorModeValue('light.text.secondary', 'dark.text.secondary')}>{dataCard?.product.brand}</Text>
+            <Text fontWeight={'medium'} fontSize={20}
+              color={useColorModeValue('light.text.main', 'dark.text.main')}
+            >
+              ${dataCard?.websites[0].best_price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
+            </Text>
           </HStack>
         </VStack>
       </CardBody>

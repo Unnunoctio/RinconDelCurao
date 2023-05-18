@@ -1,95 +1,80 @@
-import { Box, Icon, Heading, IconButton } from "@chakra-ui/react";
+import { Box, Icon, Heading, IconButton, useColorModeValue} from "@chakra-ui/react";
 import Slider from "react-slick"
 import { SliderCard } from "../cards/SliderCard";
-import { SlArrowLeft, SlArrowRight } from 'react-icons/sl'
-import { RxDot, RxDotFilled } from 'react-icons/rx'
-import { useState } from "react";
+import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 
 import './sliderHome.css'
 
-function CustomNextArrow(props) {
+const CustomNextArrow = (props) => {
   const { onClick } = props
 
   return (
     <IconButton onClick={onClick} display={{ base: 'none', md: 'flex' }}
-      icon={<Icon boxSize={7} as={SlArrowRight} />}
+      icon={<Icon boxSize={9} as={BsChevronRight} />}
       position={'absolute'}
       bg={'transparent'}
       top={'calc(50% - 20px)'}
       right={'-44px'}
-      color={'gray.500'}
+      color={useColorModeValue('light.component.main', 'dark.component.main')}
       borderRadius={'md'}
-      // justifyContent={'flex-end'}
-      _hover={{ color: 'yellow.500' }}
+      justifyContent={'flex-end'}
+      _hover={{ color: useColorModeValue('light.component.active', 'dark.component.active') }}
     />
   )
 }
 
-function CustomPrevArrow(props) {
+const CustomPrevArrow = (props) => {
   const { onClick } = props
 
   return (
     <IconButton onClick={onClick} display={{ base: 'none', md: 'flex' }}
-      icon={<Icon boxSize={7} as={SlArrowLeft} />}
+      icon={<Icon boxSize={9} as={BsChevronLeft} />}
       position={'absolute'}
       bg={'transparent'}
       top={'calc(50% - 20px)'}
       left={'-44px'}
-      color={'gray.500'}
+      color={useColorModeValue('light.component.main', 'dark.component.main')}
       borderRadius={'md'}
-      // justifyContent={'flex-start'}
-      _hover={{ color: 'yellow.500' }}
+      justifyContent={'flex-start'}
+      _hover={{ color: useColorModeValue('light.component.active', 'dark.component.active') }}
     />
   )
 }
 
-function CustomDot(i, currentSlide, slidesToScroll) {
-  return (
-    <Icon boxSize={7}
-      as={(i === (currentSlide/slidesToScroll)) ? RxDotFilled : RxDot}
-      color={(i === (currentSlide/slidesToScroll)) ? 'yellow.500' : 'gray.500'}
-      _hover={{ color: 'yellow.500' }}
-    />
-  )
-}
-
-export const SliderHome = ({ title, cards, variant }) => {
-  const [currentSlide, setCurrentSlide] = useState(0)
+export const SliderHome = ({ cards, variant }) => {
 
   const settings = {
     dots: false,
     infinite: true,
-    centerMode: true,
-
     variableWidth: true,
 
-    speed: 800,
+    speed: 500,
     autoplay: true,
     autoplaySpeed: 5000,
     pauseOnFocus: true,
 
-    afterChange: (index) => {
-      setCurrentSlide(index)
-    },
     prevArrow: <CustomPrevArrow />,
     nextArrow: <CustomNextArrow />,
-    customPaging: i => CustomDot(i, currentSlide, 1),
-    // arrows: false
+
+    responsive: [
+      {
+        breakpoint: 767,
+        settings: {
+          centerMode: true
+        }
+      }
+    ]
   }
-  // appendDots: dots => { console.log({dots}) }
 
   return (
-    <Box>
-      <Heading fontSize={{base: 24, sm: 28}} fontWeight={'medium'} fontFamily={'roboto'}>{title}</Heading>
-      <Box px={{ base: 0, sm: 2, md: 4 }}>
-        <Slider {...settings}>
-          {
-            cards.map((card, index) => (
-              <SliderCard key={index} dataCard={card} variant={variant} />
-            ))
-          }
-        </Slider>
-      </Box>
+    <Box px={{ base: 0, sm: 2, md: 4 }} w={'100%'}>
+      <Slider {...settings}>
+        {
+          cards.map((card, index) => (
+            <SliderCard key={index} dataCard={card} variant={variant} />
+          ))
+        }
+      </Slider>
     </Box>
   )
 }
