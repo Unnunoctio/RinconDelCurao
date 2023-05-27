@@ -3,6 +3,8 @@ import hashlib
 import random
 import string
 import os
+import cv2
+import numpy as np
 from openpyxl import Workbook
 
 pageHeaders = {
@@ -19,6 +21,33 @@ def getPageHash( response ):
 
   return hash_hex
 
+def removeBackground( img_path ):
+  image = cv2.imread(img_path)
+
+  #* En caso de contener pixeles [76, 112, 71] en una gran proporcion, significa que no contiene fondo.
+  green_pixels = np.all(image == [76, 112, 71], axis=2)
+  green_ratio = np.count_nonzero(green_pixels) / (image.shape[0] * image.shape[1])
+  if green_ratio > 0.03:
+    return
+
+  #* Imagenes con fondo.
+  image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+  _, mask = cv2.threshold(image_gray, 230, 255, cv2.THRESH_BINARY_INV)
+
+  contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+  mask = np.ones_like(image, dtype=np.uint8) * 255
+  cv2.drawContours(mask, contours, -1, (0, 0, 0), thickness=cv2.FILLED)
+
+  alto, ancho, _ = image.shape
+  image_trans = np.zeros((alto, ancho, 4), dtype=np.uint8)
+
+  mask_white = np.all(mask == [255, 255, 255], axis=2)
+  image_trans[mask_white] = [0, 0, 0, 0]
+  image_trans[~mask_white] = np.concatenate((image[~mask_white], np.full((np.count_nonzero(~mask_white), 1), 255, dtype=np.uint8)), axis=1)
+
+  cv2.imwrite(img_path, image_trans)
+
 def saveImage( imgUrl, typeProduct ):
   while(True):
     try:
@@ -26,6 +55,9 @@ def saveImage( imgUrl, typeProduct ):
       imgName = randomText(15)
       with open(f"Scraper/assets/{imgName}.webp", "wb") as archivo:
         archivo.write(imgResponse)
+
+      #TODO: Agregar Codigo para eliminar fondo de la imagen
+      removeBackground(f'Scraper/assets/{imgName}.webp')
 
       with open(f"Scraper/assets/{imgName}.webp", "rb") as archivo:
         backendResponse = requests.post("http://localhost:4000/api/scraper_products/upload-image", files={ "image": archivo }, data={"category": typeProduct})
@@ -43,9 +75,9 @@ def createTitle( productDB, productData ):
   title += f"{productDB['name']} {productDB['package']} "
 
   if(productDB['content'] >= 1000):
-    title += f"{productDB['content']/1000} L"
+    title += f"{productDB['content']/1000}L"
   else:
-    title += f"{productDB['content']} cc"
+    title += f"{productDB['content']}cc"
 
   return title
 

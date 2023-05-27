@@ -1,6 +1,6 @@
-import { ChakraProvider, ColorModeScript, CSSReset } from "@chakra-ui/react"
-import { Global } from "@emotion/react"
-import { theme } from "./theme"
+import { ChakraProvider, ColorModeScript, CSSReset } from '@chakra-ui/react'
+import { Global } from '@emotion/react'
+import { theme } from './theme'
 
 export const AppTheme = ({ children }) => {
   return (
@@ -8,7 +8,7 @@ export const AppTheme = ({ children }) => {
       <CSSReset />
       <Global />
       <ColorModeScript initialColorMode={theme.config.initialColorMode} />
-      { children }
+      {children}
     </ChakraProvider>
   )
 }

@@ -1,7 +1,7 @@
-import { FormControl, FormLabel, useColorModeValue } from "@chakra-ui/react"
-import { Select } from "chakra-react-select"
-import { useState } from "react"
-import { Controller } from "react-hook-form"
+import { FormControl, FormLabel, useColorModeValue } from '@chakra-ui/react'
+import { Select } from 'chakra-react-select'
+import { useState } from 'react'
+import { Controller } from 'react-hook-form'
 
 export const MultiSelectCustom = ({ control, label, name, options = [] }) => {
   const [focus, setFocus] = useState(false)
@@ -22,17 +22,17 @@ export const MultiSelectCustom = ({ control, label, name, options = [] }) => {
             onBlur={() => setFocus(false)}
             value={value}
             options={options}
-            placeholder=""
+            placeholder=''
             closeMenuOnSelect={false}
-            focusBorderColor={'yellow.500'}
+            focusBorderColor='yellow.500'
             chakraStyles={{
               control: (provided, state) => ({
                 ...provided,
                 borderColor: 'gray.500',
                 boxShadow: 'none !important',
                 cursor: 'pointer',
-                ":hover": {
-                  borderColor: `${focus ? 'yellow.500' : 'gray.500'}`,
+                ':hover': {
+                  borderColor: `${focus ? 'yellow.500' : 'gray.500'}`
                 }
               }),
               multiValue: (provided, state) => ({
@@ -47,11 +47,11 @@ export const MultiSelectCustom = ({ control, label, name, options = [] }) => {
               dropdownIndicator: (provided, { selectProps }) => ({
                 ...provided,
                 background: 'transparent',
-                "> svg": {
+                '> svg': {
                   transition: 'transform 100ms linear',
                   transform: `rotate(${selectProps.menuIsOpen ? -180 : 0}deg)`
                 }
-              }),
+              })
             }}
           />
         </FormControl>

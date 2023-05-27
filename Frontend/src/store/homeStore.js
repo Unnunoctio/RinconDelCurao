@@ -7,7 +7,7 @@ export const useHomeStore = create((set, get) => ({
   offerProducts: [],
   isLoading: false,
 
-  getHomeProducts: async() => {
+  getHomeProducts: async () => {
     set({ isLoading: true })
 
     const fetchImage = async (imagePath) => {

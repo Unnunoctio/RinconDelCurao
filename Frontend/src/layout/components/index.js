@@ -1,3 +1,3 @@
-export * from './Navbar';
-export * from './OptionsButton';
-export * from './ThemeSwitch';
+export * from './Navbar'
+export * from './OptionsButton'
+export * from './ThemeSwitch'

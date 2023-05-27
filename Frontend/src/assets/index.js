@@ -1,2 +1,2 @@
-export * from './linkItems';
-export * from './orderByItems';
+export * from './linkItems'
+export * from './orderByItems'

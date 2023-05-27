@@ -1,2 +1,2 @@
-export * from './ProductCard';
-export * from './SliderCard';
+export * from './ProductCard'
+export * from './SliderCard'

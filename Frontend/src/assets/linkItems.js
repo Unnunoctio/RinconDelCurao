@@ -26,7 +26,7 @@ export const linkItems = [
       { name: 'Ron', url: 'Ron' },
       { name: 'Pisco', url: 'Pisco' },
       { name: 'Vodka', url: 'Vodka' },
-      { name: 'Whisky', url: 'Whisky' },
+      { name: 'Whisky', url: 'Whisky' }
     ]
   }
 ]

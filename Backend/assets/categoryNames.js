@@ -1,17 +1,17 @@
-"use strict"
+'use strict'
 
 const categoryNames = {
   BEERS: {
-    category: "Cervezas",
-    folder: "beers"
+    category: 'Cervezas',
+    folder: 'beers'
   },
   DISTILLATES: {
-    category: "Destilados",
-    folder: "distillates"
+    category: 'Destilados',
+    folder: 'distillates'
   },
   WINES: {
-    category: "Vinos",
-    folder: "wines"
+    category: 'Vinos',
+    folder: 'wines'
   }
 }
 

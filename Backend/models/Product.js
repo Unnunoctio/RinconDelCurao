@@ -1,6 +1,6 @@
-"use strict"
+'use strict'
 
-const { Schema, model } = require("mongoose")
+const { Schema, model } = require('mongoose')
 
 const ProductSchema = Schema({
   name: { type: String, required: true },
@@ -14,7 +14,7 @@ const ProductSchema = Schema({
     {
       title: { type: String },
       value: { type: String }
-    },
+    }
   ]
 })
 

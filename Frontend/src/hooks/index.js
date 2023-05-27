@@ -1,1 +1,2 @@
-export * from './useBoundingRect';
+export * from './useDimensions'
+export * from './useUrlQuery'

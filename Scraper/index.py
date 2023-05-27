@@ -6,10 +6,11 @@ import utils.utils as uts
 
 t0 = time.time()
 jumboScraper.jumboScraper()
-# urlProduct = 'https://www.jumbo.cl/pack-de-cervezas-kunstman-s-alcohol-330-cc/p'
-# jumboScraper.browseProductTest(urlProduct, 'Cervezas')
+# urlProduct = 'https://www.jumbo.cl/pisco-mistral-nobel-fire-30-750cc/p'
+# jumboScraper.browseProductTest(urlProduct, 'Destilados')
 
-# uts.saveImage('https://jumbo.vtexassets.com/arquivos/ids/643519-750-750?width=750&height=750&aspect=true', 'Cervezas')
+# uts.saveImage('https://images.lider.cl/wmtcl?source=url[file:/productos/479021a.jpg]&sink', 'Otro')
+# uts.removeBackground('Scraper/assets/imagen_2.jpg')
 t1 = time.time()
 
 print('la funcion tardo: ', t1 - t0, ' segundos.')
