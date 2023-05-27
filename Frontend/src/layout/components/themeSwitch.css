@@ -1,3 +1,7 @@
-.react-switch-bg {
+[data-theme="light"] .react-switch-bg {
   background-color: rgba(214, 158, 46, 0.6) !important;
+}
+
+[data-theme="dark"] .react-switch-bg {
+  background-color: rgba(128, 90, 213, 0.6) !important;
 }

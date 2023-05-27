@@ -1,31 +1,31 @@
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, Icon, Text } from "@chakra-ui/react"
-import { useNavigate } from "react-router-dom"
-import { BsChevronRight } from "react-icons/bs"
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, Text, useColorMode } from '@chakra-ui/react'
+import { useNavigate } from 'react-router-dom'
 
 export const BreadcrumbPage = ({ links = [] }) => {
+  const { colorMode } = useColorMode()
   const navigate = useNavigate()
 
   const goLink = (url) => {
-    navigate(url, { replace: true })
+    navigate(url)
   }
 
   return (
-    <Breadcrumb spacing={2} separator={<Icon display={'flex'} boxSize={4} color={'gray.500'} as={BsChevronRight} />}>
+    <Breadcrumb spacing={2}>
       {
         links.map((link, index) => (
-          <BreadcrumbItem key={index}>
+          <BreadcrumbItem key={index} color={colorMode === 'light' ? 'light.text.secondary' : 'dark.text.secondary'}>
             {
-              (index === links.length - 1) 
-              ? (
-                <Text userSelect={'none'} color={'yellow.500'}>
-                  {link.name}
-                </Text>
-              )
-              : (
-                <BreadcrumbLink onClick={() => goLink(link.url)} color={'gray.500'}>
-                  {link.name}
-                </BreadcrumbLink>
-              )
+              (index === links.length - 1)
+                ? (
+                  <Text userSelect='none' color={colorMode === 'light' ? 'light.text.active' : 'dark.text.active'}>
+                    {link.name}
+                  </Text>
+                  )
+                : (
+                  <BreadcrumbLink onClick={() => goLink(link.url)}>
+                    {link.name}
+                  </BreadcrumbLink>
+                  )
             }
           </BreadcrumbItem>
         ))

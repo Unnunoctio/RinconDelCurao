@@ -1,5 +1,11 @@
 node_modules/
 
-uploads/scraper_images/*
+uploads/images/beers/*
+uploads/images/distillates/*
+uploads/images/wines/*
+uploads/images/others/*
 
-!uploads/scraper_images/.gitkeep
+!uploads/images/beers/.gitkeep
+!uploads/images/distillates/.gitkeep
+!uploads/images/wines/.gitkeep
+!uploads/images/others/.gitkeep

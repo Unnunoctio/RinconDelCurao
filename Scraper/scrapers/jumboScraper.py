@@ -10,20 +10,19 @@ urlBase = "https://www.jumbo.cl"
 urlsBlocked = [
   '/cerveza-sin-alcohol-mestra-330-cc/p'
 ]
+urlsCheck = [
+  '/pisco-mistral-nobel-fire-30-750cc/p'
+]
 
 productsNotFound = []
 
-def getProductImage( productBody ):
-  # response = requests.get(f'{urlProduct}', headers=uts.pageHeaders)
-  # soup = BeautifulSoup(response.content, 'html.parser')
+def getProductImage( productBody, typeProduct ):
   imgElement = productBody.select_one('.product-image-content img')
   imgUrl = imgElement["src"]
 
-  return uts.saveImage(imgUrl)
+  return uts.saveImage(imgUrl, typeProduct)
 
 def getNewPrices( productBody ):
-  # response = requests.get(f'{urlProduct}', headers=uts.pageHeaders)
-  # soup = BeautifulSoup(response.content, 'html.parser')
   infoProduct = productBody.select_one('.product-content .product-info .product-info-wrapper')
 
   # Obtener normalPrice y bestPrice
@@ -44,9 +43,6 @@ def getNewPrices( productBody ):
   return int(normalPrice.replace('$', '').replace('.', '')), int(bestPrice.replace('$', '').replace('.', ''))
 
 def obteinProductData( productBody, typeProduct ):
-  # response = requests.get(f'{urlProduct}', headers=uts.pageHeaders)
-  # soup = BeautifulSoup(response.content, 'html.parser')
-  
   infoProduct = productBody.select_one('.product-content .product-info .product-info-wrapper')
   # Obtener los dotos desde la info del producto
   brand = infoProduct.select_one(".product-aditional-info .aditional-info .product-brand").text.strip()
@@ -145,7 +141,8 @@ def workInProduct( scraperDB, productResponse, productBody, urlProduct, typeProd
     productDB = db.getProductDB(productData)
     if(productDB != None):
       # verificar si en la tabla scraper esta el producto y su cantidad
-      productScraper = db.getScraperProductDB({ "product_id": productDB['_id'], "quantity": productData['quantity'] })
+      #! productScraper = db.getScraperProductDB({ "product_id": productDB['_id'], "quantity": productData['quantity'] })
+      productScraper = db.getScraperProductDB({ "product._id": productDB['_id'], "quantity": productData['quantity'] })
       if(productScraper != None):
         # si existe agregar la website con su url, nombre, precio, best price y el average
         newWebsite = {
@@ -161,7 +158,8 @@ def workInProduct( scraperDB, productResponse, productBody, urlProduct, typeProd
       else:
         # si no existe crear el scraper product con todos los datos
         newScraperProduct = {
-          "product_id": productDB['_id'],
+          #! "product_id": productDB['_id']
+          "product": productDB,
           "title": uts.createTitle(productDB, productData),
           "quantity": productData['quantity'],
           "websites": [
@@ -174,7 +172,7 @@ def workInProduct( scraperDB, productResponse, productBody, urlProduct, typeProd
               "last_hash": uts.getPageHash(productResponse)
             }
           ],
-          "image": getProductImage(productBody)
+          "image": getProductImage(productBody, typeProduct)
         }
 
         db.addScraperProductDB(newScraperProduct)
@@ -210,7 +208,6 @@ def browseProductTest( urlProduct, typeProduct ):
     else:
       print(f'Error: Pagina no cargo, url: {urlProduct}')
 
-
 def browseProducts( products, typeProduct, page ):
   for product in products:
     href = product.select_one(".shelf-product-title")["href"]
@@ -222,6 +219,13 @@ def browseProducts( products, typeProduct, page ):
 
     # Verificar que esta entrando a los productos
     print(f'Page: {page+1}, Producto: {urlBase}{href}')
+
+    # Verificar que pasa por un producto para verificar
+    if(href in urlsCheck):
+      print('------------------------------')
+      print(f'Entro a una pagina para checkear:')
+      print(f'URL: {urlBase}{href}')
+      print('------------------------------')
 
     # En caso de que exista y este esta fuera de stock se elimina el url de ese producto y si solo esta esa url se elimina el producto de la base de datos
     outOfStock = product.select_one(".out-of-stock")
@@ -248,8 +252,6 @@ def browseProducts( products, typeProduct, page ):
 
 def browseProductsPage( urlPage, typeProduct, page ):
   print('------------------------------------------------------')
-  print(f'URL Page: {urlPage}')
-
   products = []
 
   while len(products) <= 0:
@@ -257,7 +259,8 @@ def browseProductsPage( urlPage, typeProduct, page ):
     soup = BeautifulSoup(response.content, "html.parser")
 
     # Se obtienen los productos por medio de un selector CSS
-    products = soup.select(".shelf-products-wrap .shelf-content .shelf-product-island")
+    products = soup.select(".shelf-content .shelf-product-island")
+    print(f'URL Page: {urlPage}')
     print(f'Cantidad de Productos: {len(products)}')
 
   browseProducts(products, typeProduct, page)
@@ -283,12 +286,9 @@ def scrollPages(url):
 
 def jumboScraper():
   urls = [
-    {'url': "https://www.jumbo.cl/vinos-cervezas-y-licores/cervezas", 'typeProduct': "Cervezas" },
+    # {'url': "https://www.jumbo.cl/vinos-cervezas-y-licores/cervezas", 'typeProduct': "Cervezas" },
     {'url': "https://www.jumbo.cl/vinos-cervezas-y-licores/destilados", 'typeProduct': "Destilados" },
-    {'url': "https://www.jumbo.cl/vinos-cervezas-y-licores/vinos", 'typeProduct': "Vinos" },
-    # {'url': "https://www.jumbo.cl/vinos-cervezas-y-licores/vinos/vinos-blancos", 'typeProduct': "Vino" },
-    # {'url': "https://www.jumbo.cl/vinos-cervezas-y-licores/vinos/vinos-rose", 'typeProduct': "Vino" },
-    # {'url': "https://www.jumbo.cl/vinos-cervezas-y-licores/vinos/vinos-late-harvest", 'typeProduct': "Vino" },
+    # {'url': "https://www.jumbo.cl/vinos-cervezas-y-licores/vinos", 'typeProduct': "Vinos" }
   ]
 
   for url in urls:

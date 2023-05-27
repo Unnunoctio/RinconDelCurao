@@ -1,91 +1,10 @@
-import { Flex } from '@chakra-ui/react'
+import { Box, Flex, Heading, Spinner, VStack, useColorMode } from '@chakra-ui/react'
 import { SliderHome } from '../components/slider/SliderHome'
+import { useHomeStore, useProductsStore } from '../store'
+import { shallow } from 'zustand/shallow'
+import { useEffect } from 'react'
 
-const imageOffer = 'src/assets/seba.jpg'
 const imageRating = 'src/assets/jesus.jpg'
-
-const offerCards = [
-  {
-    image: imageOffer,
-    dataValue: 26,
-    title: 'Titulo Card 1',
-    brand: 'Marca',
-    price: 5600,
-    href: '#',
-  },
-  {
-    image: imageOffer,
-    dataValue: 26,
-    title: 'Titulo Card 2',
-    brand: 'Marca',
-    price: 5600,
-    href: '#',
-  },
-  {
-    image: imageOffer,
-    dataValue: 26,
-    title: 'Titulo Card 3',
-    brand: 'Marca',
-    price: 5600,
-    href: '#',
-  },
-  {
-    image: imageOffer,
-    dataValue: 26,
-    title: 'Titulo Card 4',
-    brand: 'Marca',
-    price: 5600,
-    href: '#',
-  },
-  {
-    image: imageOffer,
-    dataValue: 26,
-    title: 'Titulo Card 5',
-    brand: 'Marca',
-    price: 5600,
-    href: '#',
-  },
-  {
-    image: imageOffer,
-    dataValue: 26,
-    title: 'Titulo Card 6',
-    brand: 'Marca',
-    price: 5600,
-    href: '#',
-  },
-  {
-    image: imageOffer,
-    dataValue: 26,
-    title: 'Titulo Card 7',
-    brand: 'Marca',
-    price: 5600,
-    href: '#',
-  },
-  {
-    image: imageOffer,
-    dataValue: 26,
-    title: 'Titulo Card 8',
-    brand: 'Marca',
-    price: 5600,
-    href: '#',
-  },
-  {
-    image: imageOffer,
-    dataValue: 26,
-    title: 'Titulo Card 9',
-    brand: 'Marca',
-    price: 5600,
-    href: '#',
-  },
-  {
-    image: imageOffer,
-    dataValue: 26,
-    title: 'Titulo Card 10',
-    brand: 'Marca',
-    price: 5600,
-    href: '#',
-  }
-]
 
 const ratingCards = [
   {
@@ -93,49 +12,100 @@ const ratingCards = [
     dataValue: 5,
     title: 'Titulo Card 1',
     brand: 'Marca',
-    price: 5600,
-    href: '#',
+    best_price: 5500
   },
   {
     image: imageRating,
     dataValue: 4.7,
     title: 'Titulo Card 2',
     brand: 'Marca',
-    price: 7000,
-    href: '#',
+    best_price: 7000
   },
   {
     image: imageRating,
-    dataValue: 4,
-    title: 'Titulo Card 3',
+    dataValue: 4.3,
+    title: 'Titulo Card 2',
     brand: 'Marca',
-    price: 2300,
-    href: '#',
+    best_price: 5000
   },
   {
     image: imageRating,
     dataValue: 4,
     title: 'Titulo Card 4',
     brand: 'Marca',
-    price: 1000,
-    href: '#',
+    best_price: 1000
   },
   {
     image: imageRating,
     dataValue: 3.2,
     title: 'Titulo Card 5',
     brand: 'Marca',
-    price: 3000,
-    href: '#',
-  },
+    best_price: 2500
+  }
 ]
 
 export const HomePage = () => {
-  return (
-    <Flex p={4} gap={4} w={'full'} minH={'90vh'} flexDir={'column'} justifyContent={'space-evenly'}>
-      <SliderHome title={'Ofertas del Día'} cards={offerCards} variant={'offer'} />
+  const { colorMode } = useColorMode()
+  const [isLoading, offerProducts] = useHomeStore((state) => [state.isLoading, state.offerProducts], shallow)
+  const [getHomeProducts] = useHomeStore((state) => [state.getHomeProducts], shallow)
 
-      <SliderHome title={'Mejor Valorados'} cards={ratingCards} variant={'rating'} />
-    </Flex>
+  const [resetStore] = useProductsStore((state) => [state.resetStore], shallow)
+
+  useEffect(() => {
+    resetStore()
+  }, [])
+
+  // TODO: Obtener los productos que se mostraran en el home
+  useEffect(() => {
+    getHomeProducts()
+  }, [])
+
+  return (
+    <Box py={{ base: 2, md: 4 }} px={{ base: 2, sm: 4, md: 8 }} w='full'>
+      {/* Content Page */}
+      <VStack align='flex-start' minH='85vh' justifyContent='space-evenly'>
+        <Box w='100%' className='offer-cards'>
+          <Heading
+            fontSize={{ base: 24, sm: 28 }} fontWeight='medium'
+            color={colorMode === 'light' ? 'light.text.main' : 'dark.text.main'}
+          >
+            Ofertas del Día
+          </Heading>
+          {
+            isLoading
+              ? (
+                <Flex w='100%' h='357px' justifyContent='center' alignItems='center'>
+                  <Spinner
+                    size='xl' speed='0.65s'
+                    color={colorMode === 'light' ? 'light.component.active' : 'dark.component.active'}
+                  />
+                </Flex>
+                )
+              : <SliderHome cards={offerProducts} variant='offer' />
+          }
+        </Box>
+
+        <Box w='100%' className='rating-cards'>
+          <Heading
+            fontSize={{ base: 24, sm: 28 }} fontWeight='medium'
+            color={colorMode === 'light' ? 'light.text.main' : 'dark.text.main'}
+          >
+            Mejor Valorados
+          </Heading>
+          {
+            isLoading
+              ? (
+                <Flex w='100%' h='357px' justifyContent='center' alignItems='center'>
+                  <Spinner
+                    size='xl' speed='0.65s'
+                    color={colorMode === 'light' ? 'light.component.active' : 'dark.component.active'}
+                  />
+                </Flex>
+                )
+              : <SliderHome cards={ratingCards} variant='rating' />
+          }
+        </Box>
+      </VStack>
+    </Box>
   )
 }

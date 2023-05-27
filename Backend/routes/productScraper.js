@@ -1,13 +1,13 @@
-"use strict"
+'use strict'
 
-const { Router } = require("express")
+const { Router } = require('express')
 const multer = require('multer')
-const path = require("path")
+const path = require('path')
 
-const { getProducts, getProductById, uploadProductImage, deleteProductImage } = require("../controllers/productScraper")
+const { getProducts, getProductById, uploadProductImage, deleteProductImage, getProductImage, getBestDiscountProducts } = require('../controllers/productScraper')
 
 const router = Router()
-const upload = multer({ 
+const upload = multer({
   dest: 'uploads/',
   fileFilter: function (req, file, cb) {
     // console.log(file)
@@ -24,9 +24,13 @@ const upload = multer({
 
 router.post('/', getProducts)
 
+router.get('/best-discount', getBestDiscountProducts)
+
 router.get('/:id', getProductById)
 
 router.post('/upload-image', upload.single('image'), uploadProductImage)
+
+router.get('/get-image/:category/:pathname', getProductImage)
 
 router.delete('/delete-image/:pathname', deleteProductImage)
 
