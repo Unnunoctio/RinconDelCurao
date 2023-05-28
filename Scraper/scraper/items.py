@@ -6,11 +6,10 @@
 import scrapy
 
 
-class ScraperProjectItem(scrapy.Item):
+class ScraperItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     pass
-
 
 class ProductItem(scrapy.Item):
     title = scrapy.Field()
@@ -31,4 +30,3 @@ class ProductItem(scrapy.Item):
     def _set_defaults(self):
         for field in self.fields:
             self[field] = None
-

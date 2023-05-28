@@ -1,7 +1,7 @@
 import scrapy
 import logging
 import re
-from Scraper_Project.items import ProductItem
+from scraper.items import ProductItem
 import database.db as db
 import utils.utils as uts
 
@@ -169,9 +169,9 @@ class JumboSpider(scrapy.Spider):
     return product_data
   
   def update_product_data(self, product_data, product_db):
-    # if product_data['quantity'] != None:
-    #   if product_data['quantity'] > 12 and product_db['category'] == 'Destilados':
-    #     product_data['quantity'] = 1
+    if product_data['quantity'] != None:
+      if product_data['quantity'] > 12 and product_db['category'] == 'Destilados':
+        product_data['quantity'] = 1
     
     if product_data['packaging'] != None:
       if 'caja' in product_data['packaging'].lower() and product_db['category'] == 'Destilados':

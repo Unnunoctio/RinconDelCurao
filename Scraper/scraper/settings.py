@@ -1,4 +1,4 @@
-# Scrapy settings for Scraper_Project project
+# Scrapy settings for scraper project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -7,22 +7,21 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = "Scraper_Project"
+BOT_NAME = "scraper"
 
-SPIDER_MODULES = ["Scraper_Project.spiders"]
-NEWSPIDER_MODULE = "Scraper_Project.spiders"
+SPIDER_MODULES = ["scraper.spiders"]
+NEWSPIDER_MODULE = "scraper.spiders"
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = "Scraper_Project (+http://www.yourdomain.com)"
+#USER_AGENT = "scraper (+http://www.yourdomain.com)"
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
 
 LOG_LEVEL = 'INFO'
-
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-#CONCURRENT_REQUESTS = 32
+# CONCURRENT_REQUESTS = 32
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
@@ -47,13 +46,13 @@ LOG_LEVEL = 'INFO'
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 #SPIDER_MIDDLEWARES = {
-#    "Scraper_Project.middlewares.ScraperProjectSpiderMiddleware": 543,
+#    "scraper.middlewares.ScraperSpiderMiddleware": 543,
 #}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #DOWNLOADER_MIDDLEWARES = {
-#    "Scraper_Project.middlewares.ScraperProjectDownloaderMiddleware": 543,
+#    "scraper.middlewares.ScraperDownloaderMiddleware": 543,
 #}
 
 # Enable or disable extensions
@@ -65,7 +64,7 @@ LOG_LEVEL = 'INFO'
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 #ITEM_PIPELINES = {
-#    "Scraper_Project.pipelines.ScraperProjectPipeline": 300,
+#    "scraper.pipelines.ScraperPipeline": 300,
 #}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
