@@ -10,7 +10,7 @@ class JumboSpider(scrapy.Spider):
   start_urls = [
     "https://www.jumbo.cl/vinos-cervezas-y-licores/cervezas",
     "https://www.jumbo.cl/vinos-cervezas-y-licores/destilados",
-    "https://www.jumbo.cl/vinos-cervezas-y-licores/vinos",
+    # "https://www.jumbo.cl/vinos-cervezas-y-licores/vinos",
   ]
 
   products_not_found = []
@@ -166,6 +166,12 @@ class JumboSpider(scrapy.Spider):
       elif 'caja' in title:
         product_data['packaging'] = 'Tetrapack'
       
+    #TODO: cambiar caja a botella en los destilados
+    if product_data['sub_category'] != None and product_data['packaging'] != None:
+      distillates = ['pisco', 'ron', 'tequila', 'vodka', 'whisky', 'gin']
+      if product_data['sub_category'].lower() in distillates and product_data['packaging'].lower() == 'caja':
+        product_data['packaging'] = 'Botella'
+
     return product_data
   
   def update_product_data(self, product_data, product_db):
