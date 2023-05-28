@@ -1,7 +1,0 @@
-*.xlsx
-*.webp
-__pycache__/
-
-assets/*
-
-!assets/.gitkeep

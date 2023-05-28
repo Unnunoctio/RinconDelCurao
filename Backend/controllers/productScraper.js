@@ -9,7 +9,7 @@ const ScraperProduct = require('../models/ProductScraper')
 const { categoryNames } = require('../assets/categoryNames')
 
 const getProducts = async (req, res = response) => {
-  const productsPerPage = 9
+  const productsPerPage = 12
 
   const { orderBy, page: currentPage, filters } = req.body
   console.log(filters)
