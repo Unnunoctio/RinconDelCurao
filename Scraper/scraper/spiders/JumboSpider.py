@@ -10,7 +10,7 @@ class JumboSpider(scrapy.Spider):
   start_urls = [
     "https://www.jumbo.cl/vinos-cervezas-y-licores/cervezas",
     "https://www.jumbo.cl/vinos-cervezas-y-licores/destilados",
-    # "https://www.jumbo.cl/vinos-cervezas-y-licores/vinos",
+    "https://www.jumbo.cl/vinos-cervezas-y-licores/vinos",
   ]
 
   products_not_found = []
