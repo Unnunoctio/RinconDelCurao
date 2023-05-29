@@ -13,6 +13,7 @@ export const AppRouter = () => {
     <LayoutApp>
       <Routes>
         <Route path='/' element={<HomePage />} />
+        <Route path='productos/:productName' element={<ProductDetailsPage />} />
         <Route path='/'>
           <Route index element={<HomePage />} />
           {
@@ -25,10 +26,6 @@ export const AppRouter = () => {
             ))
           }
         </Route>
-        {/* <Route path='/:category' element={ <ProductsPage /> } /> */}
-        {/* <Route path='/:category/:subCategory' element={ <ProductsPage /> } /> */}
-        <Route path='productos/:productName' element={<ProductDetailsPage />} />
-
         <Route path='/*' element={<Error404Page />} />
       </Routes>
     </LayoutApp>
