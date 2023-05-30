@@ -6,7 +6,7 @@ export const ProductCard = ({ dataCard, ...rest }) => {
 
   const onClickCard = () => {
     // TODO: Enviar al link de la card
-    const titlelink = dataCard?.title.toLowerCase().replaceAll('un. ', '').replaceAll('°', '').replaceAll(' ', '-')
+    const titlelink = dataCard?.title.toLowerCase().replaceAll('.', '').replaceAll('°', '').replaceAll(' ', '-')
     navigate(`/productos/${dataCard?.id}-${titlelink}`)
   }
 

@@ -3,11 +3,11 @@ import { Flex, HStack, Heading, Icon, Text, useColorModeValue } from '@chakra-ui
 export const WebsiteItem = ({ website }) => {
   return (
     <HStack
-      gap={{ base: 2, md: 5 }}
+      gap={{ base: 2, sm: 5 }}
       minW='264px'
       maxW='sm'
       w='100%'
-      py={2} px={{ base: 2, md: 4 }}
+      py={2} px={{ base: 2, sm: 4 }}
       background={useColorModeValue('light.background.main', 'dark.background.main')}
       justifyContent='center'
       boxShadow='md'
@@ -21,7 +21,7 @@ export const WebsiteItem = ({ website }) => {
       }}
     >
       <Flex minW={12} justifyContent='center'>
-        <Icon boxSize={{ base: 12, md: 14 }} />
+        <Icon boxSize={{ base: 12, sm: 14 }} />
       </Flex>
       <Flex flexDir='column' gap={2}>
         <Heading
@@ -31,9 +31,9 @@ export const WebsiteItem = ({ website }) => {
         >
           {website.title}
         </Heading>
-        <HStack gap={0}>
+        <HStack gap={{ base: 0, sm: 4 }}>
           <Flex flexDir='column' alignItems='flex-end'>
-            <Text fontSize={{ base: 14, md: 16 }} color={useColorModeValue('light.text.secondary', 'dark.text.secondary')}>Precio Oferta</Text>
+            <Text fontSize={{ base: 14, sm: 16 }} color={useColorModeValue('light.text.secondary', 'dark.text.secondary')}>Precio Oferta</Text>
             <Text
               fontSize={18}
               fontWeight='medium'
@@ -43,7 +43,7 @@ export const WebsiteItem = ({ website }) => {
             </Text>
           </Flex>
           <Flex flexDir='column' alignItems='flex-end'>
-            <Text fontSize={{ base: 14, md: 16 }} color={useColorModeValue('light.text.secondary', 'dark.text.secondary')}>Precio Normal</Text>
+            <Text fontSize={{ base: 14, sm: 16 }} color={useColorModeValue('light.text.secondary', 'dark.text.secondary')}>Precio Normal</Text>
             <Text
               fontSize={18}
               fontWeight='medium'

@@ -7,7 +7,7 @@ export const SliderCard = ({ dataCard, variant }) => {
 
   const onClickCard = () => {
     // TODO: Enviar al link de la card
-    const titlelink = dataCard?.title.toLowerCase().replaceAll(' ', '-')
+    const titlelink = dataCard?.title.toLowerCase().replaceAll('.', '').replaceAll('°', '').replaceAll(' ', '-')
     navigate(`/productos/${dataCard?.id}-${titlelink}`)
   }
 

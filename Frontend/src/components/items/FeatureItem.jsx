@@ -1,10 +1,10 @@
 import { Flex, HStack, Text, useColorModeValue } from '@chakra-ui/react'
 
-export const FeatureItem = ({ title, value, children }) => {
+export const FeatureItem = ({ title, icon, children }) => {
   return (
-    <HStack py={2} gap={1}>
+    <HStack py={2} gap={1} minW={240}>
       <Flex minW={12} justifyContent='center' color={useColorModeValue('light.text.active', 'dark.text.active')}>
-        {children}
+        {icon}
       </Flex>
       <Flex flexDir='column'>
         <Text color={useColorModeValue('light.text.active', 'dark.text.active')}>{title}</Text>
@@ -13,7 +13,7 @@ export const FeatureItem = ({ title, value, children }) => {
           fontWeight='medium'
           color={useColorModeValue('light.text.main', 'dark.text.main')}
         >
-          {value}
+          {children}
         </Text>
       </Flex>
     </HStack>
