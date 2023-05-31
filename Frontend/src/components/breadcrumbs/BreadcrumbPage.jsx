@@ -12,24 +12,19 @@ export const BreadcrumbPage = ({ links = [] }) => {
   return (
     <Breadcrumb spacing={2}>
       {
-        links.map((link, index) => (
+        links.slice(0, -1).map((link, index) => (
           <BreadcrumbItem key={index} color={colorMode === 'light' ? 'light.text.secondary' : 'dark.text.secondary'}>
-            {
-              (index === links.length - 1)
-                ? (
-                  <Text userSelect='none' color={colorMode === 'light' ? 'light.text.active' : 'dark.text.active'}>
-                    {link.name}
-                  </Text>
-                  )
-                : (
-                  <BreadcrumbLink onClick={() => goLink(link.url)}>
-                    {link.name}
-                  </BreadcrumbLink>
-                  )
-            }
+            <BreadcrumbLink onClick={() => goLink(link.url)}>
+              {link.name}
+            </BreadcrumbLink>
           </BreadcrumbItem>
         ))
       }
+      <BreadcrumbItem flex={1}>
+        <Text userSelect='none' color={colorMode === 'light' ? 'light.text.active' : 'dark.text.active'}>
+          {links[links.length - 1]?.name}
+        </Text>
+      </BreadcrumbItem>
     </Breadcrumb>
   )
 }

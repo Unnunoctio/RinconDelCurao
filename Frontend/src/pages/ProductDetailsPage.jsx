@@ -27,6 +27,10 @@ export const ProductDetailsPage = () => {
     if (queryPaths.length > 0) {
       const urlProduct = queryPaths[queryPaths.length - 1]
       getStoreProduct(urlProduct)
+
+      if (product.product?.alcoholic_grade !== undefined) {
+        console.log('xd')
+      }
     }
   }, [queryPaths])
 
@@ -53,8 +57,8 @@ export const ProductDetailsPage = () => {
               {/* Breadcrumb */}
               <BreadcrumbPage links={breadCrumbLinks} />
               {/* Title */}
-              <Flex py={4} alignItems='center' h='72px'>
-                <Heading fontSize={{ base: 28, sm: 28 }} fontWeight='medium'>{product.title}</Heading>
+              <Flex py={4} alignItems='center' minH='72px'>
+                <Heading fontSize={{ base: 24, sm: 28 }} fontWeight='medium'>{product.title}</Heading>
               </Flex>
               {/* Content Page */}
               <Flex flexDir={{ base: 'column', md: 'row' }} gap={{ base: 0, md: 1, xl: 8 }}>
@@ -75,15 +79,15 @@ export const ProductDetailsPage = () => {
                   </Box>
                   {/* Websites */}
                   <Box py={2} w='full'>
-                    <Heading fontSize={24} fontWeight='medium' textAlign='center'>Tiendas</Heading>
+                    <Heading fontSize={{ base: 22, sm: 24 }} fontWeight='medium' textAlign='center'>Tiendas</Heading>
                     <VStack py={2}>
                       <WebsiteItem website={{ title: 'Jumbo', best_price: '9600', price: '12500' }} />
                     </VStack>
                   </Box>
                 </VStack>
                 {/* Features */}
-                <Box flex={1} p={2} ref={featuresRef}>
-                  <Heading fontSize={24} fontWeight='medium' textAlign='center'>Caracteristicas</Heading>
+                <Box flex={1} ref={featuresRef}>
+                  <Heading fontSize={{ base: 22, sm: 24 }} fontWeight='medium' textAlign='center'>Caracteristicas</Heading>
                   <SimpleGrid
                     py={4}
                     rowGap={3}
@@ -140,7 +144,7 @@ export const ProductDetailsPage = () => {
                       )
                     }
                     {// TODO: Icono de Alcohol
-                      product.product?.alcoholic_grade && (
+                      (product.product?.alcoholic_grade !== undefined) && (
                         <FeatureItem title='Grado Alcohólico' icon={<AlcoholicIcon boxSize={12} />}>
                           {product.product.alcoholic_grade.toString().replace('.', ',')}°
                         </FeatureItem>
