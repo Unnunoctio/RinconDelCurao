@@ -13,6 +13,7 @@ import { PaginatorCustom } from '../components/paginator'
 import { ProductCard } from '../components/cards'
 import { FilterProducts } from '../components/filter/FilterProducts'
 import { useDimensions, useQueryURL } from '../hooks'
+import { useProductStore } from '../store'
 
 const packUnitarioData = [
   { value: 'pack', label: 'Pack (150)' },
@@ -66,6 +67,12 @@ export const ProductsPage = () => {
 
   const [getStoreProducts, handleStoreFilters, handleStorePage, handleStoreOrderBy, resetStore] = useProductsStore((state) => [state.getStoreProducts, state.handleStoreFilters, state.handleStorePage, state.handleStoreOrderBy, state.resetStore], shallow)
 
+  const [resetStoreProduct] = useProductStore((state) => [state.resetStoreProduct], shallow)
+
+  useEffect(() => {
+    resetStoreProduct()
+  }, [])
+
   const { handleSubmit, setValue, getValues, reset, control } = useForm({
     defaultValues: {
       category: '',
@@ -91,6 +98,7 @@ export const ProductsPage = () => {
       ])
 
       setTitle(category?.name)
+      document.title = `${category?.name} | Rincón del Curao`
 
       reset()
       setValue('category', category?.name)

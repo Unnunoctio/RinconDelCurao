@@ -14,7 +14,7 @@ export const ProductDetailsPage = () => {
   const { queryPaths } = useQueryURL()
 
   const [breadCrumbLinks, setBreadCrumbLinks] = useState([])
-  const [isLoading, product, isError] = useProductStore((state) => [state.isLoading, state.product, state.isError], shallow)
+  const [product, isError] = useProductStore((state) => [state.product, state.isError], shallow)
   const [getStoreProduct] = useProductStore((state) => [state.getStoreProduct], shallow)
 
   const [resetStore] = useProductsStore((state) => [state.resetStore], shallow)
@@ -41,6 +41,7 @@ export const ProductDetailsPage = () => {
       { name: category?.name, url: category?.url },
       { name: product?.title }
     ])
+    document.title = `${product?.title} | Rincón del Curao`
   }, [product])
 
   const { ref: featuresRef, dimensions: featuresDimensions } = useDimensions()

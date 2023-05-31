@@ -13,7 +13,6 @@ export const useProductStore = create((set, get) => ({
 
     try {
       const { data } = await productsApi.get(`/scraper_products/${urlProduct}`)
-      console.log({ data })
       const image = await fetchImage(data.product.image)
       data.product.image = image
 
@@ -24,5 +23,13 @@ export const useProductStore = create((set, get) => ({
       set({ isLoading: false })
       set({ isError: true })
     }
+  },
+
+  resetStoreProduct: () => {
+    set((state) => ({
+      product: {},
+      isLoading: false,
+      isError: false
+    }))
   }
 }))
