@@ -149,11 +149,14 @@ const getBestDiscountProducts = async (req, res = response) => {
   })
 }
 
-const getProductById = async (req, res = response) => {
-  const id = req.params.id
+const getProductByURL = async (req, res = response) => {
+  const url = req.params.url
 
-  const scraperLast = id.substring(0, 3)
-  const productLast = id.substring(id.length - 3)
+  const compuestId = url.substring(0, 6)
+  const compuestName = url.substring(7)
+
+  const scraperLast = compuestId.substring(0, 3)
+  const productLast = compuestId.substring(3)
 
   try {
     const scraperProducts = await ScraperProduct.find()
@@ -165,6 +168,14 @@ const getProductById = async (req, res = response) => {
     })
 
     if (!productById) {
+      return res.status(404).json({
+        ok: false,
+        msg: 'Producto no existe'
+      })
+    }
+
+    const compuestTitle = productById.title.toLowerCase().replaceAll('.', '').replaceAll('°', '').replaceAll(' ', '-')
+    if (compuestTitle !== compuestName) {
       return res.status(404).json({
         ok: false,
         msg: 'Producto no existe'
@@ -263,7 +274,7 @@ const deleteProductImage = async (req, res = response) => {
 module.exports = {
   getProducts,
   getBestDiscountProducts,
-  getProductById,
+  getProductByURL,
   uploadProductImage,
   getProductImage,
   deleteProductImage

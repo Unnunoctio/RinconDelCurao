@@ -1,6 +1,6 @@
 import { Box, Flex, Heading, Spinner, VStack, useColorMode } from '@chakra-ui/react'
 import { SliderHome } from '../components/slider/SliderHome'
-import { useHomeStore, useProductsStore } from '../store'
+import { useHomeStore, useProductStore, useProductsStore } from '../store'
 import { shallow } from 'zustand/shallow'
 import { useEffect } from 'react'
 
@@ -50,14 +50,17 @@ export const HomePage = () => {
   const [getHomeProducts] = useHomeStore((state) => [state.getHomeProducts], shallow)
 
   const [resetStore] = useProductsStore((state) => [state.resetStore], shallow)
+  const [resetStoreProduct] = useProductStore((state) => [state.resetStoreProduct], shallow)
 
   useEffect(() => {
     resetStore()
+    resetStoreProduct()
   }, [])
 
   // TODO: Obtener los productos que se mostraran en el home
   useEffect(() => {
     getHomeProducts()
+    document.title = 'Rincón del Curao'
   }, [])
 
   return (

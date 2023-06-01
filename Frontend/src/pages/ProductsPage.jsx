@@ -13,6 +13,7 @@ import { PaginatorCustom } from '../components/paginator'
 import { ProductCard } from '../components/cards'
 import { FilterProducts } from '../components/filter/FilterProducts'
 import { useDimensions, useQueryURL } from '../hooks'
+import { useProductStore } from '../store'
 
 const packUnitarioData = [
   { value: 'pack', label: 'Pack (150)' },
@@ -66,6 +67,12 @@ export const ProductsPage = () => {
 
   const [getStoreProducts, handleStoreFilters, handleStorePage, handleStoreOrderBy, resetStore] = useProductsStore((state) => [state.getStoreProducts, state.handleStoreFilters, state.handleStorePage, state.handleStoreOrderBy, state.resetStore], shallow)
 
+  const [resetStoreProduct] = useProductStore((state) => [state.resetStoreProduct], shallow)
+
+  useEffect(() => {
+    resetStoreProduct()
+  }, [])
+
   const { handleSubmit, setValue, getValues, reset, control } = useForm({
     defaultValues: {
       category: '',
@@ -91,6 +98,7 @@ export const ProductsPage = () => {
       ])
 
       setTitle(category?.name)
+      document.title = `${category?.name} | Rincón del Curao`
 
       reset()
       setValue('category', category?.name)
@@ -139,9 +147,15 @@ export const ProductsPage = () => {
     <Box py={{ base: 2, md: 4 }} px={{ base: 2, sm: 4, md: 8 }} w='full'>
       <BreadcrumbPage links={breadCrumbLinks} />
       {/* Title and OrderBy */}
-      <Flex py={4} justifyContent='space-between' flexDir={{ base: 'column', md: 'row' }}>
+      <Flex py={4} justifyContent='space-between' alignItems={{ base: 'flex-start', md: 'center' }} flexDir={{ base: 'column', md: 'row' }}>
         <Flex gap={2} alignItems='baseline'>
-          <Heading fontSize={{ base: 28, sm: 28 }} fontWeight='medium'>{title}</Heading>
+          <Heading
+            fontSize={{ base: 28, sm: 28 }}
+            fontWeight='medium'
+            color={useColorModeValue('light.text.main', 'dark.text.main')}
+          >
+            {title}
+          </Heading>
           <Text color={useColorModeValue('light.text.active', 'dark.text.active')} display={{ base: 'block', xl: 'none' }}>{totalProducts} resultados</Text>
         </Flex>
 

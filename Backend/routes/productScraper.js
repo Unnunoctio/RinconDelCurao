@@ -4,7 +4,7 @@ const { Router } = require('express')
 const multer = require('multer')
 const path = require('path')
 
-const { getProducts, getProductById, uploadProductImage, deleteProductImage, getProductImage, getBestDiscountProducts } = require('../controllers/productScraper')
+const { getProducts, getProductByURL, uploadProductImage, deleteProductImage, getProductImage, getBestDiscountProducts } = require('../controllers/productScraper')
 
 const router = Router()
 const upload = multer({
@@ -26,7 +26,7 @@ router.post('/', getProducts)
 
 router.get('/best-discount', getBestDiscountProducts)
 
-router.get('/:id', getProductById)
+router.get('/:url', getProductByURL)
 
 router.post('/upload-image', upload.single('image'), uploadProductImage)
 
