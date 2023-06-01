@@ -1,8 +1,8 @@
-import { Flex, HStack, Heading, Icon, Link, Text, useColorModeValue } from '@chakra-ui/react'
+import { Flex, HStack, Heading, Icon, Text, useColorModeValue } from '@chakra-ui/react'
 
 export const WebsiteItem = ({ website }) => {
   return (
-    <Link href={website.url} isExternal>
+    <a href={website.url} target='_blank' rel='noopener noreferrer'>
       <HStack
         gap={{ base: 2, sm: 5 }}
         minW='264px'
@@ -56,6 +56,6 @@ export const WebsiteItem = ({ website }) => {
           </HStack>
         </Flex>
       </HStack>
-    </Link>
+    </a>
   )
 }
