@@ -69,7 +69,10 @@ export const OrderBySelect = memo(() => {
           option: (provided, state) => ({
             ...provided,
             background: state.isSelected ? useColorModeValue('light.component.bg_active', 'dark.component.bg_active') : provided.background,
-            color: state.isSelected ? useColorModeValue('light.text.main', 'dark.text.main') : provided.color
+            color: state.isSelected ? useColorModeValue('light.text.main', 'dark.text.main') : provided.color,
+            ':active': {
+              background: state.isSelected ? useColorModeValue('light.component.bg_active', 'dark.component.bg_active') : provided.background
+            }
           }),
           indicatorSeparator: (provided, state) => ({
             ...provided,
