@@ -54,7 +54,7 @@ export const ProductDetailsPage = () => {
         isError
           ? <Error404Page />
           : (
-            <Box py={{ base: 2, md: 4 }} px={{ base: 2, sm: 4, md: 8 }} w='full'>
+            <Box py={{ base: 2, md: 4 }} px={{ base: 2, sm: 4, md: 8 }} w='100%'>
               {/* Breadcrumb */}
               <BreadcrumbPage links={breadCrumbLinks} />
               {/* Title */}
@@ -82,7 +82,11 @@ export const ProductDetailsPage = () => {
                   <Box py={2} w='full'>
                     <Heading fontSize={{ base: 22, sm: 24 }} fontWeight='medium' textAlign='center'>Tiendas</Heading>
                     <VStack py={2}>
-                      <WebsiteItem website={{ title: 'Jumbo', best_price: '9600', price: '12500' }} />
+                      {
+                        product.websites?.map((website, index) => (
+                          <WebsiteItem key={index} website={website} />
+                        ))
+                      }
                     </VStack>
                   </Box>
                 </VStack>

@@ -1,8 +1,8 @@
-import { Box, Center, Collapse, Drawer, DrawerContent, DrawerOverlay, Flex, HStack, Icon, IconButton, Link, Stack, Text, useColorModeValue, useDisclosure } from '@chakra-ui/react'
+import { Box, Center, Collapse, Drawer, DrawerContent, DrawerOverlay, Flex, HStack, Icon, IconButton, Stack, Text, useColorModeValue, useDisclosure } from '@chakra-ui/react'
 import { GiShatteredGlass } from 'react-icons/gi'
 import { FiChevronDown, FiMenu, FiX } from 'react-icons/fi'
 import { OptionsButton } from './OptionsButton'
-import { useNavigate } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 
 import { linkItems } from '../../assets/linkItems'
 
@@ -58,11 +58,6 @@ export const Navbar = () => {
 
 const NavbarContent = ({ onOpen, isNavOpen, onNavOpen, onNavClose, ...rest }) => {
   const { isOpen: isOptionOpen, onOpen: onOptionOpen, onClose: onOptionClose } = useDisclosure()
-  const navigate = useNavigate()
-
-  const goHome = () => {
-    navigate('')
-  }
 
   return (
     <Flex
@@ -74,19 +69,20 @@ const NavbarContent = ({ onOpen, isNavOpen, onNavOpen, onNavClose, ...rest }) =>
       {...rest}
     >
       {/* LOGO */}
-      <Center
-        onClick={goHome}
-        h={navHeigth} mr={{ base: 0, md: 12 }}
-        color={useColorModeValue('light.text.active', 'dark.text.active')} cursor='pointer'
-        transition='transform 200ms ease-out'
-        _hover={{ transform: 'scale(1.03)' }}
-      >
-        <Icon boxSize={9} as={GiShatteredGlass} />
-        <Box ml={2} fontFamily='Finger Paint'>
-          <Text>Rincón</Text>
-          <Text>Del Curao</Text>
-        </Box>
-      </Center>
+      <NavLink to='/'>
+        <Center
+          h={navHeigth} mr={{ base: 0, md: 12 }}
+          color={useColorModeValue('light.text.active', 'dark.text.active')} cursor='pointer'
+          transition='transform 200ms ease-out'
+          _hover={{ transform: 'scale(1.03)' }}
+        >
+          <Icon boxSize={9} as={GiShatteredGlass} />
+          <Box ml={2} fontFamily='Finger Paint'>
+            <Text>Rincón</Text>
+            <Text>Del Curao</Text>
+          </Box>
+        </Center>
+      </NavLink>
 
       {/* Items and Buttons */}
       <Flex>
@@ -117,13 +113,6 @@ const NavbarContent = ({ onOpen, isNavOpen, onNavOpen, onNavClose, ...rest }) =>
           alignItems='center'
           gap={3}
         >
-          {/* <IconButton onClick={onNavClose}
-            bg={'transparent'}
-            icon={<Icon boxSize={6} as={BsGear} />}
-            _hover={{
-              color: 'yellow.500'
-            }}
-          /> */}
           <OptionsButton funOnClick={onNavClose} onOptionOpen={onOptionOpen} onOptionClose={onOptionClose} />
 
           <IconButton
@@ -143,18 +132,6 @@ const NavbarContent = ({ onOpen, isNavOpen, onNavOpen, onNavClose, ...rest }) =>
 }
 
 const NavItem = ({ item, ...rest }) => {
-  const navigate = useNavigate()
-
-  const goLinkCategory = (categoryUrl) => {
-    navigate(`${item.url}?category=${categoryUrl}`)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
-  const goLinkAll = () => {
-    navigate(`${item.url}`)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
   return (
     <Flex
       alignItems='left'
@@ -167,32 +144,30 @@ const NavItem = ({ item, ...rest }) => {
       </Center>
       {
         item.categories.map((category, index) => (
-          <Link
-            key={index} onClick={() => goLinkCategory(category.url)}
-            color={useColorModeValue('light.text.secondary', 'dark.text.secondary')}
-            mb={2}
-          >
-            {category.name}
-          </Link>
+          <NavLink key={index} to={`${item.url}?category=${category.url}`}>
+            <Text
+              color={useColorModeValue('light.text.secondary', 'dark.text.secondary')}
+              mb={2}
+              _hover={{ textDecoration: 'underline' }}
+            >
+              {category.name}
+            </Text>
+          </NavLink>
         ))
       }
-      <Link
-        onClick={goLinkAll}
-        color={useColorModeValue('light.text.active', 'dark.text.active')}
-      >
-        Ver Todos
-      </Link>
+      <NavLink to={`${item.url}`}>
+        <Text
+          color={useColorModeValue('light.text.active', 'dark.text.active')}
+          _hover={{ textDecoration: 'underline' }}
+        >
+          Ver Todos
+        </Text>
+      </NavLink>
     </Flex>
   )
 }
 
 const SidebarContent = ({ onClose, ...rest }) => {
-  const navigate = useNavigate()
-
-  const goHome = () => {
-    navigate('')
-  }
-
   return (
     <Box
       bg={useColorModeValue('light.background.main', 'dark.background.main')}
@@ -205,13 +180,15 @@ const SidebarContent = ({ onClose, ...rest }) => {
     >
       <Flex h={24} alignItems='center' justifyContent='space-between'>
         {/* LOGO */}
-        <Center color={useColorModeValue('light.text.active', 'dark.text.active')} onClick={goHome} cursor='pointer'>
-          <Icon boxSize={10} as={GiShatteredGlass} />
-          <Box ml={2} fontFamily='Finger Paint' fontSize={18}>
-            <Text>Rincón</Text>
-            <Text>Del Curao</Text>
-          </Box>
-        </Center>
+        <NavLink to='/'>
+          <Center color={useColorModeValue('light.text.active', 'dark.text.active')} cursor='pointer'>
+            <Icon boxSize={10} as={GiShatteredGlass} />
+            <Box ml={2} fontFamily='Finger Paint' fontSize={18}>
+              <Text>Rincón</Text>
+              <Text>Del Curao</Text>
+            </Box>
+          </Center>
+        </NavLink>
 
         {/* CloseButton */}
         <IconButton
@@ -232,20 +209,9 @@ const SidebarContent = ({ onClose, ...rest }) => {
 }
 
 const SidebarItem = ({ item, ...rest }) => {
-  const navigate = useNavigate()
   const { isOpen, onToggle } = useDisclosure()
 
   // TODO: Detectar en que pagina estamos y abrir esas categorias
-
-  const goLinkCategory = (categoryUrl) => {
-    navigate(`${item.url}?category=${categoryUrl}`)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
-  const goLinkAll = () => {
-    navigate(`${item.url}`)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
 
   return (
     <Flex
@@ -256,7 +222,7 @@ const SidebarItem = ({ item, ...rest }) => {
       {...rest}
     >
       <Flex
-        py={3}
+        py={4}
         justifyContent='space-between'
         alignItems='center'
         color={useColorModeValue('light.text.main', 'dark.text.main')}
@@ -282,22 +248,25 @@ const SidebarItem = ({ item, ...rest }) => {
           {
             item.categories &&
             item.categories.map((category, index) => (
-              <Link
-                key={index} onClick={() => goLinkCategory(category.url)}
-                color={useColorModeValue('light.text.secondary', 'dark.text.secondary')}
-                py={1}
-              >
-                {category.name}
-              </Link>
+              <NavLink key={index} to={`${item.url}?category=${category.url}`}>
+                <Text
+                  color={useColorModeValue('light.text.secondary', 'dark.text.secondary')}
+                  mb={2}
+                  _hover={{ textDecoration: 'underline' }}
+                >
+                  {category.name}
+                </Text>
+              </NavLink>
             ))
           }
-          <Link
-            onClick={goLinkAll}
-            color={useColorModeValue('light.text.active', 'dark.text.active')}
-            py={1}
-          >
-            Ver Todos
-          </Link>
+          <NavLink to={`${item.url}`}>
+            <Text
+              color={useColorModeValue('light.text.active', 'dark.text.active')}
+              _hover={{ textDecoration: 'underline' }}
+            >
+              Ver Todos
+            </Text>
+          </NavLink>
         </Stack>
       </Collapse>
     </Flex>
