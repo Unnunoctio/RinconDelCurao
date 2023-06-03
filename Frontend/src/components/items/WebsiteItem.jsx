@@ -6,8 +6,8 @@ export const WebsiteItem = ({ website }) => {
       <HStack
         gap={{ base: 2, sm: 5 }}
         minW='264px'
-        maxW='sm'
-        w='100%'
+        // maxW='sm'
+        w='full'
         py={2} px={{ base: 2, sm: 4 }}
         background={useColorModeValue('light.background.main', 'dark.background.main')}
         justifyContent='center'

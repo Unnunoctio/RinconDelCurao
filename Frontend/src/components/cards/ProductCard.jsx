@@ -45,6 +45,7 @@ export const ProductCard = ({ dataCard, ...rest }) => {
               <Text
                 fontWeight='medium' fontSize={18}
                 color={useColorModeValue('light.text.main', 'dark.text.main')}
+                minH='54px'
               >
                 {dataCard?.title}
               </Text>

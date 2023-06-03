@@ -1,37 +1,47 @@
 import { Box, Button, Divider, Flex, Text, VStack, useColorModeValue } from '@chakra-ui/react'
-import React, { useEffect, useState } from 'react'
-import { useProductsStore } from '../../store'
-import { shallow } from 'zustand/shallow'
-import { useQueryURL } from '../../hooks'
+import { useProductsStore, useURLQuery } from '../../hooks'
 
 export const FilterProducts = ({ handleSubmit, setValue, reset, children }) => {
-  const { addQueryMultiParamsURL } = useQueryURL()
-  const [totalProducts, filtersActive] = useProductsStore((state) => [state.totalProducts, state.filtersActive], shallow)
-  const [getStoreProducts, handleStoreFilters, handleStorePage] = useProductsStore((state) => [state.getStoreProducts, state.handleStoreFilters, state.handleStorePage], shallow)
+  const { updateQueryMultiParamsURL } = useURLQuery()
+  const { totalProducts, handleFilters, handleCurrentPage } = useProductsStore()
 
-  const [clicked, setClicked] = useState(false)
+  // const [clicked, setClicked] = useState(false)
 
   const onSubmit = async (data) => {
-    await handleStoreFilters(data)
-    console.log({ filtersActive })
-    setClicked(true)
+    handleFilters(data)
+    handleCurrentPage(1)
+
+    console.log('Ejecucion: Productos via Filter')
+    const deleteParams = []
+    const addParams = [
+      { label: 'page', value: 1 }
+    ]
+
+    if (data.subCategory.length > 0) {
+      addParams.push({ label: 'category', value: data.subCategory.map(obj => obj.value).join(',') })
+    } else {
+      deleteParams.push('category')
+    }
+    // console.log(data.subCategory.map(obj => obj.value).join(','))
+    // console.log(params)
+    updateQueryMultiParamsURL(addParams, deleteParams)
   }
 
-  useEffect(() => {
-    if (clicked) {
-      handleStorePage(1)
-      getStoreProducts()
-      console.log('Ejecucion: Productos via Filter')
+  // useEffect(() => {
+  //   if (clicked) {
+  //     handleStorePage(1)
+  //     getStoreProducts()
+  //     console.log('Ejecucion: Productos via Filter')
 
-      const params = [
-        { label: 'page', value: 1 }
-      ]
-      if (filtersActive.subCategory) { params.push({ label: 'category', value: filtersActive.subCategory.join(',') }) }
+  //     const params = [
+  //       { label: 'page', value: 1 }
+  //     ]
+  //     if (filtersActive.subCategory) { params.push({ label: 'category', value: filtersActive.subCategory.join(',') }) }
 
-      addQueryMultiParamsURL(params)
-      setClicked(false)
-    }
-  }, [filtersActive])
+  //     addQueryMultiParamsURL(params)
+  //     setClicked(false)
+  //   }
+  // }, [filtersActive])
 
   return (
     <Box w='300px' minW='300px' display={{ base: 'none', xl: 'block' }}>
