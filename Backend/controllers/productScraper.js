@@ -18,6 +18,23 @@ const getProducts = async (req, res = response) => {
   let scraperProducts = await ScraperProduct.find({ 'product.category': filters.category })
 
   // TODO: Filtrar y obtener los limites para el filtro reduce
+  const filtersLimits = {
+    subCategory: []
+  }
+
+  const categoriesCount = scraperProducts.reduce((counts, { product }) => {
+    const { sub_category: subCategory } = product
+    counts[subCategory] = (counts[subCategory] || 0) + 1
+    return counts
+  }, {})
+  filtersLimits.subCategory = Object.entries(categoriesCount).map(([subCategory, count]) => ({ label: `${subCategory} (${count})`, value: subCategory }))
+
+  // scraperProducts = await ScraperProduct.find({
+  //   $and: [
+  //     { 'product.category': filters.category },
+  //     { 'product.sub_category': { $in: filters.subCategory } }
+  //   ]
+  // })
 
   //! Verifica que la pagina actual este dentro del rango
   if ((currentPage <= 0) || (currentPage > Math.ceil(scraperProducts.length / productsPerPage))) {
@@ -101,8 +118,8 @@ const getProducts = async (req, res = response) => {
     products: scraperProducts.slice(startIndex, startIndex + productsPerPage),
     // products: scraper_products,
     totalProducts: scraperProducts.length,
-    totalPages: Math.ceil(scraperProducts.length / productsPerPage)
-    // filter_limits: filter_limits
+    totalPages: Math.ceil(scraperProducts.length / productsPerPage),
+    filtersLimits
   })
 }
 

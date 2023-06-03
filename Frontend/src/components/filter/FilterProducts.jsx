@@ -1,16 +1,37 @@
 import { Box, Button, Divider, Flex, Text, VStack, useColorModeValue } from '@chakra-ui/react'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useProductsStore } from '../../store'
 import { shallow } from 'zustand/shallow'
+import { useQueryURL } from '../../hooks'
 
 export const FilterProducts = ({ handleSubmit, setValue, reset, children }) => {
-  const [totalProducts] = useProductsStore((state) => [state.totalProducts], shallow)
-  const [getProductsByFilters, resetStoreFilters] = useProductsStore((state) => [state.getProductsByFilters, state.resetStoreFilters], shallow)
+  const { addQueryMultiParamsURL } = useQueryURL()
+  const [totalProducts, filtersActive] = useProductsStore((state) => [state.totalProducts, state.filtersActive], shallow)
+  const [getStoreProducts, handleStoreFilters, handleStorePage] = useProductsStore((state) => [state.getStoreProducts, state.handleStoreFilters, state.handleStorePage], shallow)
 
-  const onSubmit = (data) => {
-    setValue('page', 1)
-    getProductsByFilters(data)
+  const [clicked, setClicked] = useState(false)
+
+  const onSubmit = async (data) => {
+    await handleStoreFilters(data)
+    console.log({ filtersActive })
+    setClicked(true)
   }
+
+  useEffect(() => {
+    if (clicked) {
+      handleStorePage(1)
+      getStoreProducts()
+      console.log('Ejecucion: Productos via Filter')
+
+      const params = [
+        { label: 'page', value: 1 }
+      ]
+      if (filtersActive.subCategory) { params.push({ label: 'category', value: filtersActive.subCategory.join(',') }) }
+
+      addQueryMultiParamsURL(params)
+      setClicked(false)
+    }
+  }, [filtersActive])
 
   return (
     <Box w='300px' minW='300px' display={{ base: 'none', xl: 'block' }}>

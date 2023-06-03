@@ -11,21 +11,21 @@ export const ProductCard = ({ dataCard, ...rest }) => {
   }, [dataCard])
 
   return (
-    <NavLink to={hrefCard}>
-      <Card
-        className='product-card'
-        w={{ base: 260, md: 260 }}
-        background={useColorModeValue('light.background.main', 'dark.background.main')}
-        boxShadow='md'
-        border='1px' borderColor={useColorModeValue('light.divider.main', 'dark.divider.main')}
-        transition='transform 200ms ease'
-        cursor='pointer'
-        _hover={{
-          transform: 'scale(1.025)',
-          borderColor: useColorModeValue('light.divider.active', 'dark.divider.active')
-        }}
-        {...rest}
-      >
+    <Card
+      className='product-card'
+      w={{ base: 260, md: 260 }}
+      background={useColorModeValue('light.background.main', 'dark.background.main')}
+      boxShadow='md'
+      border='1px' borderColor={useColorModeValue('light.divider.main', 'dark.divider.main')}
+      transition='transform 200ms ease'
+      cursor='pointer'
+      _hover={{
+        transform: 'scale(1.025)',
+        borderColor: useColorModeValue('light.divider.active', 'dark.divider.active')
+      }}
+      {...rest}
+    >
+      <NavLink to={hrefCard}>
         <CardBody h='full' p={2} display='flex' flexDir='column'>
           <Image
             h={200}
@@ -63,7 +63,7 @@ export const ProductCard = ({ dataCard, ...rest }) => {
             </HStack>
           </VStack>
         </CardBody>
-      </Card>
-    </NavLink>
+      </NavLink>
+    </Card>
   )
 }

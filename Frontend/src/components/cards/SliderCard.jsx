@@ -12,21 +12,22 @@ export const SliderCard = ({ dataCard, variant }) => {
   }, [dataCard])
 
   return (
-    <NavLink to={hrefCard}>
-      <Card
-        className='slider-card'
-        my={3} mx={2}
-        w={{ base: 260, md: 260 }}
-        background={useColorModeValue('light.background.main', 'dark.background.main')}
-        boxShadow='md'
-        border='1px' borderColor={useColorModeValue('light.divider.main', 'dark.divider.main')}
-        transition='transform 0.2s ease-out'
-        cursor='pointer'
-        _hover={{
-          transform: 'scale(1.025)',
-          borderColor: useColorModeValue('light.divider.active', 'dark.divider.active')
-        }}
-      >
+    <Card
+      className='slider-card'
+      my={3} mx={2}
+      w={{ base: 260, md: 260 }}
+      background={useColorModeValue('light.background.main', 'dark.background.main')}
+      boxShadow='md'
+      border='1px' borderColor={useColorModeValue('light.divider.main', 'dark.divider.main')}
+      transition='transform 0.2s ease-out'
+      cursor='pointer'
+      _hover={{
+        transform: 'scale(1.025)',
+        borderColor: useColorModeValue('light.divider.active', 'dark.divider.active')
+      }}
+    >
+      <NavLink to={hrefCard}>
+
         <CardBody h='full' p={2} display='flex' flexDir='column'>
           <Image
             h={200}
@@ -71,7 +72,7 @@ export const SliderCard = ({ dataCard, variant }) => {
             </HStack>
           </VStack>
         </CardBody>
-      </Card>
-    </NavLink>
+      </NavLink>
+    </Card>
   )
 }
