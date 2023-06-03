@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-export const HomeStore = create((set, get) => ({
+export const HomeStore = create((set) => ({
   offerProducts: [],
   isLoading: false,
 

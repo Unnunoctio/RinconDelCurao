@@ -13,7 +13,6 @@ import { PaginatorCustom } from '../components/paginator'
 import { ProductCard } from '../components/cards'
 import { FilterProducts } from '../components/filter/FilterProducts'
 import { useDimensions, useQueryURL } from '../hooks'
-import { useProductStore } from '../store'
 import { sameStrings } from '../helpers'
 
 // const packUnitarioData = [
@@ -68,11 +67,11 @@ export const ProductsPage = () => {
 
   const [getStoreProducts, handleStoreFilters, handleStorePage, handleStoreOrderBy, resetStore] = useProductsStore((state) => [state.getStoreProducts, state.handleStoreFilters, state.handleStorePage, state.handleStoreOrderBy, state.resetStore], shallow)
 
-  const [resetStoreProduct] = useProductStore((state) => [state.resetStoreProduct], shallow)
+  // const [resetStoreProduct] = useProductStore((state) => [state.resetStoreProduct], shallow)
 
-  useEffect(() => {
-    resetStoreProduct()
-  }, [])
+  // useEffect(() => {
+  //   resetStoreProduct()
+  // }, [])
 
   const { handleSubmit, setValue, getValues, reset, control } = useForm({
     defaultValues: {
