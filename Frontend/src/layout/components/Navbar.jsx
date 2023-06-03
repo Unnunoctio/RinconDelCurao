@@ -201,14 +201,14 @@ const SidebarContent = ({ onClose, ...rest }) => {
       </Flex>
       {
         linkItems.map((item, index) => (
-          <SidebarItem key={index} item={item} />
+          <SidebarItem key={index} item={item} onSidebarClose={onClose} />
         ))
       }
     </Box>
   )
 }
 
-const SidebarItem = ({ item, ...rest }) => {
+const SidebarItem = ({ item, onSidebarClose, ...rest }) => {
   const { isOpen, onToggle } = useDisclosure()
 
   // TODO: Detectar en que pagina estamos y abrir esas categorias
@@ -248,7 +248,7 @@ const SidebarItem = ({ item, ...rest }) => {
           {
             item.categories &&
             item.categories.map((category, index) => (
-              <NavLink key={index} to={`${item.url}?category=${category.url}`}>
+              <NavLink key={index} to={`${item.url}?category=${category.url}`} onClick={onSidebarClose}>
                 <Text
                   color={useColorModeValue('light.text.secondary', 'dark.text.secondary')}
                   mb={2}
@@ -259,7 +259,7 @@ const SidebarItem = ({ item, ...rest }) => {
               </NavLink>
             ))
           }
-          <NavLink to={`${item.url}`}>
+          <NavLink to={`${item.url}`} onClick={onSidebarClose}>
             <Text
               color={useColorModeValue('light.text.active', 'dark.text.active')}
               _hover={{ textDecoration: 'underline' }}

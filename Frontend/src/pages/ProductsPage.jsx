@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { shallow } from 'zustand/shallow'
 
 import { linkItems } from '../assets/linkItems'
 import { Box, Flex, HStack, Heading, SimpleGrid, Spinner, Text, useColorModeValue } from '@chakra-ui/react'
@@ -7,12 +6,11 @@ import { BreadcrumbPage } from '../components/breadcrumbs/BreadcrumbPage'
 import { MultiSelectCustom, SliderCustom, OrderBySelect } from '../components/inputs'
 
 import { useForm, useWatch } from 'react-hook-form'
-import { useProductsStore } from '../store/productsStore'
 import { orderByItems } from '../assets'
 import { PaginatorCustom } from '../components/paginator'
 import { ProductCard } from '../components/cards'
 import { FilterProducts } from '../components/filter/FilterProducts'
-import { useDimensions, useQueryURL } from '../hooks'
+import { useDimensions, useProductStore, useProductsStore, useURLQuery } from '../hooks'
 import { sameStrings } from '../helpers'
 
 // const packUnitarioData = [
@@ -56,22 +54,21 @@ import { sameStrings } from '../helpers'
 // ]
 
 export const ProductsPage = () => {
-  const { queryPaths, queryParams } = useQueryURL()
+  const { queryPaths, queryParams } = useURLQuery()
 
   const [breadCrumbLinks, setBreadCrumbLinks] = useState([])
   const [title, setTitle] = useState('')
 
-  const [isLoading, products, totalProducts, filtersLimits, filtersActive] = useProductsStore((state) => [state.isLoading, state.products, state.totalProducts, state.filtersLimits, state.filtersActive], shallow)
-  const { currentPage } = useProductsStore((state) => state.page)
-  const orderBy = useProductsStore((state) => state.orderBy)
+  const {
+    isLoading, products, totalProducts, filterActives, filterLimits, currentPage, orderBy,
+    getProducts, handleFilters, handleCurrentPage, handleOrderBy, resetProducts
+  } = useProductsStore()
 
-  const [getStoreProducts, handleStoreFilters, handleStorePage, handleStoreOrderBy, resetStore] = useProductsStore((state) => [state.getStoreProducts, state.handleStoreFilters, state.handleStorePage, state.handleStoreOrderBy, state.resetStore], shallow)
+  const { resetProduct: resetProductStore } = useProductStore()
 
-  // const [resetStoreProduct] = useProductStore((state) => [state.resetStoreProduct], shallow)
-
-  // useEffect(() => {
-  //   resetStoreProduct()
-  // }, [])
+  useEffect(() => {
+    resetProductStore()
+  }, [])
 
   const { handleSubmit, setValue, getValues, reset, control } = useForm({
     defaultValues: {
@@ -90,6 +87,7 @@ export const ProductsPage = () => {
 
   // TODO: Obtener el Title, Breadcrumb y setear la categoria
   useEffect(() => {
+    reset()
     const category = linkItems.find(item => item.url === `/${queryPaths[1]}`)
     if (category) {
       setBreadCrumbLinks([
@@ -100,54 +98,68 @@ export const ProductsPage = () => {
       setTitle(category?.name)
       document.title = `${category?.name} | Rincón del Curao`
 
-      reset()
       setValue('category', category?.name)
 
-      resetStore()
-      handleStoreFilters(getValues())
-      getStoreProducts()
+      resetProducts()
+      console.log(getValues())
+      handleFilters(getValues())
       console.log('Ejecucion: Productos via Pathname')
     }
   }, [queryPaths])
 
+  useEffect(() => {
+    if (Object.entries(filterActives).length > 0) {
+      console.log('me ejecute')
+      getProducts()
+    }
+  }, [filterActives, currentPage, orderBy])
+
   // TODO: Obtener los parametros del filtro activo mediante la query en la url del front
   useEffect(() => {
-    if (queryParams && Object.entries(filtersLimits).length > 0) {
+    if (queryParams && Object.entries(filterLimits).length > 0) {
       // console.log(queryParams)
       // console.log(filtersLimits)
       let changesURl = false
 
       const pageParam = parseInt(queryParams.page)
       if (!!pageParam && pageParam !== currentPage) {
-        handleStorePage(pageParam)
         changesURl = true
       }
       const orderByParam = queryParams.orderBy
-      if (!!orderByParam && orderByParam !== orderBy.value) {
-        handleStoreOrderBy(orderByItems.find(item => item.value === orderByParam))
+      if (!!orderByParam && orderByParam !== orderBy) {
         changesURl = true
       }
       const subCategoryByParam = queryParams.category
-      if (!!subCategoryByParam && !sameStrings(filtersActive.subCategory, subCategoryByParam.split(','))) {
-        setValue('subCategory', filtersLimits.subCategory?.filter((x) => { return subCategoryByParam.split(',').includes(x.value) }))
-        handleStoreFilters(getValues())
+      if (!!subCategoryByParam && !sameStrings(filterActives.subCategory, subCategoryByParam.split(','))) {
+        setValue('subCategory', filterLimits.subCategory?.filter((x) => { return subCategoryByParam.split(',').includes(x.value) }))
         changesURl = true
       }
 
       if (changesURl) {
-        getStoreProducts()
+        handleFilters(getValues())
+        if (!!pageParam && pageParam !== currentPage) {
+          handleCurrentPage(pageParam)
+        }
+        if (!!orderByParam && orderByParam !== orderBy) {
+          handleOrderBy(orderByItems.find(item => item.value === orderByParam))
+        }
         console.log('Ejecucion: Productos via QueryParams')
       }
-    } else {
-      //! Error: Hace peticiones infinitas al backend al ir desde un path con queryParams a uno limpio.
-      // if (categoryForm !== '' && Object.entries(filtersActive).length > 1) {
-      //   resetStore()
-      //   handleStoreFilters(getValues())
-      //   getStoreProducts()
-      //   console.log('Ejecucion: Productos via Sin QueryParams')
-      // }
     }
-  }, [queryParams, filtersLimits])
+  }, [queryParams, filterLimits])
+
+  useEffect(() => {
+    const category = linkItems.find(item => item.url === `/${queryPaths[1]}`)
+    if (queryParams === null && categoryForm !== '' && category.name === categoryForm) {
+      const category = categoryForm
+      reset()
+      setValue('category', category)
+
+      resetProducts()
+      handleFilters(getValues())
+      console.log('Ejecucion: Productos via Sin QueryParams')
+    }
+  }, [queryParams])
 
   const { ref: productsRef, dimensions: productsDimensions } = useDimensions()
 
@@ -174,7 +186,7 @@ export const ProductsPage = () => {
         {/* Filtro */}
         <FilterProducts handleSubmit={handleSubmit} setValue={setValue} reset={reset}>
           {/* <SliderCustom control={control} label='Precio' name='rangePrice' minValue={0} maxValue={30000} startSymbol='$' format={(value) => { return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') }} /> */}
-          <MultiSelectCustom control={control} label='Categoria' name='subCategory' options={filtersLimits.subCategory} />
+          <MultiSelectCustom control={control} label='Categoria' name='subCategory' options={filterLimits.subCategory} />
           {/* <MultiSelectCustom control={control} label='Marca' name='brand' options={marcaData} />
           <SliderCustom control={control} label='Graduación' name='rangeGrade' step={0.1} minValue={0.0} maxValue={10.0} endSymbol='°' />
           <MultiSelectCustom control={control} label='Contenido' name='content' options={contenidoData} />

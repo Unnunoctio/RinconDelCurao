@@ -15,10 +15,11 @@ const getProducts = async (req, res = response) => {
   console.log(filters)
 
   // TODO: Obtener los productos
-  let scraperProducts = await ScraperProduct.find({ 'product.category': filters.category })
+  const query = { 'product.category': filters.category }
+  let scraperProducts = await ScraperProduct.find(query)
 
   // TODO: Filtrar y obtener los limites para el filtro reduce
-  const filtersLimits = {
+  const filterLimits = {
     subCategory: []
   }
 
@@ -27,14 +28,12 @@ const getProducts = async (req, res = response) => {
     counts[subCategory] = (counts[subCategory] || 0) + 1
     return counts
   }, {})
-  filtersLimits.subCategory = Object.entries(categoriesCount).map(([subCategory, count]) => ({ label: `${subCategory} (${count})`, value: subCategory }))
+  filterLimits.subCategory = Object.entries(categoriesCount).map(([subCategory, count]) => ({ label: `${subCategory} (${count})`, value: subCategory }))
 
-  // scraperProducts = await ScraperProduct.find({
-  //   $and: [
-  //     { 'product.category': filters.category },
-  //     { 'product.sub_category': { $in: filters.subCategory } }
-  //   ]
-  // })
+  if (filters.subCategory) {
+    query['product.sub_category'] = { $in: filters.subCategory }
+    scraperProducts = await ScraperProduct.find(query)
+  }
 
   //! Verifica que la pagina actual este dentro del rango
   if ((currentPage <= 0) || (currentPage > Math.ceil(scraperProducts.length / productsPerPage))) {
@@ -119,7 +118,7 @@ const getProducts = async (req, res = response) => {
     // products: scraper_products,
     totalProducts: scraperProducts.length,
     totalPages: Math.ceil(scraperProducts.length / productsPerPage),
-    filtersLimits
+    filterLimits
   })
 }
 

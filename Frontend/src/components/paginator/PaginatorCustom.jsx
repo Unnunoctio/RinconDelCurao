@@ -4,9 +4,7 @@ import { useEffect, useState } from 'react'
 import Slider from 'react-slick'
 import { BsChevronLeft, BsChevronRight } from 'react-icons/bs'
 
-import { useProductsStore } from '../../store'
-import { shallow } from 'zustand/shallow'
-import { useQueryURL } from '../../hooks'
+import { useProductsStore, useURLQuery } from '../../hooks'
 
 const CustomPrevArrow = (props) => {
   const { onClick, currentSlide } = props
@@ -52,7 +50,7 @@ const CustomNextArrow = (props) => {
 export const PaginatorCustom = () => {
   const [pages, setPages] = useState([])
 
-  const { totalPages } = useProductsStore((state) => state.page)
+  const { totalPages } = useProductsStore()
 
   useEffect(() => {
     setPages(Array.from({ length: totalPages }, (_, i) => i + 1))
@@ -87,18 +85,16 @@ export const PaginatorCustom = () => {
 }
 
 const PageButton = ({ pageNum }) => {
-  const { addQueryParamURL } = useQueryURL()
-
-  const { currentPage } = useProductsStore((state) => state.page)
-  const [getStoreProducts, handleStorePage] = useProductsStore((state) => [state.getStoreProducts, state.handleStorePage], shallow)
+  const { addQueryParamURL } = useURLQuery()
+  const { currentPage, handleCurrentPage } = useProductsStore()
 
   const onPageClick = () => {
-    handleStorePage(pageNum)
-    getStoreProducts()
-    console.log('Ejecucion: Productos via Paginator')
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    handleCurrentPage(pageNum)
 
+    console.log('Ejecucion: Productos via Paginator')
     addQueryParamURL('page', pageNum)
+
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return (

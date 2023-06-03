@@ -1,24 +1,22 @@
-import { useProductsStore } from '../store'
-import { shallow } from 'zustand/shallow'
 import { useEffect, useState } from 'react'
 import { Box, Flex, Heading, Image, SimpleGrid, VStack, useColorModeValue } from '@chakra-ui/react'
 import { FeatureItem, WebsiteItem } from '../components/items'
-import { useDimensions, useProductStore, useQueryURL } from '../hooks'
+import { useDimensions, useProductStore, useProductsStore, useURLQuery } from '../hooks'
 import { Error404Page } from './Error404Page'
 import { linkItems } from '../assets'
 import { AlcoholicIcon, BitternessIcon, BrandIcon, CategoryIcon, ContentIcon, PackagingIcon, PlaceIcon, QuantityIcon, StrainIcon, VineyardIcon, WheatIcon } from '../assets/SvgFeatures'
 import { BreadcrumbPage } from '../components/breadcrumbs/BreadcrumbPage'
 
 export const ProductDetailsPage = () => {
-  const { queryPaths } = useQueryURL()
+  const { queryPaths } = useURLQuery()
 
   const [breadCrumbLinks, setBreadCrumbLinks] = useState([])
   const { isLoading, product, isError, getProduct } = useProductStore()
 
-  const [resetStore] = useProductsStore((state) => [state.resetStore], shallow)
+  const { resetProducts } = useProductsStore()
 
   useEffect(() => {
-    resetStore()
+    resetProducts()
   }, [])
 
   useEffect(() => {
