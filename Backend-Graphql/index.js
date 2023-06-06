@@ -1,34 +1,55 @@
 import { ApolloServer, gql } from 'apollo-server'
-
-const persons = [
-  {
-    name: 'Jose',
-    phone: '9 4444 5555',
-    street: 'calle falsa #123',
-    city: 'Santiago',
-    id: '5'
-  }
-]
+import './database/db.js'
+import Product from './models/Product.js'
 
 const typeDefinitions = gql`
-  type Person {
+  type UnitProduct {
+    _id: ID!
     name: String!
-    phone: String
-    street: String!
-    city: String!
-    id: ID!
+    brand: String!
+    alcoholic_grade: Float!
+    content: Int!
+    package: String!
+    category: String!
+    sub_category: String!
+    made_in: String
+    variety: String
+    bitterness: String
+    strain: String
+    vineyard: String
+  }
+
+  type Website {
+    id: ID
+    name: String!
+    url: String!
+    price: Int!
+    best_price: Int!
+    last_hash: String!
+  }
+
+  type Product {
+    _id: ID!
+    title: String!
+    product: UnitProduct!
+    quantity: Int!
+    websites: [Website]
+    image_path: String!
   }
 
   type Query {
-    personCount: Int!
-    allPersons: [Person]!
+    productCount: Int!
+    allProducts(title: String): [Product]!
   }
 `
 
 const resolvers = {
   Query: {
-    personCount: () => persons.length,
-    allPersons: () => persons
+    productCount: () => Product.collection.countDocuments(),
+    allProducts: async (root, args) => {
+      console.log(args)
+      return Product.find({})
+    }
   }
 }
 
