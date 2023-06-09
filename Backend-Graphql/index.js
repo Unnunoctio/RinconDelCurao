@@ -48,7 +48,7 @@ const typeDefinitions = gql`
     image_path: String!
   }
 
-  type BestDiscountProduct {
+  type ProductDiscount {
     id: ID!
     title: String!
     brand: String!
@@ -73,7 +73,7 @@ const typeDefinitions = gql`
     totalProducts(filters: FiltersInput!): Int!
     totalPages(filters: FiltersInput!): Int!
     allProducts(orderBy: OrderByEnum!, page: Int!, filters: FiltersInput!): [Product]!
-    bestDiscountProducts: [BestDiscountProduct]!
+    bestDiscountProducts: [ProductDiscount]!
   }
 `
 
@@ -95,7 +95,7 @@ const resolvers = {
     content: (root) => root.product.content,
     best_price: (root) => root.websites[0].best_price
   },
-  BestDiscountProduct: {
+  ProductDiscount: {
     id: (root) => {
       const idString = root._id.toString()
       const pidString = root.product._id.toString()
