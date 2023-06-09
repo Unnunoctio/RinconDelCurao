@@ -16,11 +16,16 @@ const totalProducts = async (root, args) => {
 
 const totalPages = async (root, args) => {
   try {
-    const { filters } = args
+    const { page, filters } = args
     const productsPerPage = 12
 
     const totalProducts = await Product.countDocuments({ 'product.category': filters.category })
     const totalPages = Math.ceil(totalProducts / productsPerPage)
+
+    if (page <= 0 || (page > totalPages)) {
+      throw new GraphQLError('invalid page value')
+    }
+
     return totalPages > 1 ? totalPages : 1
   } catch (error) {
     throw new UserInputError(error.message, {
@@ -30,12 +35,67 @@ const totalPages = async (root, args) => {
 }
 
 const getProducts = async (root, args) => {
-  const { orderBy, page, filters } = args
-  console.log(orderBy)
-  console.log(page)
-  console.log(filters)
+  try {
+    const { orderBy, page, filters } = args
+    const productsPerPage = 12
 
-  return Product.find({})
+    const products = await Product.aggregate([
+      { $unwind: '$websites' },
+      { $match: { 'product.category': filters.category } },
+      { $sort: { 'websites.best_price': 1 } },
+      {
+        $group: {
+          _id: '$_id',
+          websites: { $push: '$websites' },
+          otherFields: { $first: '$$ROOT' }
+        }
+      },
+      { $replaceRoot: { newRoot: { $mergeObjects: ['$otherFields', { websites: '$websites' }] } } }
+    ])
+
+    switch (orderBy) {
+      case 'SCORE_DESC':
+        products.sort((a, b) => {
+          const scoreA = 100 - ((a.websites[0].best_price * 100) / a.websites[0].price)
+          const scoreB = 100 - ((b.websites[0].best_price * 100) / b.websites[0].price)
+          if (scoreA !== scoreB) return scoreB - scoreA
+          if (a.websites[0].best_price !== b.websites[0].best_price) return a.websites[0].best_price - b.websites[0].best_price
+          return a.title.localCompare(b.title)
+        })
+        break
+      case 'PRICE_DESC':
+        products.sort((a, b) => {
+          if (a.websites[0].best_price !== b.websites[0].best_price) return b.websites[0].best_price - a.websites[0].best_price
+          return a.title.localCompare(b.title)
+        })
+        break
+      case 'PRICE_ASC':
+        products.sort((a, b) => {
+          if (a.websites[0].best_price !== b.websites[0].best_price) return a.websites[0].best_price - b.websites[0].best_price
+          return a.title.localCompare(b.title)
+        })
+        break
+      case 'NAME_ASC':
+        products.sort((a, b) => {
+          return a.title.localCompare(b.title)
+        })
+        break
+      case 'NAME_DESC':
+        products.sort((a, b) => {
+          return b.title.localCompare(a.title)
+        })
+        break
+      default:
+        throw new GraphQLError('invalid orderBy value')
+    }
+
+    const startIndex = (page - 1) * productsPerPage
+    return products.slice(startIndex, startIndex + productsPerPage)
+  } catch (error) {
+    throw new UserInputError(error.message, {
+      invalidArgs: args
+    })
+  }
 }
 
 const getBestDiscountProducts = async () => {

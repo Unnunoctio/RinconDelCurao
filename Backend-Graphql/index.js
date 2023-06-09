@@ -70,7 +70,7 @@ const typeDefinitions = gql`
 
   type Query {
     totalProducts(filters: FiltersInput!): Int!
-    totalPages(filters: FiltersInput!): Int!
+    totalPages(page: Int!, filters: FiltersInput!): Int!
     allProducts(orderBy: OrderByEnum!, page: Int!, filters: FiltersInput!): [Product]!
     bestDiscountProducts: [ProductDiscount]!
   }
