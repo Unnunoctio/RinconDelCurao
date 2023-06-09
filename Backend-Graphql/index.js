@@ -1,6 +1,5 @@
 import { ApolloServer, gql } from 'apollo-server'
 import './database/config.js'
-// import Product from './models/Product.js'
 import { getBestDiscountProducts, getProducts, totalPages, totalProducts } from './resolvers/product.js'
 
 const typeDefinitions = gql`
