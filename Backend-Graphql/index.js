@@ -1,6 +1,7 @@
 import { ApolloServer, gql } from 'apollo-server'
-import './database/db.js'
-import Product from './models/Product.js'
+import './database/config.js'
+// import Product from './models/Product.js'
+import { getProducts, productCount } from './resolvers/product.js'
 
 const typeDefinitions = gql`
   type UnitProduct {
@@ -37,19 +38,20 @@ const typeDefinitions = gql`
     image_path: String!
   }
 
+  input FiltersInput {
+    category: String!
+  }
+
   type Query {
-    productCount: Int!
-    allProducts(title: String): [Product]!
+    totalProducts(filters: FiltersInput!): Int!
+    getProducts(orderBy: String!, page: Int!, filters: FiltersInput!): [Product]!
   }
 `
 
 const resolvers = {
   Query: {
-    productCount: () => Product.collection.countDocuments(),
-    allProducts: async (root, args) => {
-      console.log(args)
-      return Product.find({})
-    }
+    totalProducts,
+    getProducts
   }
 }
 
@@ -58,6 +60,6 @@ const server = new ApolloServer({
   resolvers
 })
 
-server.listen().then(({ url }) => {
-  console.log(`Server ready at ${url}`)
-})
+server.listen(process.env.PORT)
+  .then(({ url }) => console.log(`Server ready at ${url}`))
+  .catch((err) => console.log(`Error connection to server ${err.message}`))
