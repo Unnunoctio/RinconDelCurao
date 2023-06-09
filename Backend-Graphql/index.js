@@ -1,7 +1,7 @@
 import { ApolloServer, gql } from 'apollo-server'
 import './database/config.js'
 // import Product from './models/Product.js'
-import { getProducts, productCount } from './resolvers/product.js'
+import { getProducts, totalPages, totalProducts } from './resolvers/product.js'
 
 const typeDefinitions = gql`
   type UnitProduct {
@@ -44,6 +44,7 @@ const typeDefinitions = gql`
 
   type Query {
     totalProducts(filters: FiltersInput!): Int!
+    totalPages(filters: FiltersInput!): Int!
     getProducts(orderBy: String!, page: Int!, filters: FiltersInput!): [Product]!
   }
 `
@@ -51,6 +52,7 @@ const typeDefinitions = gql`
 const resolvers = {
   Query: {
     totalProducts,
+    totalPages,
     getProducts
   }
 }

@@ -2,8 +2,16 @@ import Product from '../models/Product.js'
 
 const totalProducts = async (root, args) => {
   const { filters } = args
-  const count = await Product.countDocuments({ 'product.category': filters.category })
-  return count
+  const total = await Product.countDocuments({ 'product.category': filters.category })
+  return total
+}
+
+const totalPages = async (root, args) => {
+  const { filters } = args
+  const productsPerPage = 12
+
+  const totalProducts = await Product.countDocuments({ 'product.category': filters.category })
+  return Math.ceil(totalProducts / productsPerPage)
 }
 
 const getProducts = async (root, args) => {
@@ -12,5 +20,6 @@ const getProducts = async (root, args) => {
 
 export {
   totalProducts,
+  totalPages,
   getProducts
 }
