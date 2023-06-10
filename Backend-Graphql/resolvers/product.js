@@ -1,7 +1,8 @@
-import { UserInputError } from 'apollo-server'
+import { ForbiddenError, UserInputError } from 'apollo-server'
 import Product from '../models/Product.js'
 import { GraphQLError } from 'graphql'
 
+// TODO: Frontend Endpoints
 const totalProducts = async (root, args) => {
   try {
     const { filters } = args
@@ -20,13 +21,14 @@ const totalPages = async (root, args) => {
     const productsPerPage = 12
 
     const totalProducts = await Product.countDocuments({ 'product.category': filters.category })
-    const totalPages = Math.ceil(totalProducts / productsPerPage)
+    let totalPages = Math.ceil(totalProducts / productsPerPage)
+    if (totalPages === 0) totalPages = 1
 
     if (page <= 0 || (page > totalPages)) {
       throw new GraphQLError('invalid page value')
     }
 
-    return totalPages > 1 ? totalPages : 1
+    return totalPages
   } catch (error) {
     throw new UserInputError(error.message, {
       invalidArgs: args
@@ -159,6 +161,10 @@ const getProduct = async (root, args) => {
       { $limit: 1 }
     ])
 
+    if (products.length === 0) {
+      throw new GraphQLError('invalid id')
+    }
+
     const compuestTitle = products[0].title.toLowerCase().replaceAll('.', '').replaceAll('°', '').replaceAll(' ', '-')
     if (compuestTitle !== title) {
       throw new GraphQLError('invalid title')
@@ -166,8 +172,26 @@ const getProduct = async (root, args) => {
 
     return products[0]
   } catch (error) {
-    console.log(error)
-    throw new GraphQLError(error.message, {})
+    throw new UserInputError(error.message, {
+      invalidArgs: args
+    })
+  }
+}
+
+// TODO: Scrapy Endpoints
+const isProductExist = async (root, args, context) => {
+  if (!context.apiKey) throw new ForbiddenError('unauthorized')
+
+  try {
+    const { urlWebsite } = args
+
+    const product = await Product.findOne({ 'websites.url': urlWebsite })
+    if (!product) {
+      return false
+    }
+    return true
+  } catch (error) {
+    throw new GraphQLError(error.message)
   }
 }
 
@@ -176,5 +200,6 @@ export {
   totalPages,
   getProducts,
   getBestDiscountProducts,
-  getProduct
+  getProduct,
+  isProductExist
 }
