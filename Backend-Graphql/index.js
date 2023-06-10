@@ -1,6 +1,6 @@
 import { ApolloServer, gql } from 'apollo-server'
 import './database/config.js'
-import { getBestDiscountProducts, getProducts, totalPages, totalProducts } from './resolvers/product.js'
+import { getBestDiscountProducts, getProduct, getProducts, totalPages, totalProducts } from './resolvers/product.js'
 
 const typeDefinitions = gql`
   type ProductAPI {
@@ -29,7 +29,7 @@ const typeDefinitions = gql`
   }
 
   type ProductDB {
-    _id: ID!
+   _id: ID!
     title: String!
     product: ProductAPI!
     quantity: Int!
@@ -73,6 +73,7 @@ const typeDefinitions = gql`
     totalPages(page: Int!, filters: FiltersInput!): Int!
     allProducts(orderBy: OrderByEnum!, page: Int!, filters: FiltersInput!): [Product]!
     bestDiscountProducts: [ProductDiscount]!
+    product(id: ID!, title: String!): ProductDB
   }
 `
 
@@ -81,7 +82,8 @@ const resolvers = {
     totalProducts,
     totalPages,
     allProducts: getProducts,
-    bestDiscountProducts: getBestDiscountProducts
+    bestDiscountProducts: getBestDiscountProducts,
+    product: getProduct
   },
   Product: {
     id: (root) => {

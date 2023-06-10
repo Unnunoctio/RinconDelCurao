@@ -4,7 +4,7 @@ const productSchema = Schema({
   title: { type: String, required: true, unique: true },
   product: {
     _id: { type: Schema.Types.ObjectId, required: true },
-    name: { type: String, required: true, unique: true },
+    name: { type: String, required: true },
     brand: { type: String, required: true },
     alcoholic_grade: { type: Number, required: true },
     content: { type: Number, required: true },

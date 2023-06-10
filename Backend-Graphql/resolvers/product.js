@@ -1,4 +1,5 @@
 import { UserInputError } from 'apollo-server'
+import regexEscape from 'escape-string-regexp'
 import Product from '../models/Product.js'
 import { GraphQLError } from 'graphql'
 
@@ -131,9 +132,73 @@ const getBestDiscountProducts = async () => {
   }
 }
 
+// Obtener un producto en la base de datos en mongo: tengo pid = los ultimos 3 digitos del _id del producto y
+// tengo paid = los ultimos 3 digitos del product._id
+const getProduct = async (root, args) => {
+  try {
+    const { id, title } = args
+    const productId = id.substring(0, 3)
+    const productIdAPI = id.substring(3)
+
+    // const product = await Product.findOne({
+    //   $and: [
+    //     {
+    //       $expr: {
+    //         $regexMatch: {
+    //           input: { $toString: '$_id' },
+    //           regex: `.*${productId}$`
+    //         }
+    //       }
+    //     },
+    //     {
+    //       $expr: {
+    //         $regexMatch: {
+    //           input: { $toString: '$product._id' },
+    //           regex: `.*${productIdAPI}$`
+    //         }
+    //       }
+    //     }
+    //   ]
+    // })
+
+    const products = await Product.aggregate([
+      { $unwind: '$websites' },
+      {
+        $match: {
+          $and: [
+            { $expr: { $regexMatch: { input: { $toString: '$_id' }, regex: `.*${productId}$` } } },
+            { $expr: { $regexMatch: { input: { $toString: '$product._id' }, regex: `.*${productIdAPI}$` } } }
+          ]
+        }
+      },
+      { $sort: { 'websites.best_price': 1 } },
+      {
+        $group: {
+          _id: '$_id',
+          websites: { $push: '$websites' },
+          otherFields: { $first: '$$ROOT' }
+        }
+      },
+      { $replaceRoot: { newRoot: { $mergeObjects: ['$otherFields', { websites: '$websites' }] } } },
+      { $limit: 1 }
+    ])
+
+    const compuestTitle = products[0].title.toLowerCase().replaceAll('.', '').replaceAll('°', '').replaceAll(' ', '-')
+    if (compuestTitle !== title) {
+      throw new GraphQLError('invalid title')
+    }
+
+    return products[0]
+  } catch (error) {
+    console.log(error)
+    throw new GraphQLError(error.message, {})
+  }
+}
+
 export {
   totalProducts,
   totalPages,
   getProducts,
-  getBestDiscountProducts
+  getBestDiscountProducts,
+  getProduct
 }
