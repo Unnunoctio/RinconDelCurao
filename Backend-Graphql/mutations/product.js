@@ -1,5 +1,5 @@
 import { ForbiddenError, UserInputError } from 'apollo-server'
-import { getProductApi, getProductImage, getProductTitle } from '../helpers/index.js'
+import { getProductApi, getProductImage, getProductTitle, removeProductImage } from '../helpers/index.js'
 import Product from '../models/Product.js'
 
 const addProduct = async (root, args, context) => {
@@ -34,6 +34,35 @@ const addProduct = async (root, args, context) => {
   }
 }
 
+const removeWebsite = async (root, args, context) => {
+  if (!context.apiKey) throw new ForbiddenError('anauthorized')
+
+  try {
+    const { urlWebsite } = args
+    // TODO: Busca el producto que contenga un website con la url y elimina el website
+    const isProduct = await Product.findOneAndUpdate(
+      { 'websites.url': urlWebsite },
+      { $pull: { websites: { url: urlWebsite } } },
+      { new: true }
+    )
+    // TODO: si el producto no existe retorna false
+    if (!isProduct) return false
+
+    // TODO: si el producto se queda sin websites se elimina el producto
+    const deletedProducts = await Product.find({ websites: { $exists: true, $size: 0 } })
+    await Product.deleteMany(
+      { websites: { $exists: true, $size: 0 } }
+    )
+    // TODO: elimina la imagen del producto
+    deletedProducts.forEach((product) => removeProductImage(product.image_path, product.product.category))
+    // TODO: retorna true
+    return true
+  } catch (error) {
+    throw new UserInputError(error.message)
+  }
+}
+
 export {
-  addProduct
+  addProduct,
+  removeWebsite
 }

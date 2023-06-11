@@ -2,11 +2,12 @@ import { ApolloServer, gql } from 'apollo-server'
 import './database/config.js'
 import { Enums, Inputs, ProductDiscount, ProductList, typeProduct, typeProductDiscount, typeProductList } from './types/index.js'
 import { isProductExist, getBestDiscountProducts, getProduct, getProducts, totalPages, totalProducts } from './queries/product.js'
-import { addProduct } from './mutations/product.js'
+import { addProduct, removeWebsite } from './mutations/product.js'
 
 const typeDefinitions = gql`
   type Mutation {
     addProduct(data: DataInput!, website: WebsiteInput!): Product
+    removeWebsite(urlWebsite: String!): Boolean!
   }
 
   type Query {
@@ -27,7 +28,8 @@ typeDefinitions.definitions.push(typeProductList)
 
 const resolvers = {
   Mutation: {
-    addProduct
+    addProduct,
+    removeWebsite
   },
   Query: {
     totalProducts,
