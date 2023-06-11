@@ -62,7 +62,37 @@ const removeWebsite = async (root, args, context) => {
   }
 }
 
+const updateWebsite = async (root, args, context) => {
+  if (!context.apiKey) throw new ForbiddenError('anauthorized')
+
+  try {
+    const { newWebsite } = args
+    // TODO: Buscar un Product que contenga un website con la url del newWebsite
+    // TODO: Que los last_hash sean distintos y actualiza los datos
+    const product = await Product.findOneAndUpdate(
+      {
+        'websites.url': newWebsite.url,
+        'websites.last_hash': { $ne: newWebsite.last_hash }
+      },
+      {
+        $set: {
+          'websites.$.price': newWebsite.price,
+          'websites.$.best_price': newWebsite.best_price,
+          'websites.$.last_hash': newWebsite.last_hash
+        }
+      }
+    )
+    // TODO: Si el producto no existe retorna false
+    if (!product) return false
+    // TODO: Retorna true
+    return true
+  } catch (error) {
+    throw new UserInputError(error.message)
+  }
+}
+
 export {
   addProduct,
-  removeWebsite
+  removeWebsite,
+  updateWebsite
 }
