@@ -1,4 +1,4 @@
-import https from 'https'
+import axios from 'axios'
 import shortid from 'shortid'
 import fs from 'fs'
 import { BEERS, DISTILLATES, WINES } from '../assets/uploadName.js'
@@ -8,39 +8,31 @@ export const getProductImage = async (imageUrl, productCategory) => {
   const fileName = `${id}.webp`
 
   let folderPath = 'others'
-  switch (productCategory) {
-    case BEERS.name:
-      folderPath = BEERS.folder
-      break
-    case DISTILLATES.name:
-      folderPath = DISTILLATES.folder
-      break
-    case WINES.name:
-      folderPath = WINES.folder
-      break
+  const categoryMapping = {
+    [BEERS.name]: BEERS.folder,
+    [DISTILLATES.name]: DISTILLATES.folder,
+    [WINES.name]: WINES.folder
   }
+  if (Object.prototype.hasOwnProperty.call(categoryMapping, productCategory)) {
+    folderPath = categoryMapping[productCategory]
+  }
+
   const filePath = `./uploads/${folderPath}/${fileName}`
 
-  // TODO: Peticion https
-  return new Promise((resolve, reject) => {
-    https.get(imageUrl, (res) => {
-      if (res.statusCode === 200) {
-        const fileStream = fs.createWriteStream(filePath)
-        res.pipe(fileStream)
-        fileStream.on('finish', () => {
-          fileStream.close()
-          resolve(fileName)
-        })
-        fileStream.on('error', (err) => {
-          console.error(err)
-          resolve(null)
-        })
-      } else {
-        resolve(null)
-      }
-    }).on('error', (err) => {
-      console.error(err)
-      resolve(null)
+  try {
+    const response = await axios.get(imageUrl, { responseType: 'stream' })
+    if (response.status !== 200) return null
+
+    const fileStream = fs.createWriteStream(filePath)
+    await new Promise((resolve, reject) => {
+      response.data.pipe(fileStream)
+      fileStream.on('finish', resolve)
+      fileStream.on('error', reject)
     })
-  })
+
+    return fileName
+  } catch (error) {
+    // console.error(error)
+    return null
+  }
 }
