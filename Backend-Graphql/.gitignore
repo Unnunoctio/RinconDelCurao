@@ -1,3 +1,13 @@
 node_modules/
 
 .env.local
+
+uploads/beers/*
+uploads/distillates/*
+uploads/wines/*
+uploads/others/*
+
+!uploads/beers/.gitkeep
+!uploads/distillates/.gitkeep
+!uploads/wines/.gitkeep
+!uploads/others/.gitkeep
