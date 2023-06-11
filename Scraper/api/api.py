@@ -72,8 +72,25 @@ def add_product(product_data, website):
   except Exception as e:
     print(e)
     return None
+  
+def remove_website(url_website):
+  query = """
+    mutation ($urlWebsite: String!) {
+      removeWebsite(urlWebsite: $urlWebsite)
+    }
+  """
+  variables = {
+    "urlWebsite": url_website
+  }
 
-print(is_product_exist("https://www.jumbo.cl/pack-cerveza-kunstmann-torobayo-6-unid-330-cc-c-u/p"))
+  try:
+    response = make_graphql_request(query, variables)
+    return response['data']['removeWebsite']
+  except Exception as e:
+    print(e)
+    return False
+
+# print(is_product_exist("https://www.jumbo.cl/pack-cerveza-kunstmann-torobayo-6-unid-330-cc-c-u/p"))
 
 product_data = {
   "title": "Cerveza Kunstmann Gran Torobayo 500cc",
@@ -92,4 +109,6 @@ website = {
   "last_hash": "d5d0f7b8-0f8b-4b5c-8e7c-d7b9c4f3b8f8"
 }
 
-add_product(product_data, website)
+# add_product(product_data, website)
+
+# print(remove_website("https://www.ccu.cl/pack-cerveza-kunstmann-torobayo-6-unid-330-cc-c-u/p"))
