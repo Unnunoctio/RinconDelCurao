@@ -6,8 +6,8 @@ export const WebsiteItem = ({ website }) => {
       <HStack
         gap={{ base: 2, sm: 5 }}
         minW='264px'
-        maxW='sm'
-        w='100%'
+        // maxW='sm'
+        w='full'
         py={2} px={{ base: 2, sm: 4 }}
         background={useColorModeValue('light.background.main', 'dark.background.main')}
         justifyContent='center'
@@ -30,7 +30,7 @@ export const WebsiteItem = ({ website }) => {
             fontWeight='medium'
             color={useColorModeValue('light.text.main', 'dark.text.main')}
           >
-            {website.website}
+            {website.name}
           </Heading>
           <HStack gap={{ base: 0, sm: 4 }}>
             <Flex flexDir='column' alignItems='flex-end'>

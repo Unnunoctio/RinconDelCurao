@@ -53,6 +53,7 @@ export const SliderHome = ({ cards, variant }) => {
     autoplay: true,
     autoplaySpeed: 5000,
     pauseOnFocus: true,
+    draggable: false,
 
     prevArrow: <CustomPrevArrow />,
     nextArrow: <CustomNextArrow />,

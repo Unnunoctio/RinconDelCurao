@@ -1,18 +1,12 @@
-'use strict'
+import mongoose from 'mongoose'
+import dotenv from 'dotenv'
 
-const mongoose = require('mongoose')
+dotenv.config({ path: '.env.local' })
 
-const dbConnection = async () => {
-  try {
-    await mongoose.connect(process.env.DB_CNN, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    })
-    console.log('DB corriendo correctamente')
-  } catch (error) {
-    console.log(error)
-    throw new Error('Error a la hora de inicializar DB')
-  }
-}
-
-module.exports = { dbConnection }
+mongoose.connect(process.env.DB_CNN, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+  // useFindAndModify: false
+})
+  .then(() => console.log('Connected to DB'))
+  .catch((err) => console.error('Error connection to DB', err.message))
