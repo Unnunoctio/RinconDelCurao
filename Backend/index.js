@@ -1,29 +1,64 @@
-'use strict'
+import { ApolloServer, gql } from 'apollo-server'
+import './database/config.js'
+import { Enums, Inputs, ProductDiscount, ProductList, typeProduct, typeProductDiscount, typeProductList } from './types/index.js'
+import { isProductExist, getBestDiscountProducts, getProduct, getProducts, totalPages, totalProducts, getProductImage } from './queries/product.js'
+import { addProduct, removeWebsite, updateWebsite } from './mutations/product.js'
 
-const express = require('express')
-require('dotenv').config()
-const cors = require('cors')
-const { dbConnection } = require('./database/config')
+const typeDefinitions = gql`
+  type Mutation {
+    addProduct(data: DataInput!, website: WebsiteInput!): Product
+    removeWebsite(urlWebsite: String!): Boolean!
+    updateWebsite(newWebsite: WebsiteInput!): Boolean!
+  }
 
-// Crear el servidor de express
-const app = express()
+  type Query {
+    totalProducts(filters: FiltersInput!): Int!
+    totalPages(page: Int!, filters: FiltersInput!): Int!
+    allProducts(orderBy: OrderByEnum!, page: Int!, filters: FiltersInput!): [ProductList]!
+    bestDiscountProducts: [ProductDiscount]!
+    product(id: ID!, title: String!): Product
+    productImage(imagePath: String!): String!
 
-// Base de datos
-dbConnection()
+    isProductExist(urlWebsite: String!): Boolean!
+  }
+`
+typeDefinitions.definitions.push(Enums)
+typeDefinitions.definitions.push(Inputs)
+typeDefinitions.definitions.push(typeProduct)
+typeDefinitions.definitions.push(typeProductDiscount)
+typeDefinitions.definitions.push(typeProductList)
 
-// CORS
-app.use(cors())
+const resolvers = {
+  Mutation: {
+    addProduct,
+    removeWebsite,
+    updateWebsite
+  },
+  Query: {
+    totalProducts,
+    totalPages,
+    allProducts: getProducts,
+    bestDiscountProducts: getBestDiscountProducts,
+    product: getProduct,
+    productImage: getProductImage,
+    isProductExist
+  },
+  ProductList,
+  ProductDiscount
+}
 
-// Directorio Publico
-app.use(express.static('public'))
-
-// Lectura y parseo del body
-app.use(express.json())
-
-// Rutas
-app.use('/api/scraper_products', require('./routes/productScraper'))
-
-// Escuchar peticiones
-app.listen(process.env.PORT, () => {
-  console.log(`Servidor corriendo en puerto ${process.env.PORT}`)
+const server = new ApolloServer({
+  typeDefs: typeDefinitions,
+  resolvers,
+  context: async ({ req }) => {
+    const scrapyApiKey = req ? req.headers['x-api-key'] : null
+    if (scrapyApiKey === process.env.SCRAPY_API_KEY) {
+      return { apiKey: scrapyApiKey }
+    }
+    return null
+  }
 })
+
+server.listen(process.env.PORT)
+  .then(({ url }) => console.log(`Server ready at ${url}`))
+  .catch((err) => console.log(`Error connection to server ${err.message}`))

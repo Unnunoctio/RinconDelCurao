@@ -2,31 +2,24 @@ import { FormControl, FormLabel, useColorModeValue } from '@chakra-ui/react'
 import { Select } from 'chakra-react-select'
 import { memo, useState } from 'react'
 import { orderByItems } from '../../assets'
-import { shallow } from 'zustand/shallow'
-import { useProductsStore } from '../../store'
-import { useQueryURL } from '../../hooks'
+import { useProductsStore, useURLQuery } from '../../hooks'
 
 export const OrderBySelect = memo(() => {
   const [focus, setFocus] = useState(false)
-  const { addQueryMultiParamsURL } = useQueryURL()
 
-  const orderBy = useProductsStore((state) => state.orderBy)
-  const [getStoreProducts, handleStoreOrderBy, handleStorePage] = useProductsStore(
-    (state) => [state.getStoreProducts, state.handleStoreOrderBy, state.handleStorePage],
-    shallow
-  )
+  const { addQueryMultiParamsURL } = useURLQuery()
+  const { orderBy, handleOrderBy, handleCurrentPage } = useProductsStore()
 
   const onChangeOrderBy = (option) => {
-    handleStoreOrderBy(option)
-    handleStorePage(1)
-    getStoreProducts()
+    handleOrderBy(option)
+    handleCurrentPage(1)
+
     console.log('Ejecucion: Productos via OrderBy')
 
     const params = [
       { label: 'page', value: 1 },
       { label: 'orderBy', value: option.value }
     ]
-
     addQueryMultiParamsURL(params)
   }
 
@@ -47,7 +40,7 @@ export const OrderBySelect = memo(() => {
         Ordenar por
       </FormLabel>
       <Select
-        value={orderBy}
+        value={orderByItems.find((item) => { return item.value === orderBy })}
         options={orderByItems}
         onChange={(option) => onChangeOrderBy(option)}
         onFocus={() => setFocus(true)}

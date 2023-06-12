@@ -1,8 +1,7 @@
 import { Box, Flex, Heading, Spinner, VStack, useColorMode } from '@chakra-ui/react'
 import { SliderHome } from '../components/slider/SliderHome'
-import { useHomeStore, useProductStore, useProductsStore } from '../store'
-import { shallow } from 'zustand/shallow'
 import { useEffect } from 'react'
+import { useHomeStore, useProductStore, useProductsStore } from '../hooks'
 
 const imageRating = 'src/assets/jesus.jpg'
 
@@ -46,15 +45,14 @@ const ratingCards = [
 
 export const HomePage = () => {
   const { colorMode } = useColorMode()
-  const [isLoading, offerProducts] = useHomeStore((state) => [state.isLoading, state.offerProducts], shallow)
-  const [getHomeProducts] = useHomeStore((state) => [state.getHomeProducts], shallow)
 
-  const [resetStore] = useProductsStore((state) => [state.resetStore], shallow)
-  const [resetStoreProduct] = useProductStore((state) => [state.resetStoreProduct], shallow)
+  const { isLoading, offerProducts, getHomeProducts } = useHomeStore()
+  const { resetProduct } = useProductStore()
+  const { resetProducts } = useProductsStore()
 
   useEffect(() => {
-    resetStore()
-    resetStoreProduct()
+    resetProducts()
+    resetProduct()
   }, [])
 
   // TODO: Obtener los productos que se mostraran en el home
