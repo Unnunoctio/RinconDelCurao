@@ -16,12 +16,12 @@ class ProductItem(scrapy.Item):
     brand = scrapy.Field()
     price = scrapy.Field()
     best_price = scrapy.Field()
-    # category = scrapy.Field()
     sub_category = scrapy.Field()
     quantity = scrapy.Field()
-    content_unit = scrapy.Field()
+    content = scrapy.Field()
     alcoholic_grade = scrapy.Field()
-    packaging = scrapy.Field()
+    package = scrapy.Field()
+    image_url = scrapy.Field()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

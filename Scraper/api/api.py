@@ -90,7 +90,7 @@ def remove_website(url_website):
     print(e)
     return False
 
-def upload_website(website):
+def update_website(website):
   query = """
     mutation ($website: WebsiteInput!) {
       updateWebsite(newWebsite: $website)
@@ -113,19 +113,20 @@ def upload_website(website):
     print(e)
     return False
 
-product_data = {
-  "title": "Cerveza Kunstmann Gran Torobayo 500cc",
-  "brand": "Kunstmann",
-  "alcoholic_grade": 7.5,
-  "content": 500,
-  "package": "Botella",
-  "quantity": 1,
-  "image_url": "https://www.ccu.cl/wp-content/uploads/2018/03/kunstmann-gran-torobayo.png",
-}
-website = {
-  "name": "CCU",
-  "url": "https://www.ccu.cl/pack-cerveza-kunstmann-torobayo-6-unid-330-cc-c-u/p",
-  "price": 9500,
-  "best_price": 7250,
-  "last_hash": "d5d0f7b8-0f8b-4b5c-8e7c-d7b9c4f3b8f8"
-}
+# product_data = {
+#   "title": "Cerveza Kunstmann Gran Torobayo 500cc",
+#   "brand": "Kunstmann",
+#   "alcoholic_grade": 7.5,
+#   "content": 500,
+#   "package": "Botella",
+#   "quantity": 1,
+#   "image_url": "https://www.ccu.cl/wp-content/uploads/2018/03/kunstmann-gran-torobayo.png",
+# }
+# website = {
+#   "name": "CCU",
+#   "url": "https://www.ccu.cl/pack-cerveza-kunstmann-torobayo-6-unid-330-cc-c-u/p",
+#   "price": 9500,
+#   "best_price": 7250,
+#   "last_hash": "d5d0f7b8-0f8b-4b5c-8e7c-d7b9c4f3b8f8"
+# }
+
