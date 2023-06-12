@@ -20,7 +20,7 @@ const totalProducts = async (root, args) => {
 const totalPages = async (root, args) => {
   try {
     const { page, filters } = args
-    const productsPerPage = 12
+    const productsPerPage = 8
 
     const totalProducts = await Product.countDocuments({ 'product.category': filters.category })
     let totalPages = Math.ceil(totalProducts / productsPerPage)
@@ -41,7 +41,7 @@ const totalPages = async (root, args) => {
 const getProducts = async (root, args) => {
   try {
     const { orderBy, page, filters } = args
-    const productsPerPage = 12
+    const productsPerPage = 8
 
     const products = await Product.aggregate([
       { $unwind: '$websites' },
@@ -64,29 +64,29 @@ const getProducts = async (root, args) => {
           const scoreB = 100 - ((b.websites[0].best_price * 100) / b.websites[0].price)
           if (scoreA !== scoreB) return scoreB - scoreA
           if (a.websites[0].best_price !== b.websites[0].best_price) return a.websites[0].best_price - b.websites[0].best_price
-          return a.title.localCompare(b.title)
+          return a.title.localeCompare(b.title)
         })
         break
       case 'PRICE_DESC':
         products.sort((a, b) => {
           if (a.websites[0].best_price !== b.websites[0].best_price) return b.websites[0].best_price - a.websites[0].best_price
-          return a.title.localCompare(b.title)
+          return a.title.localeCompare(b.title)
         })
         break
       case 'PRICE_ASC':
         products.sort((a, b) => {
           if (a.websites[0].best_price !== b.websites[0].best_price) return a.websites[0].best_price - b.websites[0].best_price
-          return a.title.localCompare(b.title)
+          return a.title.localeCompare(b.title)
         })
         break
       case 'NAME_ASC':
         products.sort((a, b) => {
-          return a.title.localCompare(b.title)
+          return a.title.localeCompare(b.title)
         })
         break
       case 'NAME_DESC':
         products.sort((a, b) => {
-          return b.title.localCompare(a.title)
+          return b.title.localeCompare(a.title)
         })
         break
       default:
@@ -117,14 +117,14 @@ const getBestDiscountProducts = async () => {
       { $replaceRoot: { newRoot: { $mergeObjects: ['$otherFields', { websites: '$websites' }] } } }
     ])
 
-    // ordena los productos mediante el mayor descuento > menor precio > titulo alfabetico
+    // TODO: ordena los productos mediante el mayor descuento > menor precio > titulo alfabetico
     products.sort((a, b) => {
       const discountA = Math.round(100 - (a.websites[0].best_price * 100) / a.websites[0].price)
-      const discountB = Math.round(100 - (a.websites[0].best_price * 100) / a.websites[0].price)
+      const discountB = Math.round(100 - (b.websites[0].best_price * 100) / b.websites[0].price)
 
       if (discountA !== discountB) return discountB - discountA
       if (a.websites[0].best_price !== b.websites[0].best_price) return a.websites[0].best_price - b.websites[0].best_price
-      return a.title.localCompare(b.title)
+      return a.title.localeCompare(b.title)
     })
 
     return products.slice(0, 7)
@@ -167,7 +167,7 @@ const getProduct = async (root, args) => {
       throw new GraphQLError('invalid id')
     }
 
-    const compuestTitle = products[0].title.toLowerCase().replaceAll('.', '').replaceAll('°', '').replaceAll(' ', '-')
+    const compuestTitle = products[0].title.toLowerCase().replaceAll('.', '').replaceAll('°', '').replaceAll(' ', '-').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     if (compuestTitle !== title) {
       throw new GraphQLError('invalid title')
     }

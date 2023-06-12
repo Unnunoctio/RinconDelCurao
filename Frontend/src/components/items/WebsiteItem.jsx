@@ -30,7 +30,7 @@ export const WebsiteItem = ({ website }) => {
             fontWeight='medium'
             color={useColorModeValue('light.text.main', 'dark.text.main')}
           >
-            {website.website}
+            {website.name}
           </Heading>
           <HStack gap={{ base: 0, sm: 4 }}>
             <Flex flexDir='column' alignItems='flex-end'>

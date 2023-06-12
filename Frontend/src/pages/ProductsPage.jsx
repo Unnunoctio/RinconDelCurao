@@ -116,7 +116,8 @@ export const ProductsPage = () => {
 
   // TODO: Obtener los parametros del filtro activo mediante la query en la url del front
   useEffect(() => {
-    if (queryParams && Object.entries(filterLimits).length > 0) {
+    // if (queryParams && Object.entries(filterLimits).length > 0) {
+    if (queryParams) {
       // console.log(queryParams)
       // console.log(filtersLimits)
       let changesURl = false

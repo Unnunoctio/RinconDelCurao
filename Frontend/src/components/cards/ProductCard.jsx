@@ -6,7 +6,7 @@ export const ProductCard = ({ dataCard, ...rest }) => {
   const [hrefCard, setHrefCard] = useState('')
 
   useEffect(() => {
-    const titleLink = dataCard?.title.toLowerCase().replaceAll('.', '').replaceAll('°', '').replaceAll(' ', '-')
+    const titleLink = dataCard?.title.toLowerCase().replaceAll('.', '').replaceAll('°', '').replaceAll(' ', '-').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     setHrefCard(`/productos/${dataCard?.id}-${titleLink}`)
   }, [dataCard])
 
