@@ -1,21 +1,7 @@
 import { shallow } from 'zustand/shallow'
-import { HomeStore, fetchImage } from '../store'
-import productsApi from '../api/productsApi'
+import { HomeStore } from '../store'
 import { gql, useLazyQuery } from '@apollo/client'
 import { useEffect } from 'react'
-
-const queryProducts = `
-  query {
-    bestDiscountProducts {
-      id
-      title
-      brand
-      discount
-      best_price
-      image_path
-    }
-  }
-`
 
 const GET_BEST_DISCOUNT_PRODUCTS = gql`
   query GetBestDiscountProducts {
@@ -25,7 +11,7 @@ const GET_BEST_DISCOUNT_PRODUCTS = gql`
       brand
       discount
       best_price
-      image_path
+      image
     }
   }
 `
@@ -42,6 +28,7 @@ export const useHomeStore = () => {
       handleLoading(false)
     }
     if (data) {
+      console.log(data)
       setTimeout(() => {
         handleOfferProducts(data.bestDiscountProducts)
         handleLoading(false)

@@ -1,38 +1,24 @@
-import axios from 'axios'
-import shortid from 'shortid'
 import fs from 'fs'
 import { BEERS, DISTILLATES, WINES } from '../assets/uploadName.js'
 
-export const getProductImage = async (imageUrl, productCategory) => {
-  const id = shortid.generate()
-  const fileName = `${id}.webp`
-
-  let folderPath = 'others'
-  const categoryMapping = {
-    [BEERS.name]: BEERS.folder,
-    [DISTILLATES.name]: DISTILLATES.folder,
-    [WINES.name]: WINES.folder
-  }
-  if (Object.prototype.hasOwnProperty.call(categoryMapping, productCategory)) {
-    folderPath = categoryMapping[productCategory]
-  }
-
-  const filePath = `./uploads/${folderPath}/${fileName}`
-
+export const getProductImage = (imagePath, category) => {
   try {
-    const response = await axios.get(imageUrl, { responseType: 'stream' })
-    if (response.status !== 200) return null
+    let folderPath = 'others'
+    const categoryMapping = {
+      [BEERS.name]: BEERS.folder,
+      [DISTILLATES.name]: DISTILLATES.folder,
+      [WINES.name]: WINES.folder
+    }
+    if (Object.prototype.hasOwnProperty.call(categoryMapping, category)) {
+      folderPath = categoryMapping[category]
+    }
 
-    const fileStream = fs.createWriteStream(filePath)
-    await new Promise((resolve, reject) => {
-      response.data.pipe(fileStream)
-      fileStream.on('finish', resolve)
-      fileStream.on('error', reject)
-    })
+    const filePath = `./uploads/${folderPath}/${imagePath}`
+    const imageBuffer = fs.readFileSync(filePath)
+    const imageBase64 = imageBuffer.toString('base64')
 
-    return fileName
+    return `data:image/webp;base64,${imageBase64}`
   } catch (error) {
-    // console.error(error)
-    return null
+    return ''
   }
 }

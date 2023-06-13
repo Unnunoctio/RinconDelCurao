@@ -1,4 +1,5 @@
 import { gql } from 'apollo-server'
+import { getProductImage } from '../helpers/index.js'
 
 const typeProduct = gql`
   type ProductUnit {
@@ -28,9 +29,15 @@ const typeProduct = gql`
     product: ProductUnit!
     quantity: Int!
     websites: [Website]!
-    image_path: String!
+    image: String!
   }
 `
+
+const Product = {
+  image: (root) => getProductImage(root.image_path, root.product.category)
+}
+
 export {
-  typeProduct
+  typeProduct,
+  Product
 }

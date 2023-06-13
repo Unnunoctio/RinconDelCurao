@@ -1,5 +1,5 @@
 import { ForbiddenError, UserInputError } from 'apollo-server'
-import { getProductApi, getProductImage, getProductTitle, removeProductImage } from '../helpers/index.js'
+import { getProductApi, getProductTitle, removeProductImage, uploadProductImage } from '../helpers/index.js'
 import Product from '../models/Product.js'
 
 const addProduct = async (root, args, context) => {
@@ -24,7 +24,7 @@ const addProduct = async (root, args, context) => {
     } else {
       // TODO: si no existe se obtiene la image, se crea un titulo mediante (productApi, data), y se crea el producto con su website
       const title = getProductTitle(productApi, data)
-      const imagePath = await getProductImage(data.image_url, productApi.category)
+      const imagePath = await uploadProductImage(data.image_url, productApi.category)
       const newProduct = new Product({ title, product: productApi, quantity: data.quantity, websites: [website], image_path: imagePath })
       await newProduct.save()
       return newProduct

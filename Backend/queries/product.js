@@ -1,8 +1,6 @@
 import { ForbiddenError, UserInputError } from 'apollo-server'
 import Product from '../models/Product.js'
 import { GraphQLError } from 'graphql'
-import fs from 'fs'
-import { BEERS, DISTILLATES, WINES } from '../assets/uploadName.js'
 
 // TODO: Frontend Endpoints
 const totalProducts = async (root, args) => {
@@ -180,35 +178,6 @@ const getProduct = async (root, args) => {
   }
 }
 
-const getProductImage = async (root, args) => {
-  try {
-    const { imagePath } = args
-
-    const product = await Product.findOne({ image_path: imagePath })
-    if (!product) return ''
-
-    let folderPath = 'others'
-    const categoryMapping = {
-      [BEERS.name]: BEERS.folder,
-      [DISTILLATES.name]: DISTILLATES.folder,
-      [WINES.name]: WINES.folder
-    }
-    if (Object.prototype.hasOwnProperty.call(categoryMapping, product.product.category)) {
-      folderPath = categoryMapping[product.product.category]
-    }
-
-    const filePath = `./uploads/${folderPath}/${imagePath}`
-    const imageBuffer = fs.readFileSync(filePath)
-    const imageBase64 = imageBuffer.toString('base64')
-
-    return `data:image/webp;base64,${imageBase64}`
-  } catch (error) {
-    throw new UserInputError(error.message, {
-      invalidArgs: args
-    })
-  }
-}
-
 // TODO: Scrapy Endpoints
 const isProductExist = async (root, args, context) => {
   if (!context.apiKey) throw new ForbiddenError('unauthorized')
@@ -232,7 +201,6 @@ export {
   getProducts,
   getBestDiscountProducts,
   getProduct,
-  getProductImage,
   //* Scrapy EndPoints
   isProductExist
 }

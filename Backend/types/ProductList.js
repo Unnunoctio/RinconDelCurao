@@ -1,4 +1,5 @@
 import { gql } from 'apollo-server'
+import { getProductImage } from '../helpers/index.js'
 
 const typeProductList = gql`
   type ProductList {
@@ -8,7 +9,7 @@ const typeProductList = gql`
     alcoholic_grade: Float!
     content: Int!
     best_price: Int!
-    image_path: String!
+    image: String!
   }
 `
 
@@ -23,7 +24,7 @@ const ProductList = {
   alcoholic_grade: (root) => root.product.alcoholic_grade,
   content: (root) => root.product.content,
   best_price: (root) => root.websites[0].best_price,
-  image_path: (root) => root.image_path
+  image: (root) => getProductImage(root.image_path, root.product.category)
 }
 
 export {

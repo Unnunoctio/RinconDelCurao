@@ -1,4 +1,5 @@
 import { gql } from 'apollo-server'
+import { getProductImage } from '../helpers/index.js'
 
 const typeProductDiscount = gql`
   type ProductDiscount {
@@ -7,7 +8,7 @@ const typeProductDiscount = gql`
     brand: String!
     discount: Int!
     best_price: Int!
-    image_path: String!
+    image: String!
   }
 `
 
@@ -21,7 +22,7 @@ const ProductDiscount = {
   brand: (root) => root.product.brand,
   discount: (root) => Math.round(100 - ((root.websites[0].best_price * 100) / root.websites[0].price)),
   best_price: (root) => root.websites[0].best_price,
-  image_path: (root) => root.image_path
+  image: (root) => getProductImage(root.image_path, root.product.category)
 }
 
 export {
