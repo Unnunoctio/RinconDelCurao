@@ -1,3 +1,3 @@
-export * from './getEnvVariables';
-export * from './sameStrings';
-export * from './urlFunctions';
+export * from './getEnvVariables'
+export * from './sameStrings'
+export * from './urlFunctions'
