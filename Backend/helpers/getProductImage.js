@@ -19,6 +19,9 @@ export const getProductImage = (imagePath, category) => {
 
     return `data:image/webp;base64,${imageBase64}`
   } catch (error) {
-    return ''
+    const imageBuffer = fs.readFileSync('./uploads/others/not_found.webp')
+    const imageBase64 = imageBuffer.toString('base64')
+
+    return `data:image/webp;base64,${imageBase64}`
   }
 }

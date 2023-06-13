@@ -1,10 +1,10 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
+import { gql, useLazyQuery } from '@apollo/client'
 import { shallow } from 'zustand/shallow'
-import productsApi from '../api/productsApi'
-import { ProductsStore, fetchImage } from '../store'
+import { ProductsStore } from '../store'
 
-const queryProducts = `
-  query($filters: FiltersInput!, $page: Int!, $orderBy: OrderByEnum!) {
+const GET_ALL_PRODUCTS = gql`
+  query GetAllProducts($filters: FiltersInput!, $page: Int!, $orderBy: OrderByEnum!) {
     totalProducts(filters: $filters)
     totalPages(page: $page, filters: $filters)
     allProducts(orderBy: $orderBy, page: $page, filters: $filters) {
@@ -14,13 +14,13 @@ const queryProducts = `
       alcoholic_grade
       content
       best_price
-      image_path
+      image
     }
   }
 `
 
 export const useProductsStore = () => {
-  const [lastRequest, setLastRequest] = useState(0)
+  const [getAllProducts, { error, data }] = useLazyQuery(GET_ALL_PRODUCTS)
 
   const [
     isLoading, products, totalProducts,
@@ -34,6 +34,21 @@ export const useProductsStore = () => {
     handleStoreOrderby, handleStorePage, resetStore
   ] = ProductsStore((state) => [state.handleLoading, state.handleProducts, state.handleFilterActives, state.handleFilterLimits, state.handleStoreOrderby, state.handleStorePage, state.resetStore], shallow)
 
+  useEffect(() => {
+    if (error) {
+      console.error(error.message)
+      handleLoading(false)
+    }
+    if (data) {
+      setTimeout(() => {
+        handleProducts(data.allProducts, data.totalProducts)
+        // handleFilterLimits(data.filterLimits)
+        handleStorePage(null, data.totalPages)
+        handleLoading(false)
+      }, 500)
+    }
+  }, [data, error])
+
   const getProducts = async () => {
     handleLoading(true)
 
@@ -45,32 +60,7 @@ export const useProductsStore = () => {
       }
     }
 
-    setLastRequest(lastRequest + 1)
-    const currentRequest = lastRequest
-
-    try {
-      const { totalProducts, totalPages, allProducts } = await productsApi(queryProducts, variables)
-      await Promise.all(allProducts?.map(async product => {
-        product.image = await fetchImage(product.image_path)
-      }))
-
-      if (currentRequest === lastRequest) {
-        handleProducts(allProducts, totalProducts)
-        // handleFilterLimits(data.filterLimits)
-        handleStorePage(null, totalPages)
-      }
-    } catch (error) {
-      console.log(error)
-      handleProducts([], 0)
-      handleStorePage(1, 1)
-    }
-
-    if (currentRequest === lastRequest) {
-      setTimeout(() => {
-        handleLoading(false)
-        setLastRequest(0)
-      }, 500)
-    }
+    getAllProducts({ variables })
   }
 
   const handleFilters = (filters) => {

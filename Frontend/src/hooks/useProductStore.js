@@ -45,7 +45,6 @@ export const useProductStore = () => {
       handleLoading(false)
     }
     if (data) {
-      console.log(data)
       setTimeout(() => {
         handleProduct(data.product)
         handleLoading(false)

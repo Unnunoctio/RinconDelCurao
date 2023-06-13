@@ -9,5 +9,6 @@ uploads/others/*
 !uploads/distillates/.gitkeep
 !uploads/wines/.gitkeep
 !uploads/others/.gitkeep
+!uploads/others/not_found.webp
 
 .env.local

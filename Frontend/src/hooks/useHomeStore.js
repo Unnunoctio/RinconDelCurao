@@ -1,7 +1,7 @@
+import { useEffect } from 'react'
+import { gql, useLazyQuery } from '@apollo/client'
 import { shallow } from 'zustand/shallow'
 import { HomeStore } from '../store'
-import { gql, useLazyQuery } from '@apollo/client'
-import { useEffect } from 'react'
 
 const GET_BEST_DISCOUNT_PRODUCTS = gql`
   query GetBestDiscountProducts {
@@ -28,8 +28,8 @@ export const useHomeStore = () => {
       handleLoading(false)
     }
     if (data) {
-      console.log(data)
       setTimeout(() => {
+        console.log(data.bestDiscountProducts)
         handleOfferProducts(data.bestDiscountProducts)
         handleLoading(false)
       }, 500)
