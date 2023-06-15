@@ -1,10 +1,11 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { gql, useLazyQuery } from '@apollo/client'
 import { shallow } from 'zustand/shallow'
 import { ProductsStore } from '../store'
 
 const GET_ALL_PRODUCTS = gql`
-  query GetAllProducts($filters: FiltersInput!, $page: Int!, $orderBy: OrderByEnum!) {
+  query GetAllProducts($requestId: ID!, $filters: FiltersInput!, $page: Int!, $orderBy: OrderByEnum!) {
+    requestId(requestId: $requestId)
     totalProducts(filters: $filters)
     totalPages(page: $page, filters: $filters)
     allProducts(orderBy: $orderBy, page: $page, filters: $filters) {
@@ -20,7 +21,8 @@ const GET_ALL_PRODUCTS = gql`
 `
 
 export const useProductsStore = () => {
-  const [getAllProducts, { error, data }] = useLazyQuery(GET_ALL_PRODUCTS)
+  const [getAllProducts, { loading, error, data }] = useLazyQuery(GET_ALL_PRODUCTS, { fetchPolicy: 'network-only' })
+  const latestRequestIdRef = useRef(null)
 
   const [
     isLoading, products, totalProducts,
@@ -35,24 +37,30 @@ export const useProductsStore = () => {
   ] = ProductsStore((state) => [state.handleLoading, state.handleProducts, state.handleFilterActives, state.handleFilterLimits, state.handleStoreOrderby, state.handleStorePage, state.resetStore], shallow)
 
   useEffect(() => {
-    if (error) {
-      console.error(error.message)
-      handleLoading(false)
-    }
-    if (data) {
-      setTimeout(() => {
-        handleProducts(data.allProducts, data.totalProducts)
-        // handleFilterLimits(data.filterLimits)
-        handleStorePage(null, data.totalPages)
+    setTimeout(() => {
+      if (data?.requestId === latestRequestIdRef.current) {
+        if (error) {
+          console.error(error.message)
+          handleLoading(false)
+        }
+        if (data) {
+          handleProducts(data.allProducts, data.totalProducts)
+          // handleFilterLimits(data.filterLimits)
+          handleStorePage(null, data.totalPages)
+        }
         handleLoading(false)
-      }, 500)
-    }
-  }, [data, error])
+      }
+    }, 500)
+  }, [data, error, loading])
 
   const getProducts = async () => {
     handleLoading(true)
 
+    const requestId = Date.now().toString()
+    latestRequestIdRef.current = requestId
+
     const variables = {
+      requestId,
       orderBy,
       page: currentPage,
       filters: {

@@ -17,7 +17,7 @@ const GET_BEST_DISCOUNT_PRODUCTS = gql`
 `
 
 export const useHomeStore = () => {
-  const [getProducts, { error, data }] = useLazyQuery(GET_BEST_DISCOUNT_PRODUCTS)
+  const [getProducts, { error, data }] = useLazyQuery(GET_BEST_DISCOUNT_PRODUCTS, { fetchPolicy: 'network-only' })
 
   const [isLoading, offerProducts] = HomeStore((state) => [state.isLoading, state.offerProducts], shallow)
   const [handleLoading, handleOfferProducts] = HomeStore((state) => [state.handleLoading, state.handleOfferProducts], shallow)

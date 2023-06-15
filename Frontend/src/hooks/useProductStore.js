@@ -33,7 +33,7 @@ const GET_PRODUCT = gql`
 `
 
 export const useProductStore = () => {
-  const [getProductData, { error, data }] = useLazyQuery(GET_PRODUCT)
+  const [getProductData, { error, data }] = useLazyQuery(GET_PRODUCT, { fetchPolicy: 'network-only' })
 
   const [isLoading, product, isError] = ProductStore((state) => [state.isLoading, state.product, state.isError], shallow)
   const [handleLoading, handleProduct, handleError, resetStore] = ProductStore((state) => [state.handleLoading, state.handleProduct, state.handleError, state.resetStore], shallow)
