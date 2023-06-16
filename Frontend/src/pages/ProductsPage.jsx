@@ -180,7 +180,9 @@ export const ProductsPage = () => {
           <Text color={useColorModeValue('light.text.active', 'dark.text.active')} display={{ base: 'block', xl: 'none' }}>{totalProducts} resultados</Text>
         </Flex>
 
-        <OrderBySelect />
+        <HStack spacing={2} mt={{ base: 2, md: 0 }} w={{ base: 'full', md: 'auto' }} justifyContent='flex-end'>
+          <OrderBySelect />
+        </HStack>
       </Flex>
       {/* Content Page */}
       <HStack align='flex-start' gap={6}>
