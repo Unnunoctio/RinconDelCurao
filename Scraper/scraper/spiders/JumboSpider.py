@@ -2,7 +2,7 @@ import scrapy
 import logging
 import re
 from scraper.items import ProductItem
-import database.db as db
+import api.api as api
 import utils.utils as uts
 
 class JumboSpider(scrapy.Spider):
@@ -40,13 +40,12 @@ class JumboSpider(scrapy.Spider):
       href = product.css('a.shelf-product-title::attr(href)').get()
       url_product = f'https://www.jumbo.cl{href}'
 
-      #TODO Obtenemos el producto desde la base de datos
-      scraper_db = db.get_scraper_by_url(url_product)
-      
+      #TODO Obtenemos el producto
+      productApi = api.is_product_exist(url_product)
       #! Producto fuera de Stock
       if product.css('span.out-of-stock'):
-        if scraper_db != None:
-          db.delete_website(url_product)
+        if productApi:
+          api.remove_website(url_product)
         continue
         
       #TODO Trabajar el producto
@@ -55,35 +54,38 @@ class JumboSpider(scrapy.Spider):
   def parse_product(self, response):
     url_product = response.request.url
     page_hash = uts.get_page_hash(response.body)
-    scraper_db = db.get_scraper_by_url(url_product)
+    productApi = api.is_product_exist(url_product)
 
     print(url_product)
-
-    if(scraper_db == None):
-      #TODO: Obtener los datos del producto y el producto en la DB
-      product_data = self.get_product_data(response)
-      product_db = db.get_product(product_data)
-      #TODO: Verificar si existe
-      if product_db != None:
-        product_data = self.update_product_data(product_data, product_db)
-        scraper_db = db.get_scraper(product_db['_id'], product_data['quantity'])
-        if scraper_db != None:
-          db.add_website('Jumbo', url_product, scraper_db, product_data, page_hash)
-        else:
-          image_path = self.get_product_image(response, product_db['category'])
-          title = uts.create_title(product_db, product_data)
-          db.add_scraper('Jumbo', url_product, title, product_db, product_data, page_hash, image_path)
-      else:
-        #! Producto no existe en base de datos
-        self.products_not_found.append(product_data)
+    if productApi:
+      price, best_price = self.get_prices(response)
+      website = {
+        "name": "Jumbo",
+        "url": url_product,
+        "price": price,
+        "best_price": best_price,
+        "last_hash": page_hash
+      }
+      api.update_website(website)
     else:
-      website = next((w for w in scraper_db['websites'] if w['url'] == url_product), None)
-      if website:
-        if page_hash != website['last_hash']:
-          #TODO: Obtener los nuevos precios
-          website['price'], website['best_price'] = self.get_prices(response)
-          website['last_hash'] = page_hash
-          db.update_scraper(scraper_db)
+      product_data = self.get_product_data(response)
+      product_data['image_url'] = self.get_product_image(response)
+
+      if product_data.is_values_none():
+        self.products_not_found.append(product_data)
+        return
+
+      website = {
+        "name": "Jumbo",
+        "url": url_product,
+        "price": product_data['price'],
+        "best_price": product_data['best_price'],
+        "last_hash": page_hash
+      }
+      
+      new_product = api.add_product(product_data, website)
+      if new_product == None:
+        self.products_not_found.append(product_data)
       
   def get_prices(self, response):
     price = response.css('span.product-sigle-price-wrapper::text').get()
@@ -121,16 +123,16 @@ class JumboSpider(scrapy.Spider):
         content_match = re.search(r'(\d+(?:\.\d+)?)\s(cc|l|ml)', value.lower())
         if content_match:
           unit_match = content_match.group(2)
-          product_data['content_unit'] = int(float(content_match.group(1)) * 1000) if unit_match == 'l' else int(content_match.group(1))
+          product_data['content'] = int(float(content_match.group(1)) * 1000) if unit_match == 'l' else int(content_match.group(1))
         else:
-          product_data['content_unit'] = None
+          product_data['content'] = None
       elif title == 'Envase':
         if 'botella' in value.lower():
-          product_data['packaging'] = 'Botella'
+          product_data['package'] = 'Botella'
         elif 'pack' in value.lower():
-          product_data['packaging'] = None
+          product_data['package'] = None
         else:
-          product_data['packaging'] = value
+          product_data['package'] = value
     
     #TODO: Obtener los datos faltantes desde el titulo
     title = product_data['title'].lower()
@@ -151,44 +153,32 @@ class JumboSpider(scrapy.Spider):
         product_data['alcoholic_grade'] = float(alcoholic_match.group().replace('°', '')) if alcoholic_match else None
       elif 'sin alcohol' in product_data['sub_category'].lower() or 'sin alcohol' in title:
         product_data['alcoholic_grade'] = 0.0
-    if product_data['content_unit'] == None:
+    if product_data['content'] == None:
       content_match = re.search(r'(\d+(?:\.\d+)?)\s(cc|l)', title)
       if content_match:
         unit_match = content_match.group(2)
-        product_data['content_unit'] = int(float(content_match.group(1)) * 1000) if unit_match == 'l' else int(content_match.group(1))
-    if product_data['packaging'] == None:
+        product_data['content'] = int(float(content_match.group(1)) * 1000) if unit_match == 'l' else int(content_match.group(1))
+    if product_data['package'] == None:
       if 'botella' in title:
-        product_data['packaging'] = 'Botella'
+        product_data['package'] = 'Botella'
       elif 'lata' in title:
-        product_data['packaging'] = 'Lata'
+        product_data['package'] = 'Lata'
       elif 'barril' in title:
-        product_data['packaging'] = 'Barril'
+        product_data['package'] = 'Barril'
       elif 'caja' in title:
-        product_data['packaging'] = 'Tetrapack'
+        product_data['package'] = 'Tetrapack'
       
     #TODO: cambiar caja a botella en los destilados
-    if product_data['sub_category'] != None and product_data['packaging'] != None:
+    if product_data['sub_category'] != None and product_data['package'] != None:
       distillates = ['pisco', 'ron', 'tequila', 'vodka', 'whisky', 'gin']
-      if product_data['sub_category'].lower() in distillates and product_data['packaging'].lower() == 'caja':
-        product_data['packaging'] = 'Botella'
-
-    return product_data
-  
-  def update_product_data(self, product_data, product_db):
-    if product_data['quantity'] != None:
-      if product_data['quantity'] > 12 and product_db['category'] == 'Destilados':
-        product_data['quantity'] = 1
-    
-    if product_data['packaging'] != None:
-      if 'caja' in product_data['packaging'].lower() and product_db['category'] == 'Destilados':
-        product_data['packaging'] = 'Botella'
+      if product_data['sub_category'].lower() in distillates and product_data['package'].lower() == 'caja':
+        product_data['package'] = 'Botella'
 
     return product_data
 
-  def get_product_image(self, response, category_product):
+  def get_product_image(self, response):
     img_url = response.css('div.product-image-content img::attr(src)').get()
-    
-    return uts.save_product_image(img_url, category_product)
+    return img_url
   
   def closed(self, reason):
     uts.export_data('Products_Jumbo', self.products_not_found)

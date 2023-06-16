@@ -1,11 +1,14 @@
 node_modules/
 
-uploads/images/beers/*
-uploads/images/distillates/*
-uploads/images/wines/*
-uploads/images/others/*
+uploads/beers/*
+uploads/distillates/*
+uploads/wines/*
+uploads/others/*
 
-!uploads/images/beers/.gitkeep
-!uploads/images/distillates/.gitkeep
-!uploads/images/wines/.gitkeep
-!uploads/images/others/.gitkeep
+!uploads/beers/.gitkeep
+!uploads/distillates/.gitkeep
+!uploads/wines/.gitkeep
+!uploads/others/.gitkeep
+!uploads/others/not_found.webp
+
+.env.local

@@ -1,9 +1,9 @@
 import { FormControl, FormLabel, useColorModeValue } from '@chakra-ui/react'
 import { Select } from 'chakra-react-select'
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { Controller } from 'react-hook-form'
 
-export const MultiSelectCustom = ({ control, label, name, options = [] }) => {
+export const MultiSelectCustom = memo(({ control, label, name, options = [] }) => {
   const [focus, setFocus] = useState(false)
 
   return (
@@ -58,4 +58,4 @@ export const MultiSelectCustom = ({ control, label, name, options = [] }) => {
       )}
     />
   )
-}
+})

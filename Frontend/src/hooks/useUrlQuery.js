@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-export const useQueryURL = () => {
+export const useURLQuery = () => {
   const [queryPaths, setQueryPaths] = useState([])
   const [queryParams, setQueryParams] = useState(null)
 
@@ -40,11 +40,21 @@ export const useQueryURL = () => {
     navigate(`?${params.toString()}`)
   }
 
+  const updateQueryMultiParamsURL = (addParams, deleteParams) => {
+    const params = new URLSearchParams(location.search)
+
+    deleteParams.map(param => params.delete(param))
+    addParams.map(param => params.set(param.label, param.value))
+
+    navigate(`?${params.toString()}`)
+  }
+
   return {
     queryPaths,
     queryParams,
     //* Metodos
     addQueryParamURL,
-    addQueryMultiParamsURL
+    addQueryMultiParamsURL,
+    updateQueryMultiParamsURL
   }
 }
