@@ -12,6 +12,7 @@ const typeDefinitions = gql`
   }
 
   type Query {
+    requestId(requestId: ID!): ID!
     totalProducts(filters: FiltersInput!): Int!
     totalPages(page: Int!, filters: FiltersInput!): Int!
     allProducts(orderBy: OrderByEnum!, page: Int!, filters: FiltersInput!): [ProductList]!
@@ -34,6 +35,7 @@ const resolvers = {
     updateWebsite
   },
   Query: {
+    requestId: (root, { requestId }) => requestId,
     totalProducts,
     totalPages,
     allProducts: getProducts,

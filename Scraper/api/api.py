@@ -43,7 +43,7 @@ def add_product(product_data, website):
       addProduct(data: $data, website: $website) {
         title
         quantity
-        image_path
+        image
       }
     }
   """

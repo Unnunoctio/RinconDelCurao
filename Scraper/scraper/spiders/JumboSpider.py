@@ -70,6 +70,11 @@ class JumboSpider(scrapy.Spider):
     else:
       product_data = self.get_product_data(response)
       product_data['image_url'] = self.get_product_image(response)
+
+      if product_data.is_values_none():
+        self.products_not_found.append(product_data)
+        return
+
       website = {
         "name": "Jumbo",
         "url": url_product,

@@ -30,3 +30,11 @@ class ProductItem(scrapy.Item):
     def _set_defaults(self):
         for field in self.fields:
             self[field] = None
+
+    def is_values_none(self):
+        for field in self.fields:
+            if field == 'sub_category':
+                continue
+            if self[field] is None:
+                return True
+        return False
