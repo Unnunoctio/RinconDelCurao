@@ -1,4 +1,4 @@
-import { Box, Center, Collapse, Drawer, DrawerContent, DrawerOverlay, Flex, HStack, Icon, IconButton, Stack, Text, useColorModeValue, useDisclosure } from '@chakra-ui/react'
+import { Box, Center, Collapse, Drawer, DrawerContent, DrawerOverlay, Flex, HStack, Icon, IconButton, Stack, Text, VStack, useColorModeValue, useDisclosure } from '@chakra-ui/react'
 import { GiShatteredGlass } from 'react-icons/gi'
 import { FiChevronDown, FiMenu, FiX } from 'react-icons/fi'
 import { OptionsButton } from './OptionsButton'
@@ -142,27 +142,29 @@ const NavItem = ({ item, ...rest }) => {
       <Center h={navHeigth} justifyContent='left'>
         <Text fontSize={18} fontWeight='medium' color={useColorModeValue('light.text.main', 'dark.text.main')}>{item.name}</Text>
       </Center>
-      {
-        item.categories.map((category, index) => (
-          <NavLink key={index} to={`${item.url}?category=${category.url}`}>
-            <Text
-              color={useColorModeValue('light.text.secondary', 'dark.text.secondary')}
-              mb={2}
-              _hover={{ textDecoration: 'underline' }}
-            >
-              {category.name}
-            </Text>
-          </NavLink>
-        ))
-      }
-      <NavLink to={`${item.url}`}>
-        <Text
-          color={useColorModeValue('light.text.active', 'dark.text.active')}
-          _hover={{ textDecoration: 'underline' }}
-        >
-          Ver Todos
-        </Text>
-      </NavLink>
+      <VStack spacing={3} alignItems='flex-start'>
+        {
+          item.categories.map((category, index) => (
+            <NavLink key={index} to={`${item.url}?category=${category.url}`}>
+              <Text
+                color={useColorModeValue('light.text.secondary', 'dark.text.secondary')}
+                // mb={2}
+                _hover={{ textDecoration: 'underline' }}
+              >
+                {category.name}
+              </Text>
+            </NavLink>
+          ))
+        }
+        <NavLink to={`${item.url}`}>
+          <Text
+            color={useColorModeValue('light.text.active', 'dark.text.active')}
+            _hover={{ textDecoration: 'underline' }}
+          >
+            Ver Todos
+          </Text>
+        </NavLink>
+      </VStack>
     </Flex>
   )
 }
