@@ -18,7 +18,7 @@ const totalProducts = async (root, args) => {
 const totalPages = async (root, args) => {
   try {
     const { page, filters } = args
-    const productsPerPage = 8
+    const productsPerPage = 12
 
     const totalProducts = await Product.countDocuments({ 'product.category': filters.category })
     let totalPages = Math.ceil(totalProducts / productsPerPage)
@@ -39,7 +39,7 @@ const totalPages = async (root, args) => {
 const getProducts = async (root, args) => {
   try {
     const { orderBy, page, filters } = args
-    const productsPerPage = 8
+    const productsPerPage = 12
 
     const products = await Product.aggregate([
       { $unwind: '$websites' },
