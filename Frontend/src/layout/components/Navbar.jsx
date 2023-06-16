@@ -148,7 +148,6 @@ const NavItem = ({ item, ...rest }) => {
             <NavLink key={index} to={`${item.url}?category=${category.url}`}>
               <Text
                 color={useColorModeValue('light.text.secondary', 'dark.text.secondary')}
-                // mb={2}
                 _hover={{ textDecoration: 'underline' }}
               >
                 {category.name}

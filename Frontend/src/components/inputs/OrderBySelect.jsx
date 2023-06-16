@@ -24,11 +24,11 @@ export const OrderBySelect = memo(() => {
   }
 
   return (
-    <FormControl w='210px' position='relative'>
+    <FormControl w={{ base: '150px', sm: '210px' }} position='relative'>
       <FormLabel
-        fontSize={14}
+        fontSize={{ base: 12, sm: 14 }}
         position='absolute'
-        top='-12px'
+        top={{ base: '-10px', sm: '-12px' }}
         left='8px'
         zIndex={2}
         bg={useColorModeValue('light.background.secondary', 'dark.background.secondary')}
@@ -48,6 +48,7 @@ export const OrderBySelect = memo(() => {
         closeMenuOnSelect
         focusBorderColor={useColorModeValue('light.component.active', 'dark.component.active')}
         blurInputOnSelect
+        size={{ base: 'sm', sm: 'md' }}
         //* Estilos
         chakraStyles={{
           control: (provided, state) => ({
@@ -55,9 +56,15 @@ export const OrderBySelect = memo(() => {
             borderColor: useColorModeValue('light.component.border', 'dark.component.border'),
             boxShadow: 'none !important',
             cursor: 'pointer',
+            // fontSize: '14px',
+            borderRadius: '6px',
             ':hover': {
               borderColor: `${focus ? useColorModeValue('light.component.active', 'dark.component.active') : useColorModeValue('light.component.border', 'dark.component.border')}`
             }
+          }),
+          menuList: (provided, state) => ({
+            ...provided,
+            borderRadius: '6px'
           }),
           option: (provided, state) => ({
             ...provided,
@@ -75,6 +82,7 @@ export const OrderBySelect = memo(() => {
           dropdownIndicator: (provided, { selectProps }) => ({
             ...provided,
             background: 'transparent',
+            // px: 2,
             '> svg': {
               transition: 'transform 100ms linear',
               transform: `rotate(${selectProps.menuIsOpen ? -180 : 0}deg)`
