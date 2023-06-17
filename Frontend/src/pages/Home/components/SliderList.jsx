@@ -1,9 +1,9 @@
 import { Box, Icon, IconButton, useColorModeValue } from '@chakra-ui/react'
-import Slider from 'react-slick'
-import { SliderCard } from '../cards/SliderCard'
 import { BsChevronLeft, BsChevronRight } from 'react-icons/bs'
+import Slider from 'react-slick'
+import { SliderCard } from './SliderCard'
 
-import './sliderHome.css'
+import './sliderList.css'
 
 const CustomNextArrow = (props) => {
   const { onClick } = props
@@ -19,7 +19,9 @@ const CustomNextArrow = (props) => {
       color={useColorModeValue('light.component.main', 'dark.component.main')}
       borderRadius='md'
       justifyContent='flex-end'
-      _hover={{ color: useColorModeValue('light.component.active', 'dark.component.active') }}
+      _hover={{
+        color: useColorModeValue('light.component.active', 'dark.component.active')
+      }}
     />
   )
 }
@@ -38,12 +40,14 @@ const CustomPrevArrow = (props) => {
       color={useColorModeValue('light.component.main', 'dark.component.main')}
       borderRadius='md'
       justifyContent='flex-start'
-      _hover={{ color: useColorModeValue('light.component.active', 'dark.component.active') }}
+      _hover={{
+        color: useColorModeValue('light.component.active', 'dark.component.active')
+      }}
     />
   )
 }
 
-export const SliderHome = ({ cards, variant }) => {
+export const SliderList = ({ cards, variant }) => {
   const settings = {
     dots: false,
     infinite: true,

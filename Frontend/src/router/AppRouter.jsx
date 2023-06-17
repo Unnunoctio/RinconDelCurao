@@ -1,7 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
 import { LayoutApp } from '../layout/LayoutApp'
 import { Error404Page } from '../pages'
-import { HomePage } from '../pages/HomePage'
+import { HomePage } from '../pages/Home/HomePage'
 import { ProductDetailsPage } from '../pages/ProductDetailsPage'
 import { ProductsPage } from '../pages/ProductsPage'
 import { linkItems } from '../assets/linkItems'
