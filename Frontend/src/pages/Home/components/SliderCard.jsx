@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { HStack, Image, Text, VStack, useColorModeValue } from '@chakra-ui/react'
-import { CardLink } from '../../../components/CardLink'
+import { CardLink } from '../../../components'
 import { OfferRating, StarRating } from './rating'
 import { OFFER_RATING, STAR_RATING } from '../assets/ratingVariant'
 

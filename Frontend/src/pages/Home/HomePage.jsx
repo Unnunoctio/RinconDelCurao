@@ -3,7 +3,7 @@ import { VStack } from '@chakra-ui/react'
 import { useHomeStore, useProductStore, useProductsStore } from '../../hooks'
 import { LayoutPage } from '../../layout'
 import { SliderBox, SliderList } from './components'
-import { Loading } from '../../components/Loading'
+import { Loading } from '../../components'
 import { OFFER_RATING, STAR_RATING } from './assets/ratingVariant'
 
 import { ratingCards } from './assets/ratingCards'
