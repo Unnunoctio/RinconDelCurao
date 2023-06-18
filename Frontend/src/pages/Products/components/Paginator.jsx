@@ -1,10 +1,8 @@
-import { Box, Button, Icon, IconButton, useColorModeValue } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
-
-import Slider from 'react-slick'
+import { Box, Button, Icon, IconButton, useColorModeValue } from '@chakra-ui/react'
 import { BsChevronLeft, BsChevronRight } from 'react-icons/bs'
-
-import { useProductsStore, useURLQuery } from '../../hooks'
+import Slider from 'react-slick'
+import { useProductsStore, useURLQuery } from '@hooks'
 
 const CustomPrevArrow = (props) => {
   const { onClick, currentSlide } = props
@@ -47,7 +45,7 @@ const CustomNextArrow = (props) => {
   )
 }
 
-export const PaginatorCustom = () => {
+export const Paginator = () => {
   const [pages, setPages] = useState([])
 
   const { totalPages } = useProductsStore()
@@ -60,7 +58,6 @@ export const PaginatorCustom = () => {
     dots: false,
     infinity: false,
     speed: 300,
-    // variableWidth: true,
     slidesToShow: (totalPages >= 5) ? 5 : totalPages,
     slidesToScroll: 5,
 

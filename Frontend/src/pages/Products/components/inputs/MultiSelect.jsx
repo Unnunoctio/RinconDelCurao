@@ -1,9 +1,9 @@
-import { FormControl, FormLabel, useColorModeValue } from '@chakra-ui/react'
-import { Select } from 'chakra-react-select'
 import { memo, useState } from 'react'
+import { FormControl, FormLabel, useColorModeValue } from '@chakra-ui/react'
 import { Controller } from 'react-hook-form'
+import { Select } from 'chakra-react-select'
 
-export const MultiSelectCustom = memo(({ control, label, name, options = [] }) => {
+export const MultiSelect = memo(({ control, label, name, options = [] }) => {
   const [focus, setFocus] = useState(false)
 
   return (
@@ -24,25 +24,25 @@ export const MultiSelectCustom = memo(({ control, label, name, options = [] }) =
             options={options}
             placeholder=''
             closeMenuOnSelect={false}
-            focusBorderColor='yellow.500'
+            focusBorderColor={useColorModeValue('light.component.active', 'dark.component.active')}
             chakraStyles={{
               control: (provided, state) => ({
                 ...provided,
-                borderColor: 'gray.500',
+                borderColor: useColorModeValue('light.component.border', 'dark.component.border'),
                 boxShadow: 'none !important',
                 cursor: 'pointer',
                 ':hover': {
-                  borderColor: `${focus ? 'yellow.500' : 'gray.500'}`
+                  borderColor: `${focus ? useColorModeValue('light.component.active', 'dark.component.active') : useColorModeValue('light.component.border', 'dark.component.border')}`
                 }
               }),
               multiValue: (provided, state) => ({
                 ...provided,
-                background: 'rgba(214,158,46,0.6)',
-                color: useColorModeValue('gray.800', 'white')
+                background: useColorModeValue('light.background.active', 'dark.background.active'),
+                color: useColorModeValue('light.text.main', 'dark.text.main')
               }),
               indicatorSeparator: (provided, state) => ({
                 ...provided,
-                borderColor: useColorModeValue('gray.400', 'gray.600')
+                borderColor: useColorModeValue('light.component.main', 'dark.component.main')
               }),
               dropdownIndicator: (provided, { selectProps }) => ({
                 ...provided,

@@ -1,7 +1,7 @@
 import { Card, CardBody, useColorModeValue } from '@chakra-ui/react'
 import { NavLink } from 'react-router-dom'
 
-export const CardLink = ({ herf, children, ...rest }) => {
+export const CardLink = ({ href, children, ...rest }) => {
   return (
     <Card
       className='card-link'
@@ -17,7 +17,7 @@ export const CardLink = ({ herf, children, ...rest }) => {
       }}
       {...rest}
     >
-      <NavLink to={herf}>
+      <NavLink to={href}>
         <CardBody h='full' p={2} display='flex' flexDir='column'>
           {children}
         </CardBody>

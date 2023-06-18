@@ -1,8 +1,7 @@
-
 import { Box, Flex, FormLabel, RangeSlider, RangeSliderFilledTrack, RangeSliderThumb, RangeSliderTrack, Text, useColorModeValue } from '@chakra-ui/react'
 import { Controller } from 'react-hook-form'
 
-export const SliderCustom = ({ control, label, name, minValue, maxValue, step = 1, startSymbol = undefined, endSymbol = undefined, format = (value) => { return value } }) => {
+export const Slider = ({ control, label, name, minValue, maxValue, step = 1, startSymbol = undefined, endSymbol = undefined, format = (value) => { return value } }) => {
   return (
     <Controller
       name={name}
@@ -17,8 +16,8 @@ export const SliderCustom = ({ control, label, name, minValue, maxValue, step = 
           </Flex>
           <Flex justifyContent='center'>
             <RangeSlider w='95%' defaultValue={[minValue, maxValue]} min={minValue} max={maxValue} step={step} {...field}>
-              <RangeSliderTrack bg={useColorModeValue('gray.300', 'gray.700')}>
-                <RangeSliderFilledTrack bg='yellow.500' />
+              <RangeSliderTrack bg={useColorModeValue('light.divider.main', 'dark.divider.main')}>
+                <RangeSliderFilledTrack bg={useColorModeValue('light.component.active', 'dark.component.active')} />
               </RangeSliderTrack>
               <RangeSliderThumb boxSize={3.5} index={0} zIndex={0} />
               <RangeSliderThumb boxSize={3.5} index={1} zIndex={0} />

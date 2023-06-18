@@ -1,8 +1,8 @@
+import { memo, useState } from 'react'
 import { FormControl, FormLabel, useColorModeValue } from '@chakra-ui/react'
 import { Select } from 'chakra-react-select'
-import { memo, useState } from 'react'
-import { orderByItems } from '../../assets'
-import { useProductsStore, useURLQuery } from '../../hooks'
+import { useProductsStore, useURLQuery } from '@hooks'
+import { orderByItems } from '@assets'
 
 export const OrderBySelect = memo(() => {
   const [focus, setFocus] = useState(false)
@@ -56,7 +56,6 @@ export const OrderBySelect = memo(() => {
             borderColor: useColorModeValue('light.component.border', 'dark.component.border'),
             boxShadow: 'none !important',
             cursor: 'pointer',
-            // fontSize: '14px',
             borderRadius: '6px',
             ':hover': {
               borderColor: `${focus ? useColorModeValue('light.component.active', 'dark.component.active') : useColorModeValue('light.component.border', 'dark.component.border')}`
@@ -76,13 +75,11 @@ export const OrderBySelect = memo(() => {
           }),
           indicatorSeparator: (provided, state) => ({
             ...provided,
-            // borderColor: useColorModeValue('gray.400', 'gray.600')
             borderColor: useColorModeValue('light.component.main', 'dark.component.main')
           }),
           dropdownIndicator: (provided, { selectProps }) => ({
             ...provided,
             background: 'transparent',
-            // px: 2,
             '> svg': {
               transition: 'transform 100ms linear',
               transform: `rotate(${selectProps.menuIsOpen ? -180 : 0}deg)`

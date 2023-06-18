@@ -1,10 +1,10 @@
 import { Route, Routes } from 'react-router-dom'
-import { LayoutApp } from '../layout/LayoutApp'
-import { Error404Page } from '../pages'
-import { HomePage } from '../pages/Home/HomePage'
-import { ProductDetailsPage } from '../pages/ProductDetails/ProductDetailsPage'
-import { ProductsPage } from '../pages/ProductsPage'
-import { linkItems } from '../assets/linkItems'
+import { LayoutApp } from '@layout'
+import { Error404Page } from '@pages'
+import { HomePage } from '@pages/Home/HomePage'
+import { ProductDetailsPage } from '@pages/ProductDetails/ProductDetailsPage'
+import { ProductsPage } from '@pages/Products/ProductsPage'
+import { linkItems } from '@assets'
 
 const categoryURls = linkItems.map(obj => obj.url.replace('/', ''))
 
