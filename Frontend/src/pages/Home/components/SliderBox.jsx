@@ -1,5 +1,4 @@
 import { Box, Heading, useColorModeValue } from '@chakra-ui/react'
-import React from 'react'
 
 export const SliderBox = ({ title, children, ...rest }) => {
   return (

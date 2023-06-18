@@ -1,5 +1,5 @@
 import { Box, Heading, SimpleGrid, useColorModeValue } from '@chakra-ui/react'
-import { useDimensions } from '../../../../hooks'
+import { useDimensions } from '@hooks'
 import { FeatureItem } from './FeatureItem'
 import { AlcoholicIcon, BitternessIcon, BrandIcon, CategoryIcon, ContentIcon, PackagingIcon, PlaceIcon, QuantityIcon, StrainIcon, VineyardIcon, WheatIcon } from './FeatureSvg'
 

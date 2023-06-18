@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Box, Flex, Heading, Image, VStack, useColorModeValue } from '@chakra-ui/react'
-import { useProductStore, useProductsStore, useURLQuery } from '../../hooks'
-import { LayoutPage } from '../../layout/LayoutPage'
-import { Error404Page } from '../Error404Page'
-import { HeaderPage, Loading } from '../../components'
-import { linkItems } from '../../assets'
+import { useProductStore, useProductsStore, useURLQuery } from '@hooks'
+import { LayoutPage } from '@layout'
+import { Error404Page } from '@pages'
+import { HeaderPage, Loading } from '@components'
+import { linkItems } from '@assets'
 import { WebsiteList } from './components/website'
 import { FeatureList } from './components/feature'
 
@@ -28,7 +28,7 @@ export const ProductDetailsPage = () => {
   }, [queryPaths])
 
   useEffect(() => {
-    if (product !== null) {
+    if (Object.keys(product).length > 0) {
       const category = linkItems.find(item => item.name === product.product?.category)
       setBreadcrumbLinks([
         { name: 'Home', url: '/' },

@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { gql, useLazyQuery } from '@apollo/client'
 import { shallow } from 'zustand/shallow'
-import { ProductStore } from '../store'
+import { ProductStore } from '@store'
 
 const GET_PRODUCT = gql`
   query GetProduct($productId: ID!, $title: String!) {

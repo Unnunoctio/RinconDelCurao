@@ -1,11 +1,11 @@
 import { useEffect } from 'react'
 import { VStack } from '@chakra-ui/react'
-import { useHomeStore, useProductStore, useProductsStore } from '../../hooks'
-import { LayoutPage } from '../../layout'
+import { useHomeStore, useProductStore, useProductsStore } from '@hooks'
+import { LayoutPage } from '@layout'
+import { Loading } from '@components'
 import { SliderBox, SliderList } from './components'
-import { Loading } from '../../components'
-import { OFFER_RATING, STAR_RATING } from './assets/ratingVariant'
 
+import { OFFER_RATING, STAR_RATING } from './assets/ratingVariant'
 import { ratingCards } from './assets/ratingCards'
 
 export const HomePage = () => {
