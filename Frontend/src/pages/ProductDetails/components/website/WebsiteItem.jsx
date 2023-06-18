@@ -5,8 +5,8 @@ export const WebsiteItem = ({ website }) => {
     <a href={website.url} target='_blank' rel='noopener noreferrer'>
       <HStack
         minW='264px' w='full'
-        gap={{ base: 2, sm: 5 }}
-        py={2} px={{ base: 2, sm: 4 }}
+        gap={{ base: 0, sm: 5 }}
+        py={2} px={4}
         background={useColorModeValue('light.background.main', 'dark.background.main')}
         justifyContent='center'
         boxShadow='md'
@@ -18,17 +18,17 @@ export const WebsiteItem = ({ website }) => {
           borderColor: useColorModeValue('light.divider.active', 'dark.divider.active')
         }}
       >
-        <Flex minW={12} justifyContent='center'>
+        <Flex minW={12} justifyContent='center' display={{ base: 'none', sm: 'flex' }}>
           <Icon boxSize={{ base: 12, sm: 14 }} />
         </Flex>
-        <Flex flexDir='column' gap={2}>
+        <Flex flexDir='column' gap={2} w={{ base: 'full', sm: 'auto' }}>
           <Heading
             fontSize={20} fontWeight='medium'
             color={useColorModeValue('light.text.main', 'dark.text.main')}
           >
             {website.name}
           </Heading>
-          <HStack gap={{ base: 0, sm: 4 }}>
+          <HStack gap={4}>
             <PriceItem title='Precio Oferta' value={website.best_price} color={useColorModeValue('light.text.active', 'dark.text.active')} />
             <PriceItem title='Precio Normal' value={website.price} color={useColorModeValue('light.text.main', 'dark.text.main')} />
           </HStack>
@@ -42,7 +42,7 @@ const PriceItem = ({ title, value, ...rest }) => {
   return (
     <Flex flexDir='column' alignItems='flex-end'>
       <Text
-        fontSize={{ base: 14, sm: 16 }}
+        fontSize={16}
         color={useColorModeValue('light.text.secondary', 'dark.text.secondary')}
       >
         {title}
@@ -51,7 +51,7 @@ const PriceItem = ({ title, value, ...rest }) => {
         fontSize={18} fontWeight='medium'
         {...rest}
       >
-        {value}
+        ${value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
       </Text>
     </Flex>
   )
