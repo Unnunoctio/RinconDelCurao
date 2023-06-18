@@ -1,11 +1,12 @@
-import { Flex, HStack, Heading, Icon, Text, useColorModeValue } from '@chakra-ui/react'
+import { Flex, HStack, Heading, Text, useColorModeValue } from '@chakra-ui/react'
+import { WebsiteSvg } from './WebsiteSvg'
 
 export const WebsiteItem = ({ website }) => {
   return (
     <a href={website.url} target='_blank' rel='noopener noreferrer'>
       <HStack
         minW='264px' w='full'
-        gap={{ base: 2, sm: 5 }}
+        gap={{ base: 0, sm: 5 }}
         py={2} px={{ base: 2, sm: 4 }}
         background={useColorModeValue('light.background.main', 'dark.background.main')}
         justifyContent='center'
@@ -19,16 +20,16 @@ export const WebsiteItem = ({ website }) => {
         }}
       >
         <Flex minW={12} justifyContent='center'>
-          <Icon boxSize={{ base: 12, sm: 14 }} />
+          <WebsiteSvg websiteName={website.name} boxSize={{ base: 12, sm: 14 }} />
         </Flex>
-        <Flex flexDir='column' gap={2}>
+        <Flex flexDir='column' gap={{ base: 0, sm: 2 }} w={{ base: 'full', sm: 'auto' }}>
           <Heading
             fontSize={20} fontWeight='medium'
             color={useColorModeValue('light.text.main', 'dark.text.main')}
           >
             {website.name}
           </Heading>
-          <HStack gap={{ base: 0, sm: 4 }}>
+          <HStack gap={{ base: 0, sm: 4 }} justifyContent='space-between'>
             <PriceItem title='Precio Oferta' value={website.best_price} color={useColorModeValue('light.text.active', 'dark.text.active')} />
             <PriceItem title='Precio Normal' value={website.price} color={useColorModeValue('light.text.main', 'dark.text.main')} />
           </HStack>
@@ -51,7 +52,7 @@ const PriceItem = ({ title, value, ...rest }) => {
         fontSize={18} fontWeight='medium'
         {...rest}
       >
-        {value}
+        ${value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
       </Text>
     </Flex>
   )
