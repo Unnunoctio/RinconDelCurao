@@ -4,7 +4,7 @@ import { FiChevronDown, FiMenu, FiX } from 'react-icons/fi'
 import { OptionsButton } from './OptionsButton'
 import { NavLink } from 'react-router-dom'
 
-import { linkItems } from '../../assets/linkItems'
+import { linkItems } from '@assets'
 
 const navHeigth = '72px'
 

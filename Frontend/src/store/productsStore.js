@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { orderByItems } from '../assets'
+import { orderByItems } from '@assets'
 
 export const ProductsStore = create((set, get) => ({
   products: [],

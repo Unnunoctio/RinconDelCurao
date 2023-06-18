@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { gql, useLazyQuery } from '@apollo/client'
 import { shallow } from 'zustand/shallow'
-import { ProductsStore } from '../store'
+import { ProductsStore } from '@store'
 
 const GET_ALL_PRODUCTS = gql`
   query GetAllProducts($requestId: ID!, $filters: FiltersInput!, $page: Int!, $orderBy: OrderByEnum!) {

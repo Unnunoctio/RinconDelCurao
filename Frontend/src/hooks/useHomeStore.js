@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { gql, useLazyQuery } from '@apollo/client'
 import { shallow } from 'zustand/shallow'
-import { HomeStore } from '../store'
+import { HomeStore } from '@store'
 
 const GET_BEST_DISCOUNT_PRODUCTS = gql`
   query GetBestDiscountProducts {
