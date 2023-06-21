@@ -3,6 +3,16 @@ import { gql } from 'apollo-server'
 const Inputs = gql`
   input FiltersInput {
     category: String!
+    sub_category: [String]
+    brand: String
+    pack_unit: PackUnit
+    quantity: Int
+    package: String
+
+    grade_min: Float
+    grade_max: Float
+    price_min: Int
+    price_max: Int
   }
 
   input WebsiteInput {

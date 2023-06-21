@@ -8,6 +8,11 @@ const Enums = gql`
     NAME_ASC
     NAME_DESC
   }
+
+  enum PackUnit {
+    PACK
+    UNIT
+  }
 `
 
 export {

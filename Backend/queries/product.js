@@ -1,12 +1,23 @@
 import { ForbiddenError, UserInputError } from 'apollo-server'
-import Product from '../models/Product.js'
 import { GraphQLError } from 'graphql'
+import Product from '../models/Product.js'
 
 // TODO: Frontend Endpoints
 const totalProducts = async (root, args) => {
   try {
     const { filters } = args
-    const total = await Product.countDocuments({ 'product.category': filters.category })
+
+    const matchStage = {
+      'product.category': filters.category
+    }
+    if (filters.sub_category) {
+      matchStage['product.sub_category'] = { $in: filters.sub_category }
+    }
+    if (filters.grade_min && filters.grade_max) {
+      matchStage['product.alcoholic_grade'] = { $gte: filters.grade_min, $lte: filters.grade_max }
+    }
+
+    const total = await Product.countDocuments(matchStage)
     return total
   } catch (error) {
     throw new UserInputError(error.message, {
@@ -20,7 +31,17 @@ const totalPages = async (root, args) => {
     const { page, filters } = args
     const productsPerPage = 12
 
-    const totalProducts = await Product.countDocuments({ 'product.category': filters.category })
+    const matchStage = {
+      'product.category': filters.category
+    }
+    if (filters.sub_category) {
+      matchStage['product.sub_category'] = { $in: filters.sub_category }
+    }
+    if (filters.grade_min && filters.grade_max) {
+      matchStage['product.alcoholic_grade'] = { $gte: filters.grade_min, $lte: filters.grade_max }
+    }
+
+    const totalProducts = await Product.countDocuments(matchStage)
     let totalPages = Math.ceil(totalProducts / productsPerPage)
     if (totalPages === 0) totalPages = 1
 
@@ -36,14 +57,89 @@ const totalPages = async (root, args) => {
   }
 }
 
+// Jerarquia
+// Categoria: obligatorio
+// Subcategoria -> Marcas -> content -> pack-unit -> quantity -> package -> rangeGrade -> rangePrice
+// Si viene en los filtros se filtra y se obtiene del anterior en la lista
+// Si no viene se obtiene de lo que queda
+// El rangeGrade y rangePrice se obtienen siempre sus min y max antes de filtrar por ellos
+
+const getFilterLimits = async (root, { filters }) => {
+  const { category } = filters
+  console.log(filters)
+
+  // TODO: Obligatorio
+  let products = await Product.aggregate([
+    { $unwind: '$websites' },
+    { $match: { 'product.category': category } },
+    { $sort: { 'websites.best_price': 1 } },
+    {
+      $group: {
+        _id: '$_id',
+        websites: { $push: '$websites' },
+        otherFields: { $first: '$$ROOT' }
+      }
+    },
+    { $replaceRoot: { newRoot: { $mergeObjects: ['$otherFields', { websites: '$websites' }] } } }
+  ])
+
+  const filterOptions = {}
+  // TODO: Si viene en los filtros
+  //* SubCategory = [value, value, value, ...]
+  if (filters.sub_category) {
+    filterOptions.sub_category = products.reduce((acc, product) => {
+      acc[product.product.sub_category] = (acc[product.product.sub_category] || 0) + 1
+      return acc
+    }, {})
+
+    products = products.filter(product => filters.sub_category.includes(product.product.sub_category))
+  }
+
+  // //* RangeGrade = grade_min, grade_max
+  if (filters.grade_min && filters.grade_max) {
+    const alcoholicGrades = products.map(product => product.product.alcoholic_grade)
+    filterOptions.grade_min = Math.min(...alcoholicGrades)
+    filterOptions.grade_max = Math.max(...alcoholicGrades)
+
+    products = products.filter(product => product.product.alcoholic_grade >= filters.grade_min && product.product.alcoholic_grade <= filters.grade_max)
+  }
+
+  // TODO: Si NO vinen en los filtros
+  //* SubCategory
+  if (!filters.sub_category) {
+    filterOptions.sub_category = products.reduce((acc, product) => {
+      acc[product.product.sub_category] = (acc[product.product.sub_category] || 0) + 1
+      return acc
+    }, {})
+  }
+  //* RangeGrade, el || es en caso de que solo se envie 1
+  if (!filters.grade_min || !filters.grade_max) {
+    const alcoholicGrades = products.map(product => product.product.alcoholic_grade)
+    filterOptions.grade_min = Math.min(...alcoholicGrades)
+    filterOptions.grade_max = Math.max(...alcoholicGrades)
+  }
+
+  return filterOptions
+}
+
 const getProducts = async (root, args) => {
   try {
     const { orderBy, page, filters } = args
     const productsPerPage = 12
 
+    const matchStage = {
+      'product.category': filters.category
+    }
+    if (filters.sub_category) {
+      matchStage['product.sub_category'] = { $in: filters.sub_category }
+    }
+    if (filters.grade_min && filters.grade_max) {
+      matchStage['product.alcoholic_grade'] = { $gte: filters.grade_min, $lte: filters.grade_max }
+    }
+
     const products = await Product.aggregate([
       { $unwind: '$websites' },
-      { $match: { 'product.category': filters.category } },
+      { $match: matchStage },
       { $sort: { 'websites.best_price': 1 } },
       {
         $group: {
@@ -198,6 +294,7 @@ const isProductExist = async (root, args, context) => {
 export {
   totalProducts,
   totalPages,
+  getFilterLimits,
   getProducts,
   getBestDiscountProducts,
   getProduct,
