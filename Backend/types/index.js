@@ -1,4 +1,5 @@
 export * from './Enums.js'
+export * from './Filter.js'
 export * from './Inputs.js'
 export * from './Product.js'
 export * from './ProductDiscount.js'

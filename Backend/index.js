@@ -1,7 +1,7 @@
 import { ApolloServer, gql } from 'apollo-server'
 import './database/config.js'
-import { Enums, Inputs, Product, ProductDiscount, ProductList, typeProduct, typeProductDiscount, typeProductList } from './types/index.js'
-import { isProductExist, getBestDiscountProducts, getProduct, getProducts, totalPages, totalProducts } from './queries/product.js'
+import { Enums, Filter, Inputs, Product, ProductDiscount, ProductList, typeFilter, typeProduct, typeProductDiscount, typeProductList } from './types/index.js'
+import { isProductExist, getBestDiscountProducts, getProduct, getProducts, totalPages, totalProducts, getFilterLimits } from './queries/product.js'
 import { addProduct, removeWebsite, updateWebsite } from './mutations/product.js'
 
 const typeDefinitions = gql`
@@ -15,6 +15,7 @@ const typeDefinitions = gql`
     requestId(requestId: ID!): ID!
     totalProducts(filters: FiltersInput!): Int!
     totalPages(page: Int!, filters: FiltersInput!): Int!
+    filterLimits(filters: FiltersInput!): Filter!
     allProducts(orderBy: OrderByEnum!, page: Int!, filters: FiltersInput!): [ProductList]!
     bestDiscountProducts: [ProductDiscount]!
     product(id: ID!, title: String!): Product
@@ -23,6 +24,7 @@ const typeDefinitions = gql`
   }
 `
 typeDefinitions.definitions.push(Enums)
+typeDefinitions.definitions.push(typeFilter)
 typeDefinitions.definitions.push(Inputs)
 typeDefinitions.definitions.push(typeProduct)
 typeDefinitions.definitions.push(typeProductDiscount)
@@ -38,6 +40,7 @@ const resolvers = {
     requestId: (root, { requestId }) => requestId,
     totalProducts,
     totalPages,
+    filterLimits: getFilterLimits,
     allProducts: getProducts,
     bestDiscountProducts: getBestDiscountProducts,
     product: getProduct,
@@ -46,7 +49,8 @@ const resolvers = {
   },
   ProductList,
   ProductDiscount,
-  Product
+  Product,
+  Filter
 }
 
 const server = new ApolloServer({
