@@ -109,6 +109,15 @@ const getFilterLimits = async (root, { filters }) => {
 
     products = products.filter(product => filters.brand.includes(product.product.brand))
   }
+  //* Quantity
+  if (filters.quantity) {
+    filterOptions.quantity = products.reduce((acc, product) => {
+      acc[product.quantity] = (acc[product.quantity] || 0) + 1
+      return acc
+    }, {})
+
+    products = products.filter(product => filters.quantity.includes(product.product.quantity))
+  }
   //* Package
   if (filters.package) {
     filterOptions.package = products.reduce((acc, product) => {
@@ -147,6 +156,13 @@ const getFilterLimits = async (root, { filters }) => {
   if (!filters.brand) {
     filterOptions.brand = products.reduce((acc, product) => {
       acc[product.product.brand] = (acc[product.product.brand] || 0) + 1
+      return acc
+    }, {})
+  }
+  //* Quantity
+  if (!filters.quantity) {
+    filterOptions.quantity = products.reduce((acc, product) => {
+      acc[product.quantity] = (acc[product.quantity] || 0) + 1
       return acc
     }, {})
   }

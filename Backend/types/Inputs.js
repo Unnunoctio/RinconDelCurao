@@ -7,7 +7,7 @@ const Inputs = gql`
     brand: [String]
     content: Int
     pack_unit: PackUnit
-    quantity: Int
+    quantity: [Int]
     package: [String]
 
     grade_min: Float
