@@ -4,7 +4,7 @@ import { NavLink } from 'react-router-dom'
 export const BreadcrumbPage = ({ links = [] }) => {
   if (links.length === 0) return null
   return (
-    <Breadcrumb spacing={2} overflow='hidden'>
+    <Breadcrumb spacing={2}>
       {
         links.slice(0, -1).map((link, index) => (
           <BreadcrumbItem
@@ -19,10 +19,12 @@ export const BreadcrumbPage = ({ links = [] }) => {
           </BreadcrumbItem>
         ))
       }
-      <BreadcrumbItem>
+      <BreadcrumbItem overflow='hidden'>
         <Text
           userSelect='none'
           whiteSpace='nowrap'
+          overflow='hidden'
+          textOverflow='ellipsis'
           color={useColorModeValue('light.text.active', 'dark.text.active')}
         >
           {links[links.length - 1]?.name}
