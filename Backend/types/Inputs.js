@@ -6,7 +6,6 @@ const Inputs = gql`
     sub_category: [String]
     brand: [String]
     content: [Int]
-    pack_unit: PackUnit
     quantity: [Int]
     package: [String]
 
