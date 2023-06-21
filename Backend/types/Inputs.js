@@ -4,10 +4,11 @@ const Inputs = gql`
   input FiltersInput {
     category: String!
     sub_category: [String]
-    brand: String
+    brand: [String]
+    content: Int
     pack_unit: PackUnit
     quantity: Int
-    package: String
+    package: [String]
 
     grade_min: Float
     grade_max: Float
