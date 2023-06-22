@@ -32,6 +32,13 @@ export const useURLQuery = () => {
     navigate(`?${params.toString()}`)
   }
 
+  const deleteQueryParamURL = (label) => {
+    const params = new URLSearchParams(location.search)
+    params.delete(label)
+
+    navigate(`?${params.toString()}`)
+  }
+
   const addQueryMultiParamsURL = (multiParams) => {
     const params = new URLSearchParams(location.search)
 
@@ -54,6 +61,7 @@ export const useURLQuery = () => {
     queryParams,
     //* Metodos
     addQueryParamURL,
+    deleteQueryParamURL,
     addQueryMultiParamsURL,
     updateQueryMultiParamsURL
   }

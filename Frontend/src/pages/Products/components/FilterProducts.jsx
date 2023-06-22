@@ -3,13 +3,13 @@ import { useForm, useWatch } from 'react-hook-form'
 import { Box, Button, Divider, Flex, Text, VStack, useColorModeValue } from '@chakra-ui/react'
 import { useProductsStore, useURLQuery } from '@hooks'
 import { linkItems, orderByItems } from '@assets'
-import { MultiSelect } from './inputs'
+import { MultiSelect, Slider } from './inputs'
 import { sameStrings } from '../helpers'
 
 export const FilterProducts = () => {
-  const { queryPaths, queryParams, updateQueryMultiParamsURL } = useURLQuery()
+  const { queryPaths, queryParams, updateQueryMultiParamsURL, addQueryParamURL, deleteQueryParamURL } = useURLQuery()
   const {
-    totalProducts, filterActives, filterLimits, currentPage, orderBy,
+    totalProducts, filterActives, filterLimits, currentPage, orderBy, totalPages,
     handleFilters, handleCurrentPage, handleOrderBy, resetProducts
   } = useProductsStore()
 
@@ -21,12 +21,13 @@ export const FilterProducts = () => {
       brand: [],
       rangeGrade: [0.0, 0.0],
       content: [],
-      pack_unit: [],
+      // pack_unit: [],
       quantity: [],
       package: []
     }
   })
   const categoryForm = useWatch({ control, name: 'category' })
+  // const rangeGradeForm = useWatch({ control, name: 'rangeGrade' })
 
   // TODO: Ejecución via Pathname (se ejecuta la primera vez que se renderiza el componente)
   useEffect(() => {
@@ -42,8 +43,7 @@ export const FilterProducts = () => {
 
   // TODO: Ejecución via QueryParams (Se ejecuta si existen variables en la url)
   useEffect(() => {
-    // if (queryParams && Object.entries(filterLimits).length > 0) {
-    if (queryParams) {
+    if (queryParams && Object.entries(filterLimits).length > 0) {
       let changesURl = false
 
       const pageParam = parseInt(queryParams.page)
@@ -54,14 +54,36 @@ export const FilterProducts = () => {
 
       const subCategoryByParam = queryParams.category
       if (!!subCategoryByParam && !sameStrings(filterActives.subCategory, subCategoryByParam.split(','))) {
-        setValue('subCategory', filterLimits.subCategory?.filter((x) => { return subCategoryByParam.split(',').includes(x.value) }))
+        const subCategoryFilter = filterLimits.sub_category?.filter((x) => { return subCategoryByParam.split(',').includes(x.value) })
+        if (subCategoryFilter.length > 0) {
+          setValue('subCategory', subCategoryFilter)
+          addQueryParamURL('category', subCategoryFilter.map(obj => obj.value).join(','))
+        } else {
+          setValue('subCategory', [])
+          deleteQueryParamURL('category')
+        }
         changesURl = true
       }
 
       if (changesURl) {
         handleFilters(getValues())
-        if (!!pageParam && pageParam !== currentPage) handleCurrentPage(pageParam)
-        if (!!orderByParam && orderByParam !== orderBy) handleOrderBy(orderByItems.find(item => item.value === orderByParam))
+        if (!!pageParam && pageParam !== currentPage) {
+          if (pageParam <= totalPages && pageParam > 0) {
+            handleCurrentPage(pageParam)
+          } else {
+            deleteQueryParamURL('page')
+            handleCurrentPage(1) // por defecto
+          }
+        }
+        if (!!orderByParam && orderByParam !== orderBy) {
+          const orderByFilter = orderByItems.find(item => item.value === orderByParam)
+          if (orderByFilter) {
+            handleOrderBy(orderByFilter)
+          } else {
+            deleteQueryParamURL('orderBy')
+            handleOrderBy(orderByItems[0]) // por defecto
+          }
+        }
         console.log('Ejecucion: Productos via QueryParams')
       }
     }
@@ -79,6 +101,15 @@ export const FilterProducts = () => {
       console.log('Ejecucion: Productos via sin QueryParams')
     }
   }, [queryParams])
+
+  useEffect(() => {
+    if (!filterActives.rangeGrade) {
+      setValue('rangeGrade', filterLimits.range_grade)
+    }
+    if (!filterActives.rangePrice) {
+      setValue('rangePrice', filterLimits.range_price)
+    }
+  }, [filterLimits])
 
   const onSubmit = async (data) => {
     handleFilters(data)
@@ -120,14 +151,13 @@ export const FilterProducts = () => {
       <Divider borderColor={useColorModeValue('light.component.main', 'dark.component.main')} />
       <form onSubmit={handleSubmit(onSubmit)}>
         <VStack alignItems='stretch' gap={2} my={2}>
-          {/* <Slider control={control} label='Precio' name='rangePrice' minValue={0} maxValue={30000} startSymbol='$' format={(value) => { return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') }} /> */}
-          <MultiSelect control={control} label='Categoria' name='subCategory' options={filterLimits.subCategory} />
-          {/* <MultiSelectCustom control={control} label='Marca' name='brand' options={marcaData} />
-          <SliderCustom control={control} label='Graduación' name='rangeGrade' step={0.1} minValue={0.0} maxValue={10.0} endSymbol='°' />
-          <MultiSelectCustom control={control} label='Contenido' name='content' options={contenidoData} />
-          <MultiSelectCustom control={control} label='Pack-Unitario' name='pack_unit' options={packUnitarioData} />
-          <MultiSelectCustom control={control} label='Cantidad' name='quantity' options={cantidadData} />
-          <MultiSelectCustom control={control} label='Envase' name='package' options={envaseData} /> */}
+          <Slider control={control} label='Precio' name='rangePrice' minValue={filterLimits.range_price?.[0]} maxValue={filterLimits.range_price?.[1]} startSymbol='$' format={(value) => { return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') }} />
+          <MultiSelect control={control} label='Categoria' name='subCategory' options={filterLimits.sub_category} />
+          <MultiSelect control={control} label='Marca' name='brand' options={filterLimits.brand} />
+          <Slider control={control} label='Graduación' name='rangeGrade' step={0.1} minValue={filterLimits.range_grade?.[0]} maxValue={filterLimits.range_grade?.[1]} endSymbol='°' />
+          <MultiSelect control={control} label='Contenido' name='content' options={filterLimits.content} />
+          <MultiSelect control={control} label='Cantidad' name='quantity' options={filterLimits.quantity} />
+          <MultiSelect control={control} label='Envase' name='package' options={filterLimits.package} />
 
           <Flex justifyContent='flex-end'>
             <Button

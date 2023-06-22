@@ -66,10 +66,8 @@ const totalPages = async (root, args) => {
 // Si viene en los filtros se filtra y se obtiene del anterior en la lista
 // Si no viene se obtiene de lo que queda
 // El rangeGrade y rangePrice se obtienen siempre sus min y max antes de filtrar por ellos
-
 const getFilterLimits = async (root, { filters }) => {
   const { category } = filters
-  console.log(filters)
 
   // TODO: Obligatorio
   let products = await Product.aggregate([

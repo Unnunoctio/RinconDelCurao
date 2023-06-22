@@ -8,6 +8,30 @@ const GET_ALL_PRODUCTS = gql`
     requestId(requestId: $requestId)
     totalProducts(filters: $filters)
     totalPages(page: $page, filters: $filters)
+    filterLimits(filters: $filters) {
+      sub_category {
+        label
+        value
+      }
+      brand {
+        label
+        value
+      }
+      content {
+        label
+        value
+      }
+      quantity {
+        label
+        value
+      }
+      package {
+        label
+        value
+      }
+      range_grade
+      range_price
+    }
     allProducts(orderBy: $orderBy, page: $page, filters: $filters) {
       id
       title
@@ -45,7 +69,7 @@ export const useProductsStore = () => {
         }
         if (data) {
           handleProducts(data.allProducts, data.totalProducts)
-          // handleFilterLimits(data.filterLimits)
+          handleFilterLimits(data.filterLimits)
           handleStorePage(null, data.totalPages)
         }
         handleLoading(false)
@@ -59,12 +83,15 @@ export const useProductsStore = () => {
     const requestId = Date.now().toString()
     latestRequestIdRef.current = requestId
 
+    console.log(filterActives)
+
     const variables = {
       requestId,
       orderBy,
       page: currentPage,
       filters: {
-        category: filterActives.category
+        category: filterActives.category,
+        sub_category: filterActives.subCategory
       }
     }
 
@@ -75,7 +102,7 @@ export const useProductsStore = () => {
     const filterObj = {}
     if (filters.category) filterObj.category = filters.category
     // rangePrice
-    // if (!!filters.subCategory && filters.subCategory.length > 0) filterObj.subCategory = filters.subCategory.map(obj => obj.value)
+    if (!!filters.subCategory && filters.subCategory.length > 0) filterObj.subCategory = filters.subCategory.map(obj => obj.value)
     // brands
     // rangeGrade
     // content
