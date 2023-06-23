@@ -68,6 +68,7 @@ export const useFilter = () => {
       processParam('category', 'subCategory', 'sub_category')
       processParam('brand', 'brand', 'brand')
       processParam('content', 'content', 'content')
+      processParam('package', 'package', 'package')
 
       if (changes) {
         handleFilters(getValues())
@@ -131,6 +132,7 @@ export const useFilter = () => {
     processParam('category', 'subCategory')
     processParam('brand', 'brand')
     processParam('content', 'content')
+    processParam('package', 'package')
 
     updateMultiParams(addParams, deleteParams)
     console.log('Ejecución: Productos via Filter')
