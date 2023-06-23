@@ -91,7 +91,8 @@ export const useProductsStore = () => {
       page: currentPage,
       filters: {
         category: filterActives.category,
-        sub_category: filterActives.subCategory
+        sub_category: filterActives.subCategory,
+        brand: filterActives.brand
       }
     }
 
@@ -103,10 +104,9 @@ export const useProductsStore = () => {
     if (filters.category) filterObj.category = filters.category
     // rangePrice
     if (!!filters.subCategory && filters.subCategory.length > 0) filterObj.subCategory = filters.subCategory.map(obj => obj.value)
-    // brands
+    if (!!filters.brand && filters.brand.length > 0) filterObj.brand = filters.brand.map(obj => obj.value)
     // rangeGrade
     // content
-    // pack_unit
     // quantity
     // package
 
