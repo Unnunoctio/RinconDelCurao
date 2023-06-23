@@ -19,7 +19,7 @@ export const useFilter = () => {
       subCategory: [],
       brand: [],
       rangeGrade: [0.0, 0.0],
-      conten: [],
+      content: [],
       quantity: [],
       package: []
     }
@@ -53,7 +53,7 @@ export const useFilter = () => {
       const processParam = (param, keyForm, keyLimit) => {
         const itemParam = params[param]
         if (!!itemParam && !sameStrings(filterActives[keyForm], itemParam.split(','))) {
-          const itemFilter = filterLimits[keyLimit]?.filter((x) => itemParam.split(',').includes(x.value))
+          const itemFilter = filterLimits[keyLimit]?.filter((x) => itemParam.split(',').includes(`${x.value}`))
           if (itemFilter.length > 0) {
             setValue(keyForm, itemFilter)
             addParam(param, itemFilter.map(obj => obj.value).join(','))
@@ -67,6 +67,7 @@ export const useFilter = () => {
 
       processParam('category', 'subCategory', 'sub_category')
       processParam('brand', 'brand', 'brand')
+      processParam('content', 'content', 'content')
 
       if (changes) {
         handleFilters(getValues())
@@ -129,6 +130,7 @@ export const useFilter = () => {
 
     processParam('category', 'subCategory')
     processParam('brand', 'brand')
+    processParam('content', 'content')
 
     updateMultiParams(addParams, deleteParams)
     console.log('Ejecución: Productos via Filter')

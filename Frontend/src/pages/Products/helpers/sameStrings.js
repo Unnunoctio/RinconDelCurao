@@ -3,8 +3,8 @@ export const sameStrings = (array1, array2) => {
     return false
   }
 
-  array1.sort()
-  array2.sort()
+  array1 = array1.map(x => `${x}`).sort()
+  array2 = array2.map(x => `${x}`).sort()
 
   return array1.every((element, index) => element === array2[index])
 }
