@@ -9,7 +9,7 @@ import { WebsiteList } from './components/website'
 import { FeatureList } from './components/feature'
 
 export const ProductDetailsPage = () => {
-  const { queryPaths } = useURLQuery()
+  const { pathname } = useURLQuery()
 
   const [breadcrumbLinks, setBreadcrumbLinks] = useState([])
   const { isLoading, product, isError, getProduct } = useProductStore()
@@ -21,11 +21,11 @@ export const ProductDetailsPage = () => {
   }, [])
 
   useEffect(() => {
-    if (queryPaths.length > 0) {
-      const urlProduct = queryPaths[queryPaths.length - 1]
+    if (pathname.length > 0) {
+      const urlProduct = pathname[pathname.length - 1]
       getProduct(urlProduct)
     }
-  }, [queryPaths])
+  }, [pathname])
 
   useEffect(() => {
     if (Object.keys(product).length > 0) {

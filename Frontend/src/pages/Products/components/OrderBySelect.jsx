@@ -7,20 +7,19 @@ import { orderByItems } from '@assets'
 export const OrderBySelect = memo(() => {
   const [focus, setFocus] = useState(false)
 
-  const { addQueryMultiParamsURL } = useURLQuery()
+  const { addMultiParams } = useURLQuery()
   const { orderBy, handleOrderBy, handleCurrentPage } = useProductsStore()
 
   const onChangeOrderBy = (option) => {
     handleOrderBy(option)
     handleCurrentPage(1)
 
-    console.log('Ejecucion: Productos via OrderBy')
-
     const params = [
       { label: 'page', value: 1 },
       { label: 'orderBy', value: option.value }
     ]
-    addQueryMultiParamsURL(params)
+    addMultiParams(params)
+    console.log('Ejecucion: Productos via OrderBy')
   }
 
   return (

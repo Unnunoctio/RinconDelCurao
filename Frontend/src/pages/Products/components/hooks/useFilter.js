@@ -2,12 +2,11 @@ import { linkItems } from '@assets/linkItems'
 import { orderByItems } from '@assets/orderByItems'
 import { useProductsStore, useURLQuery } from '@hooks'
 import { sameStrings } from '@pages/Products/helpers'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 
 export const useFilter = () => {
-  const [category, setCategory] = useState({})
-  const { queryPaths, queryParams, updateQueryMultiParamsURL, addQueryParamURL, deleteQueryParamURL } = useURLQuery()
+  const { pathname, params, addParam, deleteParam, updateMultiParams } = useURLQuery()
   const {
     currentPage, totalPages, filterLimits, filterActives, orderBy,
     handleCurrentPage, handleFilters, handleOrderBy, resetProducts
@@ -30,38 +29,37 @@ export const useFilter = () => {
   // TODO: Ejecución via Pathname
   useEffect(() => {
     reset()
-    const category = linkItems.find(item => item.url === `/${queryPaths[1]}`)
+    const category = linkItems.find(item => item.url === `/${pathname[1]}`)
     if (category) {
-      setCategory(category)
       setValue('category', category?.name)
       resetProducts()
       console.log(getValues())
       handleFilters(getValues())
       console.log('Ejecución: Productos via Pathname')
     }
-  }, [queryPaths])
+  }, [pathname])
 
   // TODO: Ejecución via Params
   useEffect(() => {
-    if (queryParams && Object.entries(filterLimits).length > 0) {
+    if (params && Object.entries(filterLimits).length > 0) {
       let changes = false
 
-      const pageParam = parseInt(queryParams.page)
+      const pageParam = parseInt(params.page)
       if (!!pageParam && pageParam !== currentPage) changes = true
 
-      const orderByParam = queryParams.orderBy
+      const orderByParam = params.orderBy
       if (!!orderByParam && orderByParam !== orderBy) changes = true
 
       const processParam = (param, keyForm, keyLimit) => {
-        const itemParam = queryParams[param]
+        const itemParam = params[param]
         if (!!itemParam && !sameStrings(filterActives[keyForm], itemParam.split(','))) {
           const itemFilter = filterLimits[keyLimit]?.filter((x) => itemParam.split(',').includes(x.value))
           if (itemFilter.length > 0) {
             setValue(keyForm, itemFilter)
-            addQueryParamURL(param, itemFilter.map(obj => obj.value).join(','))
+            addParam(param, itemFilter.map(obj => obj.value).join(','))
           } else {
             setValue(keyForm, [])
-            deleteQueryParamURL(param)
+            deleteParam(param)
           }
           changes = true
         }
@@ -76,7 +74,7 @@ export const useFilter = () => {
           if (pageParam <= totalPages && pageParam > 0) {
             handleCurrentPage(pageParam)
           } else {
-            deleteQueryParamURL('page')
+            deleteParam('page')
             handleCurrentPage(1) // por defecto
           }
         }
@@ -85,18 +83,19 @@ export const useFilter = () => {
           if (orderByFilter) {
             handleOrderBy(orderByFilter)
           } else {
-            deleteQueryParamURL('orderBy')
+            deleteParam('orderBy')
             handleOrderBy(orderByItems[0]) // por defecto
           }
         }
         console.log('Ejecución: Productos via Params')
       }
     }
-  }, [queryParams, filterLimits])
+  }, [params, filterLimits])
 
   // TODO: Ejecución via sin Params
   useEffect(() => {
-    if (queryParams === null && categoryWatch !== '' && category.name === categoryWatch) {
+    const category = linkItems.find(item => item.url === `/${pathname[1]}`)
+    if (params === null && categoryWatch !== '' && category.name === categoryWatch) {
       const category = categoryWatch
       reset()
       setValue('category', category)
@@ -104,7 +103,7 @@ export const useFilter = () => {
       handleFilters(getValues())
       console.log('Ejecución: Productos via sin Params')
     }
-  }, [queryParams])
+  }, [params])
 
   // TODO: Manejo de rangePrice y rangeGrade
   useEffect(() => {
@@ -131,7 +130,7 @@ export const useFilter = () => {
     processParam('category', 'subCategory')
     processParam('brand', 'brand')
 
-    updateQueryMultiParamsURL(addParams, deleteParams)
+    updateMultiParams(addParams, deleteParams)
     console.log('Ejecución: Productos via Filter')
   }
 

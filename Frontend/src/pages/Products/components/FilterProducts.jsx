@@ -5,7 +5,6 @@ import { useFilter } from './hooks/useFilter'
 
 export const FilterProducts = () => {
   const { totalProducts, filterLimits } = useProductsStore()
-
   const { onSubmitFilter, handleSubmit, control } = useFilter()
 
   return (

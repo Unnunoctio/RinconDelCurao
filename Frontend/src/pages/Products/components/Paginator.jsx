@@ -82,16 +82,15 @@ export const Paginator = () => {
 }
 
 const PageButton = ({ pageNum }) => {
-  const { addQueryParamURL } = useURLQuery()
+  const { addParam } = useURLQuery()
   const { currentPage, handleCurrentPage } = useProductsStore()
 
   const onPageClick = () => {
     handleCurrentPage(pageNum)
 
-    console.log('Ejecucion: Productos via Paginator')
-    addQueryParamURL('page', pageNum)
-
+    addParam('page', pageNum)
     window.scrollTo({ top: 0, behavior: 'smooth' })
+    console.log('Ejecucion: Productos via Paginator')
   }
 
   return (
