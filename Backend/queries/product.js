@@ -105,7 +105,7 @@ const getFilterLimits = async (root, { filters }) => {
   //* Quantity
   if (filters.quantity) {
     filterOptions.quantity = applyFilter(products, 'quantity', 1)
-    products = products.filter(product => filters.quantity.includes(product.product.quantity))
+    products = products.filter(product => filters.quantity.includes(product.quantity))
   }
   //* Package
   if (filters.package) {
@@ -185,6 +185,8 @@ const getProducts = async (root, args) => {
       },
       { $replaceRoot: { newRoot: { $mergeObjects: ['$otherFields', { websites: '$websites' }] } } }
     ])
+
+    console.log(products)
 
     switch (orderBy) {
       case 'SCORE_DESC':

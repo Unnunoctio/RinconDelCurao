@@ -83,8 +83,6 @@ export const useProductsStore = () => {
     const requestId = Date.now().toString()
     latestRequestIdRef.current = requestId
 
-    console.log(filterActives)
-
     const variables = {
       requestId,
       orderBy,
@@ -94,10 +92,10 @@ export const useProductsStore = () => {
         sub_category: filterActives.subCategory,
         brand: filterActives.brand,
         content: filterActives.content,
+        quantity: filterActives.quantity,
         package: filterActives.package
       }
     }
-
     getAllProducts({ variables })
   }
 
@@ -109,7 +107,7 @@ export const useProductsStore = () => {
     if (!!filters.brand && filters.brand.length > 0) filterObj.brand = filters.brand.map(obj => obj.value)
     // rangeGrade
     if (!!filters.content && filters.content.length > 0) filterObj.content = filters.content.map(obj => obj.value)
-    // quantity
+    if (!!filters.quantity && filters.quantity.length > 0) filterObj.quantity = filters.quantity.map(obj => obj.value)
     if (!!filters.package && filters.package.length > 0) filterObj.package = filters.package.map(obj => obj.value)
 
     handleFilterActives(filterObj)
