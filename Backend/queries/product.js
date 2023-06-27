@@ -186,8 +186,6 @@ const getProducts = async (root, args) => {
       { $replaceRoot: { newRoot: { $mergeObjects: ['$otherFields', { websites: '$websites' }] } } }
     ])
 
-    console.log(products)
-
     switch (orderBy) {
       case 'SCORE_DESC':
         products.sort((a, b) => {

@@ -61,12 +61,13 @@ export const useProductsStore = () => {
   ] = ProductsStore((state) => [state.handleLoading, state.handleProducts, state.handleFilterActives, state.handleFilterLimits, state.handleStoreOrderby, state.handleStorePage, state.resetStore], shallow)
 
   useEffect(() => {
+    if (error !== undefined) {
+      handleLoading(false)
+      handleProducts([], 0)
+      handleStorePage(null, 1)
+    }
     setTimeout(() => {
       if (data?.requestId === latestRequestIdRef.current) {
-        if (error) {
-          console.error(error.message)
-          handleLoading(false)
-        }
         if (data) {
           handleProducts(data.allProducts, data.totalProducts)
           handleFilterLimits(data.filterLimits)
@@ -83,6 +84,7 @@ export const useProductsStore = () => {
     const requestId = Date.now().toString()
     latestRequestIdRef.current = requestId
 
+    console.log({ requestId })
     const variables = {
       requestId,
       orderBy,
@@ -93,7 +95,10 @@ export const useProductsStore = () => {
         brand: filterActives.brand,
         content: filterActives.content,
         quantity: filterActives.quantity,
-        package: filterActives.package
+        package: filterActives.package,
+
+        price_min: (filterActives.rangePrice) ? filterActives.rangePrice[0] : undefined,
+        price_max: (filterActives.rangePrice) ? filterActives.rangePrice[1] : undefined
       }
     }
     getAllProducts({ variables })
@@ -103,6 +108,12 @@ export const useProductsStore = () => {
     const filterObj = {}
     if (filters.category) filterObj.category = filters.category
     // rangePrice
+    if (filters.rangePrice[0] !== -1 && filters.rangePrice[1] !== -1) {
+      if (filters.rangePrice[0] > filterLimits.range_price[0] || filters.rangePrice[1] < filterLimits.range_price[1]) {
+        filterObj.rangePrice = filters.rangePrice
+      }
+    }
+
     if (!!filters.subCategory && filters.subCategory.length > 0) filterObj.subCategory = filters.subCategory.map(obj => obj.value)
     if (!!filters.brand && filters.brand.length > 0) filterObj.brand = filters.brand.map(obj => obj.value)
     // rangeGrade

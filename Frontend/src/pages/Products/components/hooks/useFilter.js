@@ -1,7 +1,7 @@
 import { linkItems } from '@assets/linkItems'
 import { orderByItems } from '@assets/orderByItems'
 import { useProductsStore, useURLQuery } from '@hooks'
-import { sameStrings } from '@pages/Products/helpers'
+import { sameStrings, verifyRanges } from '@pages/Products/helpers'
 import { useEffect } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 
@@ -15,7 +15,7 @@ export const useFilter = () => {
   const { handleSubmit, setValue, getValues, reset, control } = useForm({
     defaultValues: {
       category: '',
-      rangePrice: [0, 0],
+      rangePrice: [-1, -1],
       subCategory: [],
       brand: [],
       rangeGrade: [0.0, 0.0],
@@ -33,7 +33,6 @@ export const useFilter = () => {
     if (category) {
       setValue('category', category?.name)
       resetProducts()
-      console.log(getValues())
       handleFilters(getValues())
       console.log('Ejecución: Productos via Pathname')
     }
@@ -65,6 +64,28 @@ export const useFilter = () => {
         }
       }
 
+      const processRangeParam = (param, keyForm, keyLimit) => {
+        const itemParam = params[param]
+        if (itemParam) {
+          const rangeParam = itemParam.split('to').map(x => parseInt(x))
+          if (!sameStrings(filterActives[keyForm], itemParam.split('to')) || verifyRanges(rangeParam, filterLimits[keyLimit])) {
+            if (rangeParam[0] < filterLimits[keyLimit][0]) rangeParam[0] = filterLimits[keyLimit][0]
+            if (rangeParam[1] > filterLimits[keyLimit][1]) rangeParam[1] = filterLimits[keyLimit][1]
+
+            setValue(keyForm, rangeParam)
+            if (rangeParam[0] === filterLimits[keyLimit][0] && rangeParam[1] === filterLimits[keyLimit][1]) {
+              deleteParam(param)
+            } else {
+              addParam(param, `${rangeParam[0]}to${rangeParam[1]}`)
+            }
+            changes = true
+          } else if (sameStrings(filterActives[keyForm], itemParam.split('to'))) {
+            setValue(keyForm, filterActives[keyForm])
+          }
+        }
+      }
+
+      processRangeParam('rangePrice', 'rangePrice', 'range_price')
       processParam('category', 'subCategory', 'sub_category')
       processParam('brand', 'brand', 'brand')
       processParam('content', 'content', 'content')
@@ -93,7 +114,7 @@ export const useFilter = () => {
         console.log('Ejecución: Productos via Params')
       }
     }
-  }, [params, filterLimits])
+  }, [filterLimits])
 
   // TODO: Ejecución via sin Params
   useEffect(() => {
@@ -110,12 +131,15 @@ export const useFilter = () => {
 
   // TODO: Manejo de rangePrice y rangeGrade
   useEffect(() => {
-    if (!filterActives.rangeGrade) setValue('rangeGrade', filterLimits.range_grade)
-    if (!filterActives.rangePrice) setValue('rangePrice', filterLimits.range_price)
+    if (Object.entries(filterLimits).length > 0) {
+      if (!filterActives?.rangeGrade && !params?.rangeGrade) setValue('rangeGrade', filterLimits?.range_grade)
+      if (!filterActives?.rangePrice && !params?.rangePrice) setValue('rangePrice', filterLimits?.range_price)
+    }
   }, [filterLimits])
 
   // TODO: OnSubmit
   const onSubmitFilter = async (data) => {
+    // setValue('rangePrice', [0, 1])
     handleFilters(data)
     handleCurrentPage(1)
 
@@ -130,6 +154,15 @@ export const useFilter = () => {
       }
     }
 
+    const proccesRangeParam = (param, key, keyLimit) => {
+      if (data[key][0] > filterLimits[keyLimit][0] || data[key][1] < filterLimits[keyLimit][1]) {
+        addParams.push({ label: param, value: `${data[key][0]}to${data[key][1]}` })
+      } else {
+        deleteParams.push(param)
+      }
+    }
+
+    proccesRangeParam('rangePrice', 'rangePrice', 'range_price')
     processParam('category', 'subCategory')
     processParam('brand', 'brand')
     processParam('content', 'content')

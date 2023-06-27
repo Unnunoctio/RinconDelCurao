@@ -1,7 +1,8 @@
 import { Box, Flex, FormLabel, RangeSlider, RangeSliderFilledTrack, RangeSliderThumb, RangeSliderTrack, Text, useColorModeValue } from '@chakra-ui/react'
+import { memo } from 'react'
 import { Controller } from 'react-hook-form'
 
-export const Slider = ({ control, label, name, minValue, maxValue, step = 1, startSymbol = undefined, endSymbol = undefined, format = (value) => { return value } }) => {
+export const Slider = memo(({ control, label, name, minValue, maxValue, step = 1, startSymbol = undefined, endSymbol = undefined, format = (value) => { return value } }) => {
   return (
     <Controller
       name={name}
@@ -15,7 +16,7 @@ export const Slider = ({ control, label, name, minValue, maxValue, step = 1, sta
             </Text>
           </Flex>
           <Flex justifyContent='center'>
-            <RangeSlider w='95%' defaultValue={[minValue, maxValue]} min={minValue} max={maxValue} step={step} {...field}>
+            <RangeSlider aria-label={['min', 'max']} w='95%' min={minValue} max={maxValue} step={step} {...field}>
               <RangeSliderTrack bg={useColorModeValue('light.divider.main', 'dark.divider.main')}>
                 <RangeSliderFilledTrack bg={useColorModeValue('light.component.active', 'dark.component.active')} />
               </RangeSliderTrack>
@@ -27,4 +28,4 @@ export const Slider = ({ control, label, name, minValue, maxValue, step = 1, sta
       )}
     />
   )
-}
+})
