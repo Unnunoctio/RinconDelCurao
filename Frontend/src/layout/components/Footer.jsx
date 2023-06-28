@@ -1,9 +1,17 @@
-import { Box, Divider, Flex, Text, VStack, useColorModeValue } from '@chakra-ui/react'
+import { Box, Divider, Flex, HStack, Icon, IconButton, Text, VStack, useColorModeValue } from '@chakra-ui/react'
 import { Logo } from './Logo'
 import { linkItems } from '@assets/linkItems'
 import { NavLink } from 'react-router-dom'
+import { BsArrowUp } from 'react-icons/bs'
 
 export const Footer = () => {
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+  }
+
   return (
     <Flex
       as='footer'
@@ -20,7 +28,19 @@ export const Footer = () => {
       >
         <Flex justifyContent='space-between'>
           <FooterLogo />
-          <FooterNav />
+          <HStack gap={8} alignItems='flex-start'>
+            <FooterNav />
+            <IconButton
+              onClick={scrollToTop}
+              bg='transparent'
+              color={useColorModeValue('light.text.main', 'dark.text.main')}
+              borderRadius='full'
+              icon={<Icon boxSize={6} as={BsArrowUp} />}
+              _hover={{
+                color: useColorModeValue('light.text.active', 'dark.text.active')
+              }}
+            />
+          </HStack>
         </Flex>
         <Divider my={6} borderColor={useColorModeValue('light.divider.main', 'dark.divider.main')} />
         <Text textAlign='center'>
@@ -48,7 +68,7 @@ const FooterLogo = () => {
 const FooterNav = () => {
   return (
     <Box display={{ base: 'none', md: 'block' }}>
-      <Text fontWeight='medium' color={useColorModeValue('light.text.main', 'dark.text.main')}>
+      <Text fontWeight='medium' fontSize={18} color={useColorModeValue('light.text.main', 'dark.text.main')}>
         Navegación
       </Text>
       <VStack gap={2} alignItems='flex-start' mt={3}>
