@@ -28,10 +28,12 @@ export const Footer = () => {
       >
         <Flex justifyContent='space-between'>
           <FooterLogo />
-          <HStack gap={8} alignItems='flex-start'>
+          <HStack gap={8} alignItems='flex-start' position='relative'>
             <FooterNav />
             <IconButton
               onClick={scrollToTop}
+              position={{ base: 'absolute', sm: 'initial' }}
+              top={0} left={-12}
               bg='transparent'
               color={useColorModeValue('light.text.main', 'dark.text.main')}
               borderRadius='full'

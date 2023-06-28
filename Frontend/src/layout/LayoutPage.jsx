@@ -6,7 +6,10 @@ export const LayoutPage = ({ children }) => {
   const { queryPaths, queryParams } = useURLQuery()
 
   useEffect(() => {
-    window.scrollTo(0, 0)
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
   }, [queryPaths, queryParams])
 
   return (
