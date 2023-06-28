@@ -26,7 +26,7 @@ export const HomePage = () => {
 
   return (
     <LayoutPage>
-      <VStack align='flex-start' minH='85vh' justifyContent='space-evenly'>
+      <VStack align='flex-start' justifyContent='space-evenly'>
         <SliderBox title='Ofertas del Día'>
           {
             isLoading

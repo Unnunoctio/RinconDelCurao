@@ -8,7 +8,7 @@ export const Footer = () => {
     <Flex
       as='footer'
       w='100%'
-      py={8}
+      py={8} mt={`${15 * 4}px`}
       bg={useColorModeValue('light.background.main', 'dark.background.main')}
       borderTop='1px' borderTopColor={useColorModeValue('light.divider.main', 'dark.divider.main')}
       justifyContent='center'
@@ -47,7 +47,7 @@ const FooterLogo = () => {
 
 const FooterNav = () => {
   return (
-    <Box>
+    <Box display={{ base: 'none', md: 'block' }}>
       <Text fontWeight='medium' color={useColorModeValue('light.text.main', 'dark.text.main')}>
         Navegación
       </Text>
