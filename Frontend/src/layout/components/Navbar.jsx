@@ -5,6 +5,7 @@ import { OptionsButton } from './OptionsButton'
 import { NavLink } from 'react-router-dom'
 
 import { linkItems } from '@assets'
+import { Logo } from './Logo'
 
 const navHeigth = '72px'
 
@@ -22,6 +23,7 @@ export const Navbar = () => {
     <>
       {/* Navbar */}
       <Flex
+        as='nav'
         w='100%'
         zIndex={3} pos='fixed'
         bg={useColorModeValue('light.background.main', 'dark.background.main')}
@@ -69,20 +71,7 @@ const NavbarContent = ({ onOpen, isNavOpen, onNavOpen, onNavClose, ...rest }) =>
       {...rest}
     >
       {/* LOGO */}
-      <NavLink to='/'>
-        <Center
-          h={navHeigth} mr={{ base: 0, md: 12 }}
-          color={useColorModeValue('light.text.active', 'dark.text.active')} cursor='pointer'
-          transition='transform 200ms ease-out'
-          _hover={{ transform: 'scale(1.03)' }}
-        >
-          <Icon boxSize={9} as={GiShatteredGlass} />
-          <Box ml={2} fontFamily='Finger Paint'>
-            <Text>Rincón</Text>
-            <Text>Del Curao</Text>
-          </Box>
-        </Center>
-      </NavLink>
+      <Logo h={navHeigth} mr={{ base: 0, md: 12 }} />
 
       {/* Items and Buttons */}
       <Flex>
