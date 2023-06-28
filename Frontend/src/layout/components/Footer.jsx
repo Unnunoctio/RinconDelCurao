@@ -1,5 +1,7 @@
-import { Divider, Flex, Text, VStack, useColorModeValue } from '@chakra-ui/react'
+import { Box, Divider, Flex, Text, VStack, useColorModeValue } from '@chakra-ui/react'
 import { Logo } from './Logo'
+import { linkItems } from '@assets/linkItems'
+import { NavLink } from 'react-router-dom'
 
 export const Footer = () => {
   return (
@@ -16,7 +18,10 @@ export const Footer = () => {
         maxW={`${1850 * 0.75}px`}
         px={{ base: 4, md: 8 }}
       >
-        <FooterLogo />
+        <Flex justifyContent='space-between'>
+          <FooterLogo />
+          <FooterNav />
+        </Flex>
         <Divider my={6} borderColor={useColorModeValue('light.divider.main', 'dark.divider.main')} />
         <Text textAlign='center'>
           &copy; {new Date().getFullYear()} Rincón del Curao. Todos los derechos reservados.
@@ -37,5 +42,29 @@ const FooterLogo = () => {
         Nuestra misión es ayudar a los consumidores a escoger las mejores bebidas para sus presupuestos
       </Text>
     </VStack>
+  )
+}
+
+const FooterNav = () => {
+  return (
+    <Box>
+      <Text fontWeight='medium' color={useColorModeValue('light.text.main', 'dark.text.main')}>
+        Navegación
+      </Text>
+      <VStack gap={2} alignItems='flex-start' mt={3}>
+        {
+          linkItems.map((item, index) => (
+            <NavLink to={item.url} key={index}>
+              <Text
+                color={useColorModeValue('light.text.secondary', 'dark.text.secondary')}
+                _hover={{ textDecoration: 'underline' }}
+              >
+                {item.name}
+              </Text>
+            </NavLink>
+          ))
+        }
+      </VStack>
+    </Box>
   )
 }
