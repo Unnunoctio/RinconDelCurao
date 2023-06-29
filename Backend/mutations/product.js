@@ -3,7 +3,7 @@ import { getProductApi, getProductTitle, removeProductImage, uploadProductImage 
 import Product from '../models/Product.js'
 
 const addProduct = async (root, args, context) => {
-  if (!context.apiKey) throw new ForbiddenError('anauthorized')
+  if (!context.apiKey) throw new ForbiddenError('Unauthorized')
 
   try {
     const { data, website } = args
@@ -35,7 +35,7 @@ const addProduct = async (root, args, context) => {
 }
 
 const removeWebsite = async (root, args, context) => {
-  if (!context.apiKey) throw new ForbiddenError('anauthorized')
+  if (!context.apiKey) throw new ForbiddenError('Unauthorized')
 
   try {
     const { urlWebsite } = args
@@ -63,7 +63,7 @@ const removeWebsite = async (root, args, context) => {
 }
 
 const updateWebsite = async (root, args, context) => {
-  if (!context.apiKey) throw new ForbiddenError('anauthorized')
+  if (!context.apiKey) throw new ForbiddenError('Unauthorized')
 
   try {
     const { newWebsite } = args
@@ -71,14 +71,15 @@ const updateWebsite = async (root, args, context) => {
     // TODO: Que los last_hash sean distintos y actualiza los datos
     const product = await Product.findOneAndUpdate(
       {
-        'websites.url': newWebsite.url,
-        'websites.last_hash': { $ne: newWebsite.last_hash }
+        'websites.url': newWebsite.url
+        // 'websites.last_hash': { $ne: newWebsite.last_hash }
       },
       {
         $set: {
           'websites.$.price': newWebsite.price,
           'websites.$.best_price': newWebsite.best_price,
-          'websites.$.last_hash': newWebsite.last_hash
+          'websites.$.average': newWebsite.average
+          // 'websites.$.last_hash': newWebsite.last_hash
         }
       }
     )

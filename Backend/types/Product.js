@@ -22,6 +22,7 @@ const typeProduct = gql`
     url: String!
     price: Int!
     best_price: Int!
+    average: Float
   }
 
   type Product {

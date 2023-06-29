@@ -7,9 +7,11 @@ class ProductItem:
     self.price = None
     self.best_price = None
     self.sub_category = None
+    self.quantity = None
     self.content = None
     self.alcoholic_grade = None
     self.package = None
+    self.average = None
     self.image_url = None
 
   def is_values_none(self):
@@ -18,3 +20,6 @@ class ProductItem:
       if attribute is None:
         return True
     return False
+  
+  def __str__(self):
+    return f"Title: {self.title}, Brand: {self.brand}, Price: {self.price}, Best Price: {self.best_price}, Sub Category: {self.sub_category}, Quantity: {self.quantity}, Content: {self.content}, Alcoholic Grade: {self.alcoholic_grade}, Package: {self.package}, Average: {self.average}, Image URL: {self.image_url}"
