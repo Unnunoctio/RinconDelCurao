@@ -1,5 +1,6 @@
 export * from './Enums.js'
 export * from './Inputs.js'
 export * from './Product.js'
+export * from './ProductAverage.js'
 export * from './ProductDiscount.js'
 export * from './ProductList.js'
