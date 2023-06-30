@@ -7,22 +7,22 @@ import api.api as api
 import utils.utils as uts
 
 
-class JumboSpider(scrapy.Spider):
-    name = "jumbo_spider"
+class SantaSpider(scrapy.Spider):
+    name = "santa_spider"
     allowed_domains = ["sm-web-api.ecomm.cencosud.com"]
     start_urls = [
-        "https://sm-web-api.ecomm.cencosud.com/catalog/api/v4/products/vinos-cervezas-y-licores/cervezas",
-        "https://sm-web-api.ecomm.cencosud.com/catalog/api/v4/products/vinos-cervezas-y-licores/destilados",
-        "https://sm-web-api.ecomm.cencosud.com/catalog/api/v4/products/vinos-cervezas-y-licores/vinos",
+        "https://sm-web-api.ecomm.cencosud.com/catalog/api/v4/pedrofontova/products/vinos-cervezas-y-licores/cervezas",
+        "https://sm-web-api.ecomm.cencosud.com/catalog/api/v4/pedrofontova/products/vinos-cervezas-y-licores/destilados",
+        "https://sm-web-api.ecomm.cencosud.com/catalog/api/v4/pedrofontova/products/vinos-cervezas-y-licores/vinos"
     ]
-    href_blockeds = [
-        # "cerveza-mahou-alhambra-reserva-1925-330-cc"
-    ]
+    href_blockeds = []
     headers = {
-        "apiKey": "WlVnnB7c1BblmgUPOfg"
+        "apiKey": "WlVnnB7c1BblmgUPOfg",
+        "x-account": "pedrofontova",
+        "x-consumer": "santaisabel"
     }
-    base_url = "https://jumbo.cl"
-    base_product_url = "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/product"
+    base_url = "https://santaisabel.cl"
+    base_product_url = "https://sm-web-api.ecomm.cencosud.com/catalog/api/v1/pedrofontova/product"
     products_not_found = []
 
     def start_requests(self):
@@ -32,21 +32,21 @@ class JumboSpider(scrapy.Spider):
     def parse(self, response):
         max_pages = self.get_max_pages(response)
         for page in range(1, max_pages + 1):
-            url = f"{response.url}?page={page}&sc=11"
+            url = f"{response.url}?page={page}&sc=1"
 
             yield scrapy.Request(url=url, headers=self.headers, callback=self.parse_list_products)
 
     def get_max_pages(self, response):
         total_products = response.json()['recordsFiltered']
         return math.ceil(total_products / 40)
-
+    
     def parse_list_products(self, response):
         products = response.json()['products']
         for product in products:
             href = product['linkText']
             if href in self.href_blockeds:
                 continue
-            link_product = f'{self.base_product_url}/{href}?sc=11'
+            link_product = f'{self.base_product_url}/{href}?sc=1'
 
             yield scrapy.Request(url=link_product, headers=self.headers, callback=self.parse_product)
 
@@ -68,7 +68,7 @@ class JumboSpider(scrapy.Spider):
         if stock_product == 0:
             return False
         return True
-
+    
     def process_product(self, response):
         product = response.meta['product']
         url_product = f"{self.base_url}/{product['linkText']}/p"
@@ -81,7 +81,7 @@ class JumboSpider(scrapy.Spider):
         # TODO: Obtener el product data y se crea el website
         product_data = self.get_product_data(product)
         website = {
-            "name": "Jumbo",
+            "name": "Santa Isabel",
             "url": url_product,
             "price": product_data['price'],
             "best_price": product_data['best_price'],
@@ -178,7 +178,7 @@ class JumboSpider(scrapy.Spider):
             product_data['image_url'] = images[0]['imageUrl']
 
         return product_data
-    
+
     def closed(self, reason):
-        uts.export_data('Products_Jumbo', self.products_not_found)
-        print('Jumbo Scraper Closed')
+        uts.export_data('Products_Santa', self.products_not_found)
+        print('Santa Isabel Scraper Closed')
