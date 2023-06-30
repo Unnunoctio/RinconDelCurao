@@ -13,14 +13,22 @@ const GET_BEST_DISCOUNT_PRODUCTS = gql`
       best_price
       image
     }
+    bestAverageProducts {
+      id
+      title
+      brand
+      average
+      best_price
+      image
+    }
   }
 `
 
 export const useHomeStore = () => {
   const [getProducts, { error, data }] = useLazyQuery(GET_BEST_DISCOUNT_PRODUCTS, { fetchPolicy: 'network-only' })
 
-  const [isLoading, offerProducts] = HomeStore((state) => [state.isLoading, state.offerProducts], shallow)
-  const [handleLoading, handleOfferProducts] = HomeStore((state) => [state.handleLoading, state.handleOfferProducts], shallow)
+  const [isLoading, offerProducts, ratingProducts] = HomeStore((state) => [state.isLoading, state.offerProducts, state.ratingProducts], shallow)
+  const [handleLoading, handleOfferProducts, handleRatingProducts] = HomeStore((state) => [state.handleLoading, state.handleOfferProducts, state.handleRatingProducts], shallow)
 
   useEffect(() => {
     if (error) {
@@ -29,8 +37,8 @@ export const useHomeStore = () => {
     }
     if (data) {
       setTimeout(() => {
-        console.log(data.bestDiscountProducts)
         handleOfferProducts(data.bestDiscountProducts)
+        handleRatingProducts(data.bestAverageProducts)
         handleLoading(false)
       }, 500)
     }
@@ -44,6 +52,7 @@ export const useHomeStore = () => {
   return {
     isLoading,
     offerProducts,
+    ratingProducts,
     //* Methods
     getHomeProducts
   }

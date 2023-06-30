@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { HStack, Image, Text, VStack, useColorModeValue } from '@chakra-ui/react'
-import { CardLink } from '@components'
-import { OfferRating, StarRating } from './rating'
+import { CardLink, StarRating } from '@components'
+import { OfferRating } from './rating'
 import { OFFER_RATING, STAR_RATING } from '../assets/ratingVariant'
 
 export const SliderCard = ({ dataCard, variant }) => {
@@ -31,7 +31,7 @@ export const SliderCard = ({ dataCard, variant }) => {
             (variant === OFFER_RATING) && <OfferRating value={dataCard?.discount} />
           }
           {
-            (variant === STAR_RATING) && <StarRating value={dataCard?.dataValue} />
+            (variant === STAR_RATING) && <StarRating value={dataCard?.average} />
           }
         </>
         <Text
