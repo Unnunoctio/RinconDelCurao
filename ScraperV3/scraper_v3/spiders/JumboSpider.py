@@ -33,7 +33,7 @@ class JumboSpider(scrapy.Spider):
     def parse(self, response):
         max_pages = self.get_max_pages(response)
         for page in range(1, max_pages + 1):
-            url = f"{response.url}?page={page}"
+            url = f"{response.url}?page={page}&sc=11"
 
             yield scrapy.Request(url=url, headers=self.headers, callback=self.parse_list_products)
 
@@ -47,7 +47,7 @@ class JumboSpider(scrapy.Spider):
             href = product['linkText']
             if href in self.href_blockeds:
                 continue
-            link_product = f'{self.base_product_url}/{href}'
+            link_product = f'{self.base_product_url}/{href}?sc=11'
 
             yield scrapy.Request(url=link_product, headers=self.headers, callback=self.parse_product)
 
