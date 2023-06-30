@@ -23,14 +23,13 @@ const ProductAverage = {
   average: (root) => {
     let count = 0
     let sumAverage = 0
-    root.websites.map(website => {
+    for (const website of root.websites) {
       if (website.average !== null) {
         count++
         sumAverage += website.average
       }
-      return website
-    })
-    return sumAverage / count
+    }
+    return count > 0 ? sumAverage / count : null
   },
   best_price: (root) => root.websites[0].best_price,
   image: (root) => getProductImage(root.image_path, root.product.category)
