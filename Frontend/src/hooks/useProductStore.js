@@ -27,6 +27,7 @@ const GET_PRODUCT = gql`
         url
         price
         best_price
+        average
       }
     }
   }

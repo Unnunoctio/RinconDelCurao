@@ -1,5 +1,6 @@
 import { Flex, HStack, Heading, Text, useColorModeValue } from '@chakra-ui/react'
 import { WebsiteSvg } from './WebsiteSvg'
+import { StarRating } from '@components'
 
 export const WebsiteItem = ({ website }) => {
   return (
@@ -23,12 +24,15 @@ export const WebsiteItem = ({ website }) => {
           <WebsiteSvg websiteName={website.name} boxSize={{ base: 12, sm: 14 }} />
         </Flex>
         <Flex flexDir='column' gap={{ base: 0, sm: 2 }} w={{ base: 'full', sm: 'auto' }}>
-          <Heading
-            fontSize={20} fontWeight='medium'
-            color={useColorModeValue('light.text.main', 'dark.text.main')}
-          >
-            {website.name}
-          </Heading>
+          <HStack justifyContent='space-between'>
+            <Heading
+              fontSize={20} fontWeight='medium'
+              color={useColorModeValue('light.text.main', 'dark.text.main')}
+            >
+              {website.name}
+            </Heading>
+            <StarRating value={website.average} />
+          </HStack>
           <HStack gap={{ base: 0, sm: 4 }} justifyContent='space-between'>
             <PriceItem title='Precio Oferta' value={website.best_price} color={useColorModeValue('light.text.active', 'dark.text.active')} />
             <PriceItem title='Precio Normal' value={website.price} color={useColorModeValue('light.text.main', 'dark.text.main')} />
