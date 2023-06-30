@@ -18,8 +18,28 @@ const JumboIcon = (props) => (
   </Icon>
 )
 
+const SantaIcon = (props) => (
+  <Icon viewBox='0 0 196 196' {...props}>
+    <g
+      transform='translate(0.000000,196.000000) scale(0.100000,-0.100000)'
+      fill='#D91E17' stroke='none'
+    >
+      <path d='M998 1945 c-177 -29 -323 -93 -423 -186 -123 -115 -180 -263 -173
+        -449 3 -95 6 -112 36 -172 61 -124 162 -197 415 -297 145 -58 190 -84 234
+        -135 53 -59 56 -136 8 -208 -32 -48 -126 -94 -225 -109 -146 -22 -400 8 -539
+        65 -35 14 -65 25 -67 23 -4 -4 -102 -314 -108 -344 -7 -29 -5 -32 26 -42 67
+        -21 196 -51 293 -67 140 -24 426 -24 555 1 338 64 536 219 600 471 24 92 26
+        204 5 293 -43 183 -159 282 -483 415 -70 28 -144 64 -164 79 -89 68 -88 182 3
+        249 45 33 136 49 274 49 141 0 236 -14 353 -55 l72 -25 16 37 c17 41 104 319
+        104 332 0 14 -147 57 -234 69 -135 19 -479 23 -578 6z'
+      />
+    </g>
+  </Icon>
+)
+
 export const WebsiteSvg = ({ websiteName, ...rest }) => {
   if (websiteName.toLowerCase() === 'jumbo') return <JumboIcon {...rest} />
+  if (websiteName.toLowerCase() === 'santa isabel') return <SantaIcon {...rest} />
 
   return <Icon {...rest} />
 }
