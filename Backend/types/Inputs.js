@@ -20,7 +20,7 @@ const Inputs = gql`
     url: String!
     price: Int!
     best_price: Int!
-    last_hash: String!
+    average: Float
   }
 
   input DataInput {

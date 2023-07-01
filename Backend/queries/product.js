@@ -256,7 +256,59 @@ const getBestDiscountProducts = async () => {
       return a.title.localeCompare(b.title)
     })
 
-    return products.slice(0, 7)
+    return products.slice(0, 12)
+  } catch (error) {
+    throw new GraphQLError(error.message, {
+      extensions: { code: 'OPERATION_RESOLUTION_FAILURE' }
+    })
+  }
+}
+
+const getProductAverage = (product) => {
+  const { websites } = product
+  let count = 0
+  let sumAverage = 0
+
+  for (const website of websites) {
+    if (website.average !== null) {
+      count++
+      sumAverage += website.average
+    }
+  }
+  return count > 0 ? sumAverage / count : 0
+}
+
+const getBestAverageProducts = async () => {
+  try {
+    const products = await Product.aggregate([
+      { $unwind: '$websites' },
+      { $sort: { 'websites.best_price': 1 } },
+      {
+        $group: {
+          _id: '$_id',
+          websites: { $push: '$websites' },
+          otherFields: { $first: '$$ROOT' }
+        }
+      },
+      { $replaceRoot: { newRoot: { $mergeObjects: ['$otherFields', { websites: '$websites' }] } } }
+    ])
+
+    // TODO: ordena los productos mediante promedio de averages > mayor descuento > menor precio > titulo alfabetico
+    products.sort((a, b) => {
+      const averageA = getProductAverage(a)
+      const averageB = getProductAverage(b)
+
+      if (averageA !== averageB) return averageB - averageA
+
+      const discountA = Math.round(100 - (a.websites[0].best_price * 100) / a.websites[0].price)
+      const discountB = Math.round(100 - (b.websites[0].best_price * 100) / b.websites[0].price)
+
+      if (discountA !== discountB) return discountB - discountA
+      if (a.websites[0].best_price !== b.websites[0].best_price) return a.websites[0].best_price - b.websites[0].best_price
+      return a.title.localeCompare(b.title)
+    })
+
+    return products.slice(0, 15)
   } catch (error) {
     throw new GraphQLError(error.message, {
       extensions: { code: 'OPERATION_RESOLUTION_FAILURE' }
@@ -332,6 +384,7 @@ export {
   getFilterLimits,
   getProducts,
   getBestDiscountProducts,
+  getBestAverageProducts,
   getProduct,
   //* Scrapy EndPoints
   isProductExist

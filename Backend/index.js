@@ -1,7 +1,7 @@
 import { ApolloServer, gql } from 'apollo-server'
 import './database/config.js'
-import { Enums, Filter, Inputs, Product, ProductDiscount, ProductList, typeFilter, typeProduct, typeProductDiscount, typeProductList } from './types/index.js'
-import { isProductExist, getBestDiscountProducts, getProduct, getProducts, totalPages, totalProducts, getFilterLimits } from './queries/product.js'
+import { Enums, Filter, Inputs, Product, ProductAverage, ProductDiscount, ProductList, typeFilter, typeProduct, typeProductAverage, typeProductDiscount, typeProductList } from './types/index.js'
+import { isProductExist, getBestDiscountProducts, getProduct, getProducts, totalPages, totalProducts, getBestAverageProducts, getFilterLimits } from './queries/product.js'
 import { addProduct, removeWebsite, updateWebsite } from './mutations/product.js'
 
 const typeDefinitions = gql`
@@ -18,6 +18,7 @@ const typeDefinitions = gql`
     filterLimits(filters: FiltersInput!): Filter!
     allProducts(orderBy: OrderByEnum!, page: Int!, filters: FiltersInput!): [ProductList]!
     bestDiscountProducts: [ProductDiscount]!
+    bestAverageProducts: [ProductAverage]!
     product(id: ID!, title: String!): Product
 
     isProductExist(urlWebsite: String!): Boolean!
@@ -28,6 +29,7 @@ typeDefinitions.definitions.push(typeFilter)
 typeDefinitions.definitions.push(Inputs)
 typeDefinitions.definitions.push(typeProduct)
 typeDefinitions.definitions.push(typeProductDiscount)
+typeDefinitions.definitions.push(typeProductAverage)
 typeDefinitions.definitions.push(typeProductList)
 
 const resolvers = {
@@ -43,12 +45,14 @@ const resolvers = {
     filterLimits: getFilterLimits,
     allProducts: getProducts,
     bestDiscountProducts: getBestDiscountProducts,
+    bestAverageProducts: getBestAverageProducts,
     product: getProduct,
     // productImage: getProductImage,
     isProductExist
   },
   ProductList,
   ProductDiscount,
+  ProductAverage,
   Product,
   Filter
 }

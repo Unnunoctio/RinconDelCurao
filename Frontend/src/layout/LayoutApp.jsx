@@ -1,5 +1,6 @@
 import { Box, Flex, useColorModeValue } from '@chakra-ui/react'
 import { Navbar } from './components/Navbar'
+import { Footer } from './components'
 
 export const LayoutApp = ({ children }) => {
   return (
@@ -16,6 +17,7 @@ export const LayoutApp = ({ children }) => {
       </Flex>
 
       {/* Footer */}
+      <Footer />
     </Box>
   )
 }

@@ -24,7 +24,8 @@ const productSchema = Schema({
       url: { type: String, required: true },
       price: { type: Number, required: true },
       best_price: { type: Number, required: true },
-      last_hash: { type: String, required: true }
+      average: { type: Number }
+      // last_hash: { type: String, required: true }
     }
   ],
   image_path: { type: String, required: true, unique: true }

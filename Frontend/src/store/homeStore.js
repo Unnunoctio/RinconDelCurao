@@ -2,6 +2,7 @@ import { create } from 'zustand'
 
 export const HomeStore = create((set) => ({
   offerProducts: [],
+  ratingProducts: [],
   isLoading: false,
 
   handleLoading: (loading) => {
@@ -10,5 +11,9 @@ export const HomeStore = create((set) => ({
 
   handleOfferProducts: (products) => {
     set({ offerProducts: products })
+  },
+
+  handleRatingProducts: (products) => {
+    set({ ratingProducts: products })
   }
 }))
