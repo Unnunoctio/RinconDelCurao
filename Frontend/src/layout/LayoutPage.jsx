@@ -3,14 +3,14 @@ import { useURLQuery } from '@hooks/useUrlQuery'
 import { useEffect } from 'react'
 
 export const LayoutPage = ({ children }) => {
-  const { queryPaths, queryParams } = useURLQuery()
+  const { pathname, params } = useURLQuery()
 
   useEffect(() => {
     window.scrollTo({
       top: 0,
       behavior: 'smooth'
     })
-  }, [queryPaths, queryParams])
+  }, [pathname, params])
 
   return (
     <Box py={{ base: 2, md: 4 }} px={{ base: 2, sm: 4, md: 8 }} w='full' minH='85vh'>
