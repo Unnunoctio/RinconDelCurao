@@ -84,7 +84,6 @@ export const useProductsStore = () => {
     const requestId = Date.now().toString()
     latestRequestIdRef.current = requestId
 
-    console.log({ requestId })
     const variables = {
       requestId,
       orderBy,
@@ -97,10 +96,14 @@ export const useProductsStore = () => {
         quantity: filterActives.quantity,
         package: filterActives.package,
 
+        grade_min: (filterActives.rangeGrade) ? filterActives.rangeGrade[0] : undefined,
+        grade_max: (filterActives.rangeGrade) ? filterActives.rangeGrade[1] : undefined,
+
         price_min: (filterActives.rangePrice) ? filterActives.rangePrice[0] : undefined,
         price_max: (filterActives.rangePrice) ? filterActives.rangePrice[1] : undefined
       }
     }
+
     getAllProducts({ variables })
   }
 
@@ -117,6 +120,12 @@ export const useProductsStore = () => {
     if (!!filters.subCategory && filters.subCategory.length > 0) filterObj.subCategory = filters.subCategory.map(obj => obj.value)
     if (!!filters.brand && filters.brand.length > 0) filterObj.brand = filters.brand.map(obj => obj.value)
     // rangeGrade
+    if (filters.rangeGrade[0] !== -1 && filters.rangeGrade[1] !== -1) {
+      if (filters.rangeGrade[0] > filterLimits.range_grade[0] || filters.rangeGrade[1] < filterLimits.range_grade[1]) {
+        filterObj.rangeGrade = filters.rangeGrade
+      }
+    }
+
     if (!!filters.content && filters.content.length > 0) filterObj.content = filters.content.map(obj => obj.value)
     if (!!filters.quantity && filters.quantity.length > 0) filterObj.quantity = filters.quantity.map(obj => obj.value)
     if (!!filters.package && filters.package.length > 0) filterObj.package = filters.package.map(obj => obj.value)

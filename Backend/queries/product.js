@@ -16,8 +16,8 @@ const totalProducts = async (root, args) => {
     if (filters.content) matchStage['product.content'] = { $in: filters.content }
     if (filters.quantity) matchStage.quantity = { $in: filters.quantity }
     if (filters.package) matchStage['product.package'] = { $in: filters.package }
-    if (filters.grade_min && filters.grade_max) matchStage['product.alcoholic_grade'] = { $gte: filters.grade_min, $lte: filters.grade_max }
-    if (filters.price_min && filters.price_max) matchStage['websites.best_price'] = { $gte: filters.price_min, $lte: filters.price_max }
+    if (filters.grade_min !== undefined && filters.grade_max !== undefined) matchStage['product.alcoholic_grade'] = { $gte: filters.grade_min, $lte: filters.grade_max }
+    if (filters.price_min !== undefined && filters.price_max !== undefined) matchStage['websites.best_price'] = { $gte: filters.price_min, $lte: filters.price_max }
 
     const total = await Product.countDocuments(matchStage)
     return total
@@ -41,8 +41,8 @@ const totalPages = async (root, args) => {
     if (filters.content) matchStage['product.content'] = { $in: filters.content }
     if (filters.quantity) matchStage.quantity = { $in: filters.quantity }
     if (filters.package) matchStage['product.package'] = { $in: filters.package }
-    if (filters.grade_min && filters.grade_max) matchStage['product.alcoholic_grade'] = { $gte: filters.grade_min, $lte: filters.grade_max }
-    if (filters.price_min && filters.price_max) matchStage['websites.best_price'] = { $gte: filters.price_min, $lte: filters.price_max }
+    if (filters.grade_min !== undefined && filters.grade_max !== undefined) matchStage['product.alcoholic_grade'] = { $gte: filters.grade_min, $lte: filters.grade_max }
+    if (filters.price_min !== undefined && filters.price_max !== undefined) matchStage['websites.best_price'] = { $gte: filters.price_min, $lte: filters.price_max }
 
     const totalProducts = await Product.countDocuments(matchStage)
     let totalPages = Math.ceil(totalProducts / productsPerPage)
@@ -113,7 +113,7 @@ const getFilterLimits = async (root, { filters }) => {
     products = products.filter(product => filters.package.includes(product.product.package))
   }
   //* RangeGrade = grade_min, grade_max
-  if (filters.grade_min && filters.grade_max) {
+  if (filters.grade_min !== undefined && filters.grade_max !== undefined) {
     const alcoholicGrades = products.map(product => product.product.alcoholic_grade)
     filterOptions.grade_min = Math.min(...alcoholicGrades)
     filterOptions.grade_max = Math.max(...alcoholicGrades)
@@ -121,7 +121,7 @@ const getFilterLimits = async (root, { filters }) => {
     products = products.filter(product => product.product.alcoholic_grade >= filters.grade_min && product.product.alcoholic_grade <= filters.grade_max)
   }
   //* RangePrice = price_min, price_max
-  if (filters.price_min && filters.price_max) {
+  if (filters.price_min !== undefined && filters.price_max !== undefined) {
     const prices = products.map(product => product.websites[0].best_price)
     filterOptions.price_min = Math.min(...prices)
     filterOptions.price_max = Math.max(...prices)
@@ -141,13 +141,13 @@ const getFilterLimits = async (root, { filters }) => {
   //* Package
   if (!filters.package) filterOptions.package = applyFilter(products, 'package', 2)
   //* RangeGrade, el || es en caso de que solo se envie 1
-  if (!filters.grade_min || !filters.grade_max) {
+  if (filters.grade_min === undefined || filters.grade_max === undefined) {
     const alcoholicGrades = products.map(product => product.product.alcoholic_grade)
     filterOptions.grade_min = Math.min(...alcoholicGrades)
     filterOptions.grade_max = Math.max(...alcoholicGrades)
   }
   //* RangePrice = price_min, price_max
-  if (!filters.price_min && !filters.price_max) {
+  if (filters.price_min === undefined || filters.price_max === undefined) {
     const prices = products.map(product => product.websites[0].best_price)
     filterOptions.price_min = Math.min(...prices)
     filterOptions.price_max = Math.max(...prices)
@@ -169,8 +169,8 @@ const getProducts = async (root, args) => {
     if (filters.content) matchStage['product.content'] = { $in: filters.content }
     if (filters.quantity) matchStage.quantity = { $in: filters.quantity }
     if (filters.package) matchStage['product.package'] = { $in: filters.package }
-    if (filters.grade_min && filters.grade_max) matchStage['product.alcoholic_grade'] = { $gte: filters.grade_min, $lte: filters.grade_max }
-    if (filters.price_min && filters.price_max) matchStage['websites.best_price'] = { $gte: filters.price_min, $lte: filters.price_max }
+    if (filters.grade_min !== undefined && filters.grade_max !== undefined) matchStage['product.alcoholic_grade'] = { $gte: filters.grade_min, $lte: filters.grade_max }
+    if (filters.price_min !== undefined && filters.price_max !== undefined) matchStage['websites.best_price'] = { $gte: filters.price_min, $lte: filters.price_max }
 
     const products = await Product.aggregate([
       { $unwind: '$websites' },

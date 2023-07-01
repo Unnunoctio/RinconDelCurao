@@ -1,6 +1,7 @@
 import { linkItems } from '@assets/linkItems'
 import { orderByItems } from '@assets/orderByItems'
 import { useProductsStore, useURLQuery } from '@hooks'
+import { VALUE_FLOAT, VALUE_INT } from '@pages/Products/assets'
 import { sameStrings, verifyRanges } from '@pages/Products/helpers'
 import { useEffect } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
@@ -18,7 +19,7 @@ export const useFilter = () => {
       rangePrice: [-1, -1],
       subCategory: [],
       brand: [],
-      rangeGrade: [0.0, 0.0],
+      rangeGrade: [-1, -1],
       content: [],
       quantity: [],
       package: []
@@ -64,10 +65,13 @@ export const useFilter = () => {
         }
       }
 
-      const processRangeParam = (param, keyForm, keyLimit) => {
+      const processRangeParam = (param, keyForm, keyLimit, valueType = VALUE_INT) => {
         const itemParam = params[param]
         if (itemParam) {
-          const rangeParam = itemParam.split('to').map(x => parseInt(x))
+          let rangeParam = [0, 0]
+          if (valueType === VALUE_INT) rangeParam = itemParam.split('to').map(x => parseInt(x))
+          if (valueType === VALUE_FLOAT) rangeParam = itemParam.split('to').map(x => parseFloat(x))
+
           if (!sameStrings(filterActives[keyForm], itemParam.split('to')) || verifyRanges(rangeParam, filterLimits[keyLimit])) {
             if (rangeParam[0] < filterLimits[keyLimit][0]) rangeParam[0] = filterLimits[keyLimit][0]
             if (rangeParam[1] > filterLimits[keyLimit][1]) rangeParam[1] = filterLimits[keyLimit][1]
@@ -86,6 +90,7 @@ export const useFilter = () => {
       }
 
       processRangeParam('rangePrice', 'rangePrice', 'range_price')
+      processRangeParam('rangeGrade', 'rangeGrade', 'range_grade', VALUE_FLOAT)
       processParam('category', 'subCategory', 'sub_category')
       processParam('brand', 'brand', 'brand')
       processParam('content', 'content', 'content')
@@ -163,6 +168,7 @@ export const useFilter = () => {
     }
 
     proccesRangeParam('rangePrice', 'rangePrice', 'range_price')
+    proccesRangeParam('rangeGrade', 'rangeGrade', 'range_grade')
     processParam('category', 'subCategory')
     processParam('brand', 'brand')
     processParam('content', 'content')
