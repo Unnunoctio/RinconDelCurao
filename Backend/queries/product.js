@@ -1,12 +1,25 @@
 import { ForbiddenError, UserInputError } from 'apollo-server'
-import Product from '../models/Product.js'
 import { GraphQLError } from 'graphql'
+import Product from '../models/Product.js'
+import { applyFilter } from '../helpers/index.js'
 
 // TODO: Frontend Endpoints
 const totalProducts = async (root, args) => {
   try {
     const { filters } = args
-    const total = await Product.countDocuments({ 'product.category': filters.category })
+
+    const matchStage = {
+      'product.category': filters.category
+    }
+    if (filters.sub_category) matchStage['product.sub_category'] = { $in: filters.sub_category }
+    if (filters.brand) matchStage['product.brand'] = { $in: filters.brand }
+    if (filters.content) matchStage['product.content'] = { $in: filters.content }
+    if (filters.quantity) matchStage.quantity = { $in: filters.quantity }
+    if (filters.package) matchStage['product.package'] = { $in: filters.package }
+    if (filters.grade_min !== undefined && filters.grade_max !== undefined) matchStage['product.alcoholic_grade'] = { $gte: filters.grade_min, $lte: filters.grade_max }
+    if (filters.price_min !== undefined && filters.price_max !== undefined) matchStage['websites.best_price'] = { $gte: filters.price_min, $lte: filters.price_max }
+
+    const total = await Product.countDocuments(matchStage)
     return total
   } catch (error) {
     throw new UserInputError(error.message, {
@@ -20,7 +33,18 @@ const totalPages = async (root, args) => {
     const { page, filters } = args
     const productsPerPage = 12
 
-    const totalProducts = await Product.countDocuments({ 'product.category': filters.category })
+    const matchStage = {
+      'product.category': filters.category
+    }
+    if (filters.sub_category) matchStage['product.sub_category'] = { $in: filters.sub_category }
+    if (filters.brand) matchStage['product.brand'] = { $in: filters.brand }
+    if (filters.content) matchStage['product.content'] = { $in: filters.content }
+    if (filters.quantity) matchStage.quantity = { $in: filters.quantity }
+    if (filters.package) matchStage['product.package'] = { $in: filters.package }
+    if (filters.grade_min !== undefined && filters.grade_max !== undefined) matchStage['product.alcoholic_grade'] = { $gte: filters.grade_min, $lte: filters.grade_max }
+    if (filters.price_min !== undefined && filters.price_max !== undefined) matchStage['websites.best_price'] = { $gte: filters.price_min, $lte: filters.price_max }
+
+    const totalProducts = await Product.countDocuments(matchStage)
     let totalPages = Math.ceil(totalProducts / productsPerPage)
     if (totalPages === 0) totalPages = 1
 
@@ -36,14 +60,121 @@ const totalPages = async (root, args) => {
   }
 }
 
+// Jerarquia
+// Categoria: obligatorio
+// Subcategoria -> Marcas -> content -> pack-unit -> quantity -> package -> rangeGrade -> rangePrice
+// Si viene en los filtros se filtra y se obtiene del anterior en la lista
+// Si no viene se obtiene de lo que queda
+// El rangeGrade y rangePrice se obtienen siempre sus min y max antes de filtrar por ellos
+const getFilterLimits = async (root, { filters }) => {
+  const { category } = filters
+
+  // TODO: Obligatorio
+  let products = await Product.aggregate([
+    { $unwind: '$websites' },
+    { $match: { 'product.category': category } },
+    { $sort: { 'websites.best_price': 1 } },
+    {
+      $group: {
+        _id: '$_id',
+        websites: { $push: '$websites' },
+        otherFields: { $first: '$$ROOT' }
+      }
+    },
+    { $replaceRoot: { newRoot: { $mergeObjects: ['$otherFields', { websites: '$websites' }] } } }
+  ])
+
+  const filterOptions = {}
+
+  // TODO: Si viene en los filtros
+  //* SubCategory = [value, value, value, ...]
+  if (filters.sub_category) {
+    filterOptions.sub_category = applyFilter(products, 'sub_category', 2)
+    products = products.filter(product => filters.sub_category.includes(product.product.sub_category))
+  }
+  //* Brand
+  if (filters.brand) {
+    filterOptions.brand = applyFilter(products, 'brand', 2)
+    products = products.filter(product => filters.brand.includes(product.product.brand))
+  }
+  //* Content
+  if (filters.content) {
+    filterOptions.content = applyFilter(products, 'content', 2)
+    products = products.filter(product => filters.content.includes(product.product.content))
+  }
+  //* Quantity
+  if (filters.quantity) {
+    filterOptions.quantity = applyFilter(products, 'quantity', 1)
+    products = products.filter(product => filters.quantity.includes(product.quantity))
+  }
+  //* Package
+  if (filters.package) {
+    filterOptions.package = applyFilter(products, 'package', 2)
+    products = products.filter(product => filters.package.includes(product.product.package))
+  }
+  //* RangeGrade = grade_min, grade_max
+  if (filters.grade_min !== undefined && filters.grade_max !== undefined) {
+    const alcoholicGrades = products.map(product => product.product.alcoholic_grade)
+    filterOptions.grade_min = Math.min(...alcoholicGrades)
+    filterOptions.grade_max = Math.max(...alcoholicGrades)
+
+    products = products.filter(product => product.product.alcoholic_grade >= filters.grade_min && product.product.alcoholic_grade <= filters.grade_max)
+  }
+  //* RangePrice = price_min, price_max
+  if (filters.price_min !== undefined && filters.price_max !== undefined) {
+    const prices = products.map(product => product.websites[0].best_price)
+    filterOptions.price_min = Math.min(...prices)
+    filterOptions.price_max = Math.max(...prices)
+
+    products = products.filter(product => product.websites[0].best_price >= filters.price_min && product.websites[0].best_price <= filters.price_max)
+  }
+
+  // TODO: Si NO vinen en los filtros
+  //* SubCategory
+  if (!filters.sub_category) filterOptions.sub_category = applyFilter(products, 'sub_category', 2)
+  //* Brand
+  if (!filters.brand) filterOptions.brand = applyFilter(products, 'brand', 2)
+  //* Content
+  if (!filters.content) filterOptions.content = applyFilter(products, 'content', 2)
+  //* Quantity
+  if (!filters.quantity) filterOptions.quantity = applyFilter(products, 'quantity', 1)
+  //* Package
+  if (!filters.package) filterOptions.package = applyFilter(products, 'package', 2)
+  //* RangeGrade, el || es en caso de que solo se envie 1
+  if (filters.grade_min === undefined || filters.grade_max === undefined) {
+    const alcoholicGrades = products.map(product => product.product.alcoholic_grade)
+    filterOptions.grade_min = Math.min(...alcoholicGrades)
+    filterOptions.grade_max = Math.max(...alcoholicGrades)
+  }
+  //* RangePrice = price_min, price_max
+  if (filters.price_min === undefined || filters.price_max === undefined) {
+    const prices = products.map(product => product.websites[0].best_price)
+    filterOptions.price_min = Math.min(...prices)
+    filterOptions.price_max = Math.max(...prices)
+  }
+
+  return filterOptions
+}
+
 const getProducts = async (root, args) => {
   try {
     const { orderBy, page, filters } = args
     const productsPerPage = 12
 
+    const matchStage = {
+      'product.category': filters.category
+    }
+    if (filters.sub_category) matchStage['product.sub_category'] = { $in: filters.sub_category }
+    if (filters.brand) matchStage['product.brand'] = { $in: filters.brand }
+    if (filters.content) matchStage['product.content'] = { $in: filters.content }
+    if (filters.quantity) matchStage.quantity = { $in: filters.quantity }
+    if (filters.package) matchStage['product.package'] = { $in: filters.package }
+    if (filters.grade_min !== undefined && filters.grade_max !== undefined) matchStage['product.alcoholic_grade'] = { $gte: filters.grade_min, $lte: filters.grade_max }
+    if (filters.price_min !== undefined && filters.price_max !== undefined) matchStage['websites.best_price'] = { $gte: filters.price_min, $lte: filters.price_max }
+
     const products = await Product.aggregate([
       { $unwind: '$websites' },
-      { $match: { 'product.category': filters.category } },
+      { $match: matchStage },
       { $sort: { 'websites.best_price': 1 } },
       {
         $group: {
@@ -250,6 +381,7 @@ const isProductExist = async (root, args, context) => {
 export {
   totalProducts,
   totalPages,
+  getFilterLimits,
   getProducts,
   getBestDiscountProducts,
   getBestAverageProducts,

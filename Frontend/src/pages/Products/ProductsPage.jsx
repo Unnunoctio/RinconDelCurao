@@ -8,7 +8,7 @@ import { FilterProducts, ProductList } from './components'
 import { OrderBySelect } from './components/inputs'
 
 export const ProductsPage = () => {
-  const { queryPaths } = useURLQuery()
+  const { pathname } = useURLQuery()
 
   const [breadcrumbLinks, setBreadcrumbLinks] = useState([])
   const [title, setTitle] = useState('')
@@ -25,7 +25,7 @@ export const ProductsPage = () => {
   }, [])
 
   useEffect(() => {
-    const category = linkItems.find(item => item.url === `/${queryPaths[1]}`)
+    const category = linkItems.find(item => item.url === `/${pathname[1]}`)
     if (category) {
       setBreadcrumbLinks([
         { name: 'Home', url: '/' },
@@ -35,7 +35,7 @@ export const ProductsPage = () => {
       setTitle(category?.name)
       document.title = `${category?.name} | Rincón del Curao`
     }
-  }, [queryPaths])
+  }, [pathname])
 
   useEffect(() => {
     if (Object.entries(filterActives).length > 0) {

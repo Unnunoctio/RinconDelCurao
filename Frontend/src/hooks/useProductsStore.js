@@ -8,6 +8,30 @@ const GET_ALL_PRODUCTS = gql`
     requestId(requestId: $requestId)
     totalProducts(filters: $filters)
     totalPages(page: $page, filters: $filters)
+    filterLimits(filters: $filters) {
+      sub_category {
+        label
+        value
+      }
+      brand {
+        label
+        value
+      }
+      content {
+        label
+        value
+      }
+      quantity {
+        label
+        value
+      }
+      package {
+        label
+        value
+      }
+      range_grade
+      range_price
+    }
     allProducts(orderBy: $orderBy, page: $page, filters: $filters) {
       id
       title
@@ -37,15 +61,16 @@ export const useProductsStore = () => {
   ] = ProductsStore((state) => [state.handleLoading, state.handleProducts, state.handleFilterActives, state.handleFilterLimits, state.handleStoreOrderby, state.handleStorePage, state.resetStore], shallow)
 
   useEffect(() => {
+    if (error !== undefined) {
+      handleLoading(false)
+      handleProducts([], 0)
+      handleStorePage(null, 1)
+    }
     setTimeout(() => {
       if (data?.requestId === latestRequestIdRef.current) {
-        if (error) {
-          console.error(error.message)
-          handleLoading(false)
-        }
         if (data) {
           handleProducts(data.allProducts, data.totalProducts)
-          // handleFilterLimits(data.filterLimits)
+          handleFilterLimits(data.filterLimits)
           handleStorePage(null, data.totalPages)
         }
         handleLoading(false)
@@ -64,7 +89,18 @@ export const useProductsStore = () => {
       orderBy,
       page: currentPage,
       filters: {
-        category: filterActives.category
+        category: filterActives.category,
+        sub_category: filterActives.subCategory,
+        brand: filterActives.brand,
+        content: filterActives.content,
+        quantity: filterActives.quantity,
+        package: filterActives.package,
+
+        grade_min: (filterActives.rangeGrade) ? filterActives.rangeGrade[0] : undefined,
+        grade_max: (filterActives.rangeGrade) ? filterActives.rangeGrade[1] : undefined,
+
+        price_min: (filterActives.rangePrice) ? filterActives.rangePrice[0] : undefined,
+        price_max: (filterActives.rangePrice) ? filterActives.rangePrice[1] : undefined
       }
     }
 
@@ -75,13 +111,24 @@ export const useProductsStore = () => {
     const filterObj = {}
     if (filters.category) filterObj.category = filters.category
     // rangePrice
-    // if (!!filters.subCategory && filters.subCategory.length > 0) filterObj.subCategory = filters.subCategory.map(obj => obj.value)
-    // brands
+    if (filters.rangePrice[0] !== -1 && filters.rangePrice[1] !== -1) {
+      if (filters.rangePrice[0] > filterLimits.range_price[0] || filters.rangePrice[1] < filterLimits.range_price[1]) {
+        filterObj.rangePrice = filters.rangePrice
+      }
+    }
+
+    if (!!filters.subCategory && filters.subCategory.length > 0) filterObj.subCategory = filters.subCategory.map(obj => obj.value)
+    if (!!filters.brand && filters.brand.length > 0) filterObj.brand = filters.brand.map(obj => obj.value)
     // rangeGrade
-    // content
-    // pack_unit
-    // quantity
-    // package
+    if (filters.rangeGrade[0] !== -1 && filters.rangeGrade[1] !== -1) {
+      if (filters.rangeGrade[0] > filterLimits.range_grade[0] || filters.rangeGrade[1] < filterLimits.range_grade[1]) {
+        filterObj.rangeGrade = filters.rangeGrade
+      }
+    }
+
+    if (!!filters.content && filters.content.length > 0) filterObj.content = filters.content.map(obj => obj.value)
+    if (!!filters.quantity && filters.quantity.length > 0) filterObj.quantity = filters.quantity.map(obj => obj.value)
+    if (!!filters.package && filters.package.length > 0) filterObj.package = filters.package.map(obj => obj.value)
 
     handleFilterActives(filterObj)
   }

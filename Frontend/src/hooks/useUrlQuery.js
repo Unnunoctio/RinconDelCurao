@@ -2,59 +2,73 @@ import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 export const useURLQuery = () => {
-  const [queryPaths, setQueryPaths] = useState([])
-  const [queryParams, setQueryParams] = useState(null)
+  const [pathname, setPathname] = useState([])
+  const [params, setParams] = useState(null)
 
   const navigate = useNavigate()
   const location = useLocation()
 
+  // TODO: Obtener los params
   useEffect(() => {
-    const params = new URLSearchParams(location.search)
+    const paramsSearch = new URLSearchParams(location.search)
 
-    const paramsObj = Object.fromEntries(params.entries())
+    const paramsObj = Object.fromEntries(paramsSearch.entries())
     if (Object.keys(paramsObj).length > 0) {
-      setQueryParams(paramsObj)
+      setParams(paramsObj)
     } else {
-      setQueryParams(null)
+      setParams(null)
     }
   }, [location.search])
 
+  // TODO: Obtener el pathname
   useEffect(() => {
     const pathSplit = location.pathname.split('/')
 
-    setQueryPaths(pathSplit)
+    setPathname(pathSplit)
   }, [location.pathname])
 
-  const addQueryParamURL = (label, value) => {
-    const params = new URLSearchParams(location.search)
-    params.set(label, value)
+  // TODO: Agrega 1 param o lo modifica
+  const addParam = (label, value) => {
+    const paramsSearch = new URLSearchParams(location.search)
+    paramsSearch.set(label, value)
 
-    navigate(`?${params.toString()}`)
+    navigate(`?${paramsSearch.toString()}`)
   }
 
-  const addQueryMultiParamsURL = (multiParams) => {
-    const params = new URLSearchParams(location.search)
+  // TODO: Elimina 1 param
+  const deleteParam = (label) => {
+    const paramsSearch = new URLSearchParams(location.search)
+    paramsSearch.delete(label)
 
-    multiParams.map(param => params.set(param.label, param.value))
-
-    navigate(`?${params.toString()}`)
+    navigate(`?${paramsSearch.toString()}`)
   }
 
-  const updateQueryMultiParamsURL = (addParams, deleteParams) => {
-    const params = new URLSearchParams(location.search)
+  // TODO: Agrega una lista de params: { label, value }
+  const addMultiParams = (multiParams) => {
+    const paramsSearch = new URLSearchParams(location.search)
 
-    deleteParams.map(param => params.delete(param))
-    addParams.map(param => params.set(param.label, param.value))
+    multiParams.map(param => paramsSearch.set(param.label, param.value))
 
-    navigate(`?${params.toString()}`)
+    navigate(`?${paramsSearch.toString()}`)
+  }
+
+  // TODO: Actualiza una lista de params: { label, value }, Agregando y Eliminando
+  const updateMultiParams = (addParams, deleteParams) => {
+    const paramsSearch = new URLSearchParams(location.search)
+
+    deleteParams.map(param => paramsSearch.delete(param))
+    addParams.map(param => paramsSearch.set(param.label, param.value))
+
+    navigate(`?${paramsSearch.toString()}`)
   }
 
   return {
-    queryPaths,
-    queryParams,
+    pathname,
+    params,
     //* Metodos
-    addQueryParamURL,
-    addQueryMultiParamsURL,
-    updateQueryMultiParamsURL
+    addParam,
+    deleteParam,
+    addMultiParams,
+    updateMultiParams
   }
 }
